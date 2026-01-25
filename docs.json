@@ -1,0 +1,36 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "OMNI Documentation",
+  "logo": {
+    "dark": "/logo/dark.svg",
+    "light": "/logo/light.svg"
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#007AFF",
+    "light": "#4DA3FF",
+    "dark": "#0055CC"
+  },
+  "topbarLinks": [
+    {
+      "name": "App",
+      "url": "https://app.omnibrief.app"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Get Started",
+    "url": "https://app.omnibrief.app"
+  },
+  "navigation": {
+    "groups": [
+      {
+        "group": "Getting Started",
+        "pages": ["index", "quickstart"]
+      }
+    ]
+  },
+  "footerSocials": {
+    "website": "https://omnibrief.app"
+  }
+}
