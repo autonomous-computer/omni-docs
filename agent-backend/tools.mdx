@@ -1,0 +1,96 @@
+---
+title: "Creating Tools"
+description: "Extend the agent's capabilities with custom tools"
+---
+
+Tools extend the agent's capabilities. This guide shows how to create custom tools.
+
+## Tool Structure
+
+Each tool has:
+
+- **Name**: Unique identifier
+- **Description**: For Claude to understand when to use it
+- **Parameters**: JSON Schema for inputs
+- **Handler**: Function that executes the tool
+
+## Basic Example
+
+```typescript
+import { defineTool } from '../tools/registry'
+
+defineTool({
+  name: 'get_weather',
+  description: 'Get current weather for a location',
+  parameters: {
+    type: 'object',
+    properties: {
+      location: {
+        type: 'string',
+        description: 'City name or coordinates',
+      },
+    },
+    required: ['location'],
+  },
+  handler: async ({ location }) => {
+    const response = await fetch(
+      `https://api.weather.com/v1/${location}`
+    )
+    return response.json()
+  },
+})
+```
+
+## Permission Levels
+
+Tools are categorized by risk:
+
+| Level | Examples | Behavior |
+|-------|----------|----------|
+| read | read_file, glob | Always allowed |
+| modify | write_file, edit | Requires confirmation in "ask" mode |
+| dangerous | bash, delete | Requires confirmation |
+
+Set the level in your tool definition:
+
+```typescript
+defineTool({
+  name: 'run_tests',
+  level: 'dangerous',
+  // ...
+})
+```
+
+## MCP Integration
+
+Tools can come from MCP servers:
+
+```typescript
+await mcpManager.registerServer({
+  name: 'my-tools',
+  transport: 'stdio',
+  command: 'npx',
+  args: ['-y', 'my-mcp-server'],
+})
+```
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Clear descriptions" icon="comment">
+    Help Claude know when to use the tool
+  </Card>
+  <Card title="Validate inputs" icon="check">
+    Check parameters before execution
+  </Card>
+  <Card title="Handle errors" icon="triangle-exclamation">
+    Return helpful error messages
+  </Card>
+  <Card title="Minimize side effects" icon="shield">
+    Make tools predictable
+  </Card>
+</CardGroup>
+
+<Tip>
+Document your tools well with examples and edge cases. The description is what Claude uses to decide when to invoke your tool.
+</Tip>

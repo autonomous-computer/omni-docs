@@ -1,0 +1,112 @@
+---
+title: "Architecture"
+description: "Understanding OMNI's system architecture"
+---
+
+OMNI uses a modular architecture with clear separation of concerns.
+
+## System Overview
+
+```
+┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+│   Web App   │    │  Desktop    │    │   Mobile    │
+│  (Next.js)  │    │  (Electron) │    │  (Future)   │
+└──────┬──────┘    └──────┬──────┘    └──────┬──────┘
+       │                  │                  │
+       └──────────────────┼──────────────────┘
+                          │
+                          ▼
+┌─────────────────────────────────────────────────────┐
+│                 Agent Backend                        │
+│  ┌───────────┐  ┌───────────┐  ┌───────────┐       │
+│  │  Claude   │  │   Tools   │  │   MCP     │       │
+│  │  Agent    │  │  System   │  │  Client   │       │
+│  └───────────┘  └───────────┘  └───────────┘       │
+└─────────────────────────┬───────────────────────────┘
+                          │
+       ┌──────────────────┼──────────────────┐
+       ▼                  ▼                  ▼
+┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+│  PostgreSQL │    │     R2      │    │   Claude    │
+│  (Sessions) │    │  (Storage)  │    │   (API)     │
+└─────────────┘    └─────────────┘    └─────────────┘
+```
+
+## Agent Backend
+
+The agent backend is the core service that powers OMNI's AI capabilities.
+
+### Request Flow
+
+<Steps>
+  <Step title="Connect">
+    Client connects via WebSocket
+  </Step>
+  <Step title="Authenticate">
+    Authentication via JWT token
+  </Step>
+  <Step title="Route">
+    Messages routed to agent
+  </Step>
+  <Step title="Process">
+    Agent processes with Claude API
+  </Step>
+  <Step title="Execute">
+    Tool calls executed
+  </Step>
+  <Step title="Stream">
+    Responses streamed back
+  </Step>
+</Steps>
+
+### Key Components
+
+| Component | Purpose |
+|-----------|---------|
+| OmniAgent | Main agent orchestration |
+| ToolRegistry | Tool discovery and execution |
+| McpManager | MCP server connections |
+| PermissionManager | Access control |
+| SessionStorage | Session persistence |
+
+## Web App
+
+Next.js application with:
+
+- Server components for initial render
+- Client components for interactivity
+- WebSocket for real-time updates
+- IndexedDB for offline support
+
+## Desktop App
+
+Electron application that:
+
+- Embeds the web app
+- Provides native features (notifications, file access)
+- Secure token storage via OS keychain
+- Auto-updates via GitHub releases
+
+## Data Flow
+
+### Message Flow
+
+```
+User Input → WebSocket → Agent → Claude API
+                            ↓
+UI Update ← WebSocket ← Agent ← Response
+```
+
+### Storage
+
+<CardGroup cols={3}>
+  <Card title="Sessions" icon="database">
+    PostgreSQL for cross-device sync
+  </Card>
+  <Card title="Attachments" icon="file">
+    R2 for file storage
+  </Card>
+  <Card title="Credentials" icon="key">
+    OS keychain (desktop) or secure cookie (web)
+  </Card>
+</CardGroup>

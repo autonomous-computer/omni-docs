@@ -26,11 +26,24 @@
     "groups": [
       {
         "group": "Getting Started",
-        "pages": ["index", "quickstart"]
+        "pages": ["index", "quickstart", "getting-started"]
+      },
+      {
+        "group": "Architecture",
+        "pages": ["architecture"]
+      },
+      {
+        "group": "Agent Backend",
+        "pages": ["agent-backend/tools", "agent-backend/skills"]
+      },
+      {
+        "group": "Support",
+        "pages": ["troubleshooting"]
       }
     ]
   },
   "footerSocials": {
-    "website": "https://omnibrief.app"
+    "website": "https://omnibrief.app",
+    "github": "https://github.com/omnibrief"
   }
 }

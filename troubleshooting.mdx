@@ -1,0 +1,121 @@
+---
+title: "Troubleshooting"
+description: "Common issues and solutions"
+---
+
+## Connection Issues
+
+### WebSocket fails to connect
+
+<Accordion title="Symptoms">
+Chat doesn't work, "Connection error" message appears
+</Accordion>
+
+<Accordion title="Solutions">
+1. Check agent backend is running: `curl http://localhost:3001/health`
+2. Verify WebSocket URL in environment
+3. Check CORS settings if cross-origin
+</Accordion>
+
+### Authentication fails
+
+<Accordion title="Symptoms">
+"Unauthorized" error, redirected to login
+</Accordion>
+
+<Accordion title="Solutions">
+1. Clear local storage and re-login
+2. Check JWT expiration
+3. Verify JWT_SECRET matches between services
+</Accordion>
+
+## Agent Issues
+
+### Agent not responding
+
+<Accordion title="Symptoms">
+Messages sent but no response
+</Accordion>
+
+<Accordion title="Solutions">
+1. Check Anthropic API key is valid
+2. Verify API rate limits not exceeded
+3. Check agent backend logs
+</Accordion>
+
+### Tools not working
+
+<Accordion title="Symptoms">
+"Tool not found" or execution errors
+</Accordion>
+
+<Accordion title="Solutions">
+1. Verify tool is registered
+2. Check permission mode allows the tool
+3. Review tool handler for errors
+</Accordion>
+
+## Desktop Issues
+
+### App won't start
+
+<Accordion title="Symptoms">
+App crashes on launch
+</Accordion>
+
+<Accordion title="Solutions">
+1. Clear app data: `~/Library/Application Support/OMNI`
+2. Reinstall the application
+3. Check crash logs in app data folder
+</Accordion>
+
+### Auto-update fails
+
+<Accordion title="Symptoms">
+Update notification but update fails
+</Accordion>
+
+<Accordion title="Solutions">
+1. Check internet connection
+2. Verify code signing is valid
+3. Manual download from GitHub releases
+</Accordion>
+
+## Build Issues
+
+### TypeScript errors
+
+<Accordion title="Solutions">
+1. Run `pnpm typecheck` to see all errors
+2. Ensure all dependencies installed
+3. Check for version mismatches
+</Accordion>
+
+### Docker build fails
+
+<Accordion title="Solutions">
+1. Ensure Docker daemon is running
+2. Clear Docker cache: `docker builder prune`
+3. Check Dockerfile syntax
+</Accordion>
+
+## Getting Help
+
+If these solutions don't work:
+
+<CardGroup cols={3}>
+  <Card title="GitHub Issues" icon="github" href="https://github.com/omnibrief/omni-app-new/issues">
+    Search existing issues
+  </Card>
+  <Card title="Discord" icon="discord" href="https://discord.gg/omnibrief">
+    Ask the community
+  </Card>
+  <Card title="Email Support" icon="envelope" href="mailto:support@omnibrief.app">
+    Contact support
+  </Card>
+</CardGroup>
+
+When creating a new issue, include:
+- Steps to reproduce
+- Error messages
+- Environment details
