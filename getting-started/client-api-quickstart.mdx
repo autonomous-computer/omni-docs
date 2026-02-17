@@ -14,6 +14,7 @@ Use an authenticated Omni session token (your normal app auth) and create a key:
 ```bash
 curl -X POST https://agent-backend.omnibrief.app/api/client/keys \
   -H "Authorization: Bearer <omni_user_jwt>" \
+  -H "Idempotency-Key: idem_create_key_001" \
   -H "Content-Type: application/json" \
   -d '{
     "name": "internal-beta-main",
