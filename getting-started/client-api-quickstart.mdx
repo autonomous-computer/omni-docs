@@ -69,3 +69,4 @@ curl -X POST "https://api.omnibrief.app/v1/mcp/invoke" \
 - Access is allowlist-gated.
 - Billing infrastructure is active and usage is metered from successful calls.
 - Public beta infrastructure is deployed but remains gated off.
+- `POST /api/client/keys` also requires `Idempotency-Key` (same as other POST endpoints).
