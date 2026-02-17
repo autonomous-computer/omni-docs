@@ -1,0 +1,39 @@
+---
+title: Client API Internal Beta Policy
+description: Launch policy, SLA posture, and gating model for OMNI Client API internal beta.
+---
+
+# Client API Internal Beta Policy
+
+## Launch posture
+
+- Stage: `internal_beta`
+- Audience: allowlisted internal account(s) only
+- Public onboarding: disabled
+
+## Availability posture
+
+- No public SLA commitment during internal beta
+- Backward compatibility targeted but not guaranteed for undocumented fields
+- Breaking changes require changelog entry and migration note before rollout
+
+## Billing posture
+
+- Metering and billing infrastructure is active
+- Billable unit: successful API call (`2xx/3xx`)
+- Failed calls (`4xx/5xx`) are non-billable
+- Idempotent replays are non-billable duplicates
+
+## Guardrails
+
+- Global killswitch for client API traffic
+- Per-key revoke
+- Internal allowlist enforcement
+- Spend-cap and anomaly controls (control-plane driven)
+
+## Exit criteria to public beta
+
+- Stable auth semantics and key lifecycle
+- Reconciliation drift within tolerance
+- MCP invoke parity for published tool catalog
+- Onboarding and abuse-prevention controls verified in staging and production

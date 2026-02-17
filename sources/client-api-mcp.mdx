@@ -1,0 +1,41 @@
+---
+title: Client API MCP Access
+description: Hosted MCP-compatible API surface for OMNI Client API.
+---
+
+# Client API MCP Access
+
+OMNI exposes a hosted MCP-compatible surface under Client API v1.
+
+## Endpoints
+
+- `GET /v1/mcp/tools` — list available OMNI tools
+- `POST /v1/mcp/invoke` — invoke a tool with idempotency support
+
+## Tools in internal beta
+
+- `fred.search`
+- `fred.series`
+
+## Invoke payload
+
+```json
+{
+  "tool": "fred.search",
+  "arguments": {
+    "q": "inflation",
+    "limit": 5
+  }
+}
+```
+
+## Required headers
+
+- `Authorization: Bearer omni_live_...`
+- `Idempotency-Key: <required-for-post>`
+
+## Billing and metering behavior
+
+- Successful invocations (`2xx/3xx`) generate billable usage events.
+- Replayed idempotent responses are not double-billed.
+- Usage is written to OMNI shadow ledger and can be forwarded to Stripe metering.
