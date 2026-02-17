@@ -30,6 +30,8 @@
           "index",
           "getting-started/quickstart",
           "getting-started/installation",
+          "getting-started/client-api-quickstart",
+          "getting-started/client-api-versioning",
           "getting-started/craft-parity-audit"
         ]
       },
@@ -46,6 +48,9 @@
         "pages": [
           "sources/overview",
           "sources/mcp-servers",
+          "sources/client-api-auth",
+          "sources/client-api-mcp",
+          "sources/client-api-internal-beta-policy",
           "sources/apis",
           "sources/local-folders"
         ]

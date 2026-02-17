@@ -1,0 +1,33 @@
+---
+title: Client API Versioning and Changelog
+description: Versioning policy and change communication for OMNI Client API.
+---
+
+# Client API Versioning and Changelog
+
+## Version model
+
+- Base path versioning: `/v1/...`
+- Optional request pin: `Omni-Version` header
+- Response echoes selected `Omni-Version`
+
+## Change categories
+
+- Additive: new endpoints/fields, non-breaking
+- Behavioral: semantics clarified, may require migration note
+- Breaking: removed/renamed fields, auth or error-contract changes
+
+## Beta policy
+
+- Internal beta can introduce breaking changes with migration notes
+- Public beta requires deprecation notice before breaking changes
+
+## Changelog format
+
+For each release:
+
+- Release date (UTC)
+- Affected endpoints
+- Contract changes
+- Migration steps
+- Sunset dates (if applicable)

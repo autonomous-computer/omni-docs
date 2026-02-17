@@ -1,0 +1,78 @@
+---
+title: Client API Auth, Errors, and Limits
+description: Authentication, request semantics, idempotency, and error model for OMNI Client API v1.
+---
+
+# Client API Auth, Errors, and Limits
+
+## Authentication
+
+Send your OMNI API key in bearer format:
+
+```http
+Authorization: Bearer omni_live_...
+```
+
+Supported key prefixes:
+
+- `omni_live_...`
+- `omni_test_...`
+
+## Request tracing
+
+Optional inbound request ID:
+
+```http
+X-Request-Id: req_123
+```
+
+The API echoes `X-Request-Id` in responses.
+
+## Version pinning
+
+Optional version header:
+
+```http
+Omni-Version: 2026-02-17
+```
+
+The API echoes `Omni-Version` in responses.
+
+## Idempotency
+
+POST endpoints require:
+
+```http
+Idempotency-Key: <unique-key-per-operation>
+```
+
+Repeated requests with the same key and payload replay the stored response.
+
+## Error envelope
+
+All errors use:
+
+```json
+{
+  "error": {
+    "type": "invalid_request | auth_error | permission_error | rate_limit_error | api_error",
+    "code": "machine_readable_code",
+    "message": "Human-readable error",
+    "request_id": "req_xxx"
+  }
+}
+```
+
+## Rate limiting
+
+Per-key limits apply:
+
+- burst window limits
+- sustained per-minute limits
+
+Rate-limited responses:
+
+- `429 Too Many Requests`
+- `Retry-After` header
+- `X-RateLimit-Limit-Burst` header
+- `X-RateLimit-Limit-Minute` header
