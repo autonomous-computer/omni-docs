@@ -1,0 +1,33 @@
+---
+title: HTML Preview
+description: Rendering HTML artifacts safely for review workflows.
+---
+
+# HTML Preview
+
+HTML preview is useful for reviewing generated reports, email-like content, and rich artifacts.
+
+## Good Use Cases
+
+- Generated investment memo drafts
+- Email-format market recaps
+- Multi-section report prototypes
+
+## Workflow Pattern
+
+1. Generate or retrieve HTML content
+2. Validate structure and encoding
+3. Render in preview container
+4. Export or revise
+
+## Safety Notes
+
+- Treat remote HTML as untrusted content
+- Avoid unbounded script execution contexts
+- Prefer sanitized and deterministic render paths
+
+## Troubleshooting
+
+- Blank preview: verify valid HTML root structure
+- Missing styles: ensure CSS is embedded or linked correctly
+- Encoding issues: force UTF-8 normalization

@@ -1,0 +1,29 @@
+---
+title: Connect To Anything
+description: Strategy for extending Omni with safe, high-leverage integrations.
+---
+
+# Connect To Anything
+
+Omni is designed to connect to heterogeneous systems while preserving execution safety.
+
+## Integration strategy
+
+1. **Prefer first-party Omni tools** for stable financial workflows
+2. Add **MCP sources** for external tool ecosystems
+3. Add **OAuth/API sources** for provider-specific capabilities
+4. Use **custom endpoints** only when bounded and permissioned
+
+## Practical examples
+
+- Add an MCP source for internal research tooling
+- Add OAuth-backed source for productivity workflows
+- Route financial/news intelligence through Omni API proxies
+
+## Safety model
+
+Always combine new integrations with:
+
+- Permission mode controls
+- Source-specific allow/deny rules
+- Session-level approval where needed

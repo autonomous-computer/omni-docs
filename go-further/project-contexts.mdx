@@ -1,0 +1,31 @@
+---
+title: Project Contexts (No Workspaces)
+description: Omni's context model in place of Craft's workspace-first concept.
+---
+
+# Project Contexts (No Workspaces)
+
+Craft docs rely heavily on workspaces. Omni intentionally uses a different user-facing model.
+
+## What Omni uses instead
+
+Omni composes context from:
+
+- Session metadata and state
+- Enabled sources and permissions
+- User preference/profile context
+- Attached files and extracted artifacts
+
+## Why this change
+
+For Omni's product direction, context is centered on **analysis objective + data scope**, not folder/workspace ownership.
+
+This reduces setup friction and better matches financial research workflows that span symbols, models, and event threads.
+
+## Practical outcome
+
+Think in terms of:
+
+- "What question am I answering?"
+- "Which sources should be enabled?"
+- "Which outputs should be persisted for follow-up?"

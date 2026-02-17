@@ -1,0 +1,61 @@
+---
+title: Skills Overview
+description: How Omni skills package repeatable agent workflows.
+---
+
+# Skills Overview
+
+Skills are instruction packages that turn recurring workflows into predictable agent behavior.
+
+## What a Skill Contains
+
+A skill typically defines:
+
+- Name and summary metadata
+- Triggering context
+- Workflow instructions
+- Required tools/sources (where applicable)
+- Output expectations
+
+## Runtime Selection
+
+At runtime Omni:
+
+1. Builds or loads built-in skill index
+2. Scores skills against prompt intent
+3. Selects top active skills
+4. Injects skill instructions into agent context
+
+## Skill Sources
+
+- Built-in: `packages/skills/skills/*`
+- User/session-managed: backend skill store APIs
+
+## Precedence Model
+
+Omni prioritizes explicit and high-confidence skill matches over broad generic instructions.
+
+When multiple skills match, selection is constrained by relevance and configured limits.
+
+## Skill Quality Rules
+
+High-quality skills should:
+
+- Be specific about data sources and tools
+- Define clear output shape
+- Include edge-case handling
+- Prefer deterministic tool calls before free-form reasoning
+
+## Troubleshooting
+
+### Wrong skill selected
+
+Narrow prompt intent and include explicit task framing.
+
+### Skill uses unavailable tools
+
+Check tool preset, permission mode, and source availability.
+
+### Output too generic
+
+Strengthen skill-level output contract and required sections.

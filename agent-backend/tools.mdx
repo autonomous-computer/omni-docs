@@ -1,96 +1,56 @@
 ---
-title: "Creating Tools"
-description: "Extend the agent's capabilities with custom tools"
+title: Agent Backend Tools
+description: Tooling model, built-ins, and execution safeguards in Omni.
 ---
 
-Tools extend the agent's capabilities. This guide shows how to create custom tools.
+# Agent Backend Tools
 
-## Tool Structure
+Tools are the execution interface between Omni's reasoning layer and actionable systems.
 
-Each tool has:
+## Tool Categories
 
-- **Name**: Unique identifier
-- **Description**: For Claude to understand when to use it
-- **Parameters**: JSON Schema for inputs
-- **Handler**: Function that executes the tool
+### Data Access
 
-## Basic Example
+- `omni_api_*` symbol/market/portfolio/model/factor/news/briefing tools
+- File text retrieval and artifact readers
 
-```typescript
-import { defineTool } from '../tools/registry'
+### Execution
 
-defineTool({
-  name: 'get_weather',
-  description: 'Get current weather for a location',
-  parameters: {
-    type: 'object',
-    properties: {
-      location: {
-        type: 'string',
-        description: 'City name or coordinates',
-      },
-    },
-    required: ['location'],
-  },
-  handler: async ({ location }) => {
-    const response = await fetch(
-      `https://api.weather.com/v1/${location}`
-    )
-    return response.json()
-  },
-})
-```
+- `python_run` for computation and artifact generation
+- Plan submission tools for structured workflows
 
-## Permission Levels
+### Utility + Validation
 
-Tools are categorized by risk:
+- `mermaid_validate`
+- Prompt library search/get helpers
 
-| Level | Examples | Behavior |
-|-------|----------|----------|
-| read | read_file, glob | Always allowed |
-| modify | write_file, edit | Requires confirmation in "ask" mode |
-| dangerous | bash, delete | Requires confirmation |
+## Registration Model
 
-Set the level in your tool definition:
+All built-ins are registered in backend tool registry and exposed based on active preset.
 
-```typescript
-defineTool({
-  name: 'run_tests',
-  level: 'dangerous',
-  // ...
-})
-```
+## Preset Exposure
 
-## MCP Integration
+- `skills` preset: product-facing safe tool surface
+- `full` preset: broader internal/developer surface (guarded)
 
-Tools can come from MCP servers:
+## Execution Flow
 
-```typescript
-await mcpManager.registerServer({
-  name: 'my-tools',
-  transport: 'stdio',
-  command: 'npx',
-  args: ['-y', 'my-mcp-server'],
-})
-```
+1. Model selects tool call
+2. Tool schema validated
+3. Permission checks applied
+4. Tool executes with context
+5. Result streamed and persisted
 
-## Best Practices
+## Safety Constraints
 
-<CardGroup cols={2}>
-  <Card title="Clear descriptions" icon="comment">
-    Help Claude know when to use the tool
-  </Card>
-  <Card title="Validate inputs" icon="check">
-    Check parameters before execution
-  </Card>
-  <Card title="Handle errors" icon="triangle-exclamation">
-    Return helpful error messages
-  </Card>
-  <Card title="Minimize side effects" icon="shield">
-    Make tools predictable
-  </Card>
-</CardGroup>
+- Permission mode enforcement
+- Source-level allow/deny checks
+- Per-tool risk classification
+- Output guard and redaction controls
 
-<Tip>
-Document your tools well with examples and edge cases. The description is what Claude uses to decide when to invoke your tool.
-</Tip>
+## Design Tips For New Tools
+
+- Keep schemas strict and explicit
+- Return concise, parsable output
+- Avoid hidden side effects
+- Prefer first-party API adapters over direct external calls

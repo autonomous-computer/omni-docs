@@ -1,0 +1,41 @@
+---
+title: Themes
+description: Omni theme behavior and practical customization guidance.
+---
+
+# Themes
+
+Omni theme customization is preference-driven and applied across app surfaces.
+
+## Theme Hierarchy (Omni)
+
+1. User preference selection
+2. Theme token resolution
+3. Component-level semantic token usage
+
+## Available Modes
+
+- System
+- Light
+- Dark
+- Omni Blue
+
+## Customization Principles
+
+- Prefer semantic tokens over one-off overrides
+- Validate dense table readability in all themes
+- Ensure contrast for status/label/icon overlays
+
+## Operational Notes
+
+Theme preference sync should remain idempotent across sessions and devices.
+
+## Troubleshooting
+
+### Theme not applying
+
+Check persisted preference and active theme provider state.
+
+### Inconsistent colors
+
+Ensure components consume semantic tokens, not hardcoded colors.

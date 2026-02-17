@@ -8,9 +8,9 @@
   },
   "favicon": "/favicon.svg",
   "colors": {
-    "primary": "#007AFF",
-    "light": "#4DA3FF",
-    "dark": "#0055CC"
+    "primary": "#005FD1",
+    "light": "#5AA9FF",
+    "dark": "#2D8CFF"
   },
   "topbarLinks": [
     {
@@ -19,26 +19,107 @@
     }
   ],
   "topbarCtaButton": {
-    "name": "Get Started",
+    "name": "Launch Omni",
     "url": "https://app.omnibrief.app"
   },
   "navigation": {
     "groups": [
       {
         "group": "Getting Started",
-        "pages": ["index", "quickstart", "getting-started"]
+        "pages": [
+          "index",
+          "getting-started/quickstart",
+          "getting-started/installation",
+          "getting-started/craft-parity-audit"
+        ]
+      },
+      {
+        "group": "Core Concepts",
+        "pages": [
+          "core-concepts/conversations",
+          "core-concepts/working-directory",
+          "core-concepts/permissions"
+        ]
+      },
+      {
+        "group": "Sources",
+        "pages": [
+          "sources/overview",
+          "sources/mcp-servers",
+          "sources/apis",
+          "sources/local-folders"
+        ]
+      },
+      {
+        "group": "Skills & Superpowers",
+        "pages": [
+          "skills/overview",
+          "skills/superpowers",
+          "skills/skill-catalog"
+        ]
+      },
+      {
+        "group": "Statuses & Labels",
+        "pages": [
+          "statuses/overview",
+          "statuses/customizing",
+          "labels/overview",
+          "labels/auto-apply-rules"
+        ]
+      },
+      {
+        "group": "Automation (Preview)",
+        "pages": [
+          "hooks/overview"
+        ]
+      },
+      {
+        "group": "Customisation",
+        "pages": [
+          "customisation/themes",
+          "customisation/colors",
+          "customisation/icons"
+        ]
+      },
+      {
+        "group": "Omni Intelligence",
+        "pages": [
+          "omni-intelligence/daily-briefing-pipeline",
+          "omni-intelligence/portfolio-intelligence",
+          "omni-intelligence/factors-news-events"
+        ]
+      },
+      {
+        "group": "Go Further",
+        "pages": [
+          "go-further/sharing-conversations",
+          "go-further/connect-to-anything",
+          "go-further/project-contexts",
+          "go-further/deep-links",
+          "go-further/data-tables",
+          "go-further/html-preview",
+          "go-further/pdf-preview",
+          "go-further/mermaid"
+        ]
       },
       {
         "group": "Architecture",
-        "pages": ["architecture"]
+        "pages": [
+          "architecture"
+        ]
       },
       {
         "group": "Agent Backend",
-        "pages": ["agent-backend/tools", "agent-backend/skills"]
+        "pages": [
+          "agent-backend/tools",
+          "agent-backend/skills"
+        ]
       },
       {
         "group": "Support",
-        "pages": ["troubleshooting"]
+        "pages": [
+          "troubleshooting"
+        ]
       }
     ]
   },

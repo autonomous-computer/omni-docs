@@ -1,0 +1,50 @@
+---
+title: Statuses
+description: Session workflow statuses in Omni.
+---
+
+# Statuses
+
+Statuses represent workflow state for sessions.
+
+## Default Statuses
+
+Omni defaults include:
+
+- `backlog`
+- `todo`
+- `needs-review`
+- `done`
+- `cancelled`
+
+## Category Model
+
+| Category | Meaning |
+|---|---|
+| `open` | Active/inbox workflows |
+| `closed` | Completed/archive workflows |
+
+## Status Fields
+
+A status can include:
+
+- `id`
+- `label`
+- `color`
+- `icon`
+- `category`
+- `isFixed` / `isDefault`
+- `order`
+
+## Fixed vs Default
+
+- **Fixed** statuses protect critical workflow semantics
+- **Default** statuses are shipped defaults that can be adapted
+
+## Why Statuses Matter
+
+Statuses power:
+
+- Inbox/archive filtering
+- Team handoff state
+- Session lifecycle automation primitives

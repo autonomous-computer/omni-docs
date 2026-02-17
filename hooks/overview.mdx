@@ -1,0 +1,50 @@
+---
+title: Hooks (Preview)
+description: Event-driven automation contract and current Omni availability.
+---
+
+# Hooks (Preview)
+
+This page is intentionally **live** in docs to preserve Craft parity, but Hook runtime support in Omni is currently a **preview contract**, not full GA.
+
+## Current Truth State
+
+| Area | Status |
+|---|---|
+| Docs/API contract | Live |
+| Full runtime parity with Craft Hook system | In progress |
+| Recommended production automation path | Skills + statuses/labels + scheduled backend pipelines |
+
+## Hook Model (Target)
+
+Hooks connect events to actions.
+
+### Common events
+
+- Label add/remove
+- Session status change
+- Scheduled tick
+- Tool lifecycle events
+
+### Common actions
+
+- Command action
+- Prompt/session creation action
+
+## Why Keep This Page Live
+
+- Maintains feature-parity visibility
+- Enables forward-compatible workflow design
+- Prevents hidden drift between docs and roadmap
+
+## Practical Guidance Today
+
+For production use now:
+
+1. Use status + label workflows for routing/triage
+2. Use skills for repeatable automation logic
+3. Use scheduled data pipelines for recurring briefings
+
+## Migration Guidance
+
+As hook runtime support expands, workflows documented here should map cleanly into native Hook configs with minimal changes.

@@ -1,0 +1,40 @@
+---
+title: Labels
+description: Flexible metadata tags for session organization and filtering.
+---
+
+# Labels
+
+Labels are additive metadata tags. A session can carry many labels simultaneously.
+
+## Label Tree Model
+
+Labels support hierarchical configuration through nested children.
+
+- Root and nested labels share the same schema
+- IDs are unique across the full tree
+- Tree order drives display order
+
+## Label Fields
+
+- `id`
+- `name`
+- `color`
+- `children`
+- `valueType` (`string`, `number`, `date`)
+- `autoRules`
+
+## Session Label Values
+
+A label can be:
+
+- Presence-only (`macro`)
+- Value-carrying (`priority::1`, `due::2026-02-20`)
+
+Typed values improve filtering and structured automation.
+
+## Design Guidance
+
+- Keep taxonomy small and high signal
+- Use hierarchical labels for discoverability
+- Use values for sortable metadata, not prose

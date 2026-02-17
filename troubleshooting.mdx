@@ -1,121 +1,50 @@
 ---
-title: "Troubleshooting"
-description: "Common issues and solutions"
+title: Troubleshooting
+description: Common issues and fixes across Omni docs, app, and backend.
 ---
 
-## Connection Issues
+# Troubleshooting
 
-### WebSocket fails to connect
+## Chat not responding
 
-<Accordion title="Symptoms">
-Chat doesn't work, "Connection error" message appears
-</Accordion>
+Check:
 
-<Accordion title="Solutions">
-1. Check agent backend is running: `curl http://localhost:3001/health`
-2. Verify WebSocket URL in environment
-3. Check CORS settings if cross-origin
-</Accordion>
+1. Agent backend health endpoint
+2. Auth token/session validity
+3. Model provider key configuration
 
-### Authentication fails
+## Source connection issues
 
-<Accordion title="Symptoms">
-"Unauthorized" error, redirected to login
-</Accordion>
+For MCP/API sources:
 
-<Accordion title="Solutions">
-1. Clear local storage and re-login
-2. Check JWT expiration
-3. Verify JWT_SECRET matches between services
-</Accordion>
+1. Verify source config and transport
+2. Test source connection before enabling
+3. Confirm OAuth credentials (if applicable)
 
-## Agent Issues
+## Missing market/news/factor results
 
-### Agent not responding
+1. Validate Omni API connectivity
+2. Confirm requested ticker/date parameters
+3. Check whether requested endpoint/tool is enabled in preset/permissions
 
-<Accordion title="Symptoms">
-Messages sent but no response
-</Accordion>
+## Briefing data appears stale
 
-<Accordion title="Solutions">
-1. Check Anthropic API key is valid
-2. Verify API rate limits not exceeded
-3. Check agent backend logs
-</Accordion>
+Briefing/snapshot pipelines can have publication windows.
 
-### Tools not working
+- Check latest available briefing date/type
+- Re-run with explicit date to confirm availability
 
-<Accordion title="Symptoms">
-"Tool not found" or execution errors
-</Accordion>
+## Skill output quality is inconsistent
 
-<Accordion title="Solutions">
-1. Verify tool is registered
-2. Check permission mode allows the tool
-3. Review tool handler for errors
-</Accordion>
+1. Confirm the right skill is being selected
+2. Narrow prompt scope and desired output shape
+3. Verify required sources/tools are available
 
-## Desktop Issues
+## Still blocked?
 
-### App won't start
+Share:
 
-<Accordion title="Symptoms">
-App crashes on launch
-</Accordion>
-
-<Accordion title="Solutions">
-1. Clear app data: `~/Library/Application Support/OMNI`
-2. Reinstall the application
-3. Check crash logs in app data folder
-</Accordion>
-
-### Auto-update fails
-
-<Accordion title="Symptoms">
-Update notification but update fails
-</Accordion>
-
-<Accordion title="Solutions">
-1. Check internet connection
-2. Verify code signing is valid
-3. Manual download from GitHub releases
-</Accordion>
-
-## Build Issues
-
-### TypeScript errors
-
-<Accordion title="Solutions">
-1. Run `pnpm typecheck` to see all errors
-2. Ensure all dependencies installed
-3. Check for version mismatches
-</Accordion>
-
-### Docker build fails
-
-<Accordion title="Solutions">
-1. Ensure Docker daemon is running
-2. Clear Docker cache: `docker builder prune`
-3. Check Dockerfile syntax
-</Accordion>
-
-## Getting Help
-
-If these solutions don't work:
-
-<CardGroup cols={3}>
-  <Card title="GitHub Issues" icon="github" href="https://github.com/omnibrief/omni-app-new/issues">
-    Search existing issues
-  </Card>
-  <Card title="Discord" icon="discord" href="https://discord.gg/omnibrief">
-    Ask the community
-  </Card>
-  <Card title="Email Support" icon="envelope" href="mailto:support@omnibrief.app">
-    Contact support
-  </Card>
-</CardGroup>
-
-When creating a new issue, include:
-- Steps to reproduce
-- Error messages
-- Environment details
+- Prompt + timestamp
+- Session ID
+- Source and permission mode
+- Any tool error payload shown in chat
