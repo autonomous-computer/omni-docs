@@ -1,0 +1,38 @@
+---
+title: Client API OpenAPI Contract
+description: Canonical contract endpoint and OpenAPI generation policy for OMNI Client API.
+---
+
+# Client API OpenAPI Contract
+
+## Canonical endpoint
+
+```text
+GET https://api.omnibrief.app/v1/openapi.json
+```
+
+The OpenAPI schema published here is the source of truth for generated endpoint reference and SDK workflows.
+
+## Usage
+
+```bash
+curl "https://api.omnibrief.app/v1/openapi.json" \
+  -H "Authorization: Bearer omni_live_..."
+```
+
+## Contract governance
+
+1. Additive changes are allowed without version pin updates.
+2. Behavioral or breaking changes require changelog entries and migration notes.
+3. Deprecated endpoints must include replacement references and sunset dates.
+
+## What the schema includes
+
+- All `/v1/*` Client API routes
+- Request and response models
+- Error response schema
+- Authentication requirements
+
+## Relationship to docs
+
+Narrative docs remain human-authored. Schema-heavy reference sections should be generated or validated from `openapi.json` to prevent drift.

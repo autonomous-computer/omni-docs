@@ -48,6 +48,11 @@ Idempotency-Key: <unique-key-per-operation>
 
 Repeated requests with the same key and payload replay the stored response.
 
+Idempotency applies to:
+
+- `POST /v1/mcp/invoke`
+- Hosted MCP `tools/call` requests sent to `POST /mcp`
+
 ## Error envelope
 
 All errors use:

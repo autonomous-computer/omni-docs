@@ -64,6 +64,27 @@ curl -X POST "https://api.omnibrief.app/v1/mcp/invoke" \
   }'
 ```
 
+## 5. Hosted MCP protocol (`/mcp`)
+
+```bash
+curl -X POST "https://api.omnibrief.app/mcp" \
+  -H "Authorization: Bearer omni_live_..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "tools/list",
+    "params": {}
+  }'
+```
+
+## 6. OpenAPI schema
+
+```bash
+curl "https://api.omnibrief.app/v1/openapi.json" \
+  -H "Authorization: Bearer omni_live_..."
+```
+
 ## Internal beta notes
 
 - Access is allowlist-gated.

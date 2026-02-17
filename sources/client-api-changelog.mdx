@@ -1,0 +1,51 @@
+---
+title: Client API Changelog and Migration Policy
+description: Release notes, compatibility guarantees, and migration windows for OMNI Client API.
+---
+
+# Client API Changelog and Migration Policy
+
+## Compatibility commitments
+
+1. Additive changes can ship without migration requirements.
+2. Behavioral and breaking changes require explicit changelog entries.
+3. Deprecated endpoints must include replacement path and sunset date.
+
+## Changelog template
+
+Each release entry includes:
+
+- Release date (UTC)
+- Affected endpoints/methods
+- Change category (`additive`, `behavioral`, `breaking`)
+- Migration steps
+- Sunset date (if deprecating)
+
+## Current release log
+
+## 2026-02-17
+
+### Added
+
+- `GET /v1/openapi.json` canonical OpenAPI contract endpoint.
+- Hosted MCP protocol endpoint at `/mcp` (`GET`, `POST`, `DELETE`).
+- SSE compatibility endpoint at `/sse`.
+- Docs additions: reference, errors, hosted MCP, webhooks, changelog.
+
+### Behavioral updates
+
+- `POST /v1/mcp/invoke` and hosted MCP `tools/call` both require idempotency keys.
+- Tool invocation semantics shared across legacy and hosted MCP routes.
+
+### Deprecations
+
+- `/v1/mcp/tools` and `/v1/mcp/invoke` are compatibility routes and are planned to migrate to `/mcp` as canonical hosted transport.
+
+## Migration guidance
+
+If you are integrating via MCP clients:
+
+1. Move transport endpoint to `/mcp`.
+2. Use JSON-RPC `tools/list` and `tools/call`.
+3. Provide `Idempotency-Key` for `tools/call`.
+4. Use `/sse` only for compatibility during migration windows.

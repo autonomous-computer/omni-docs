@@ -1,11 +1,13 @@
 ---
 title: Client API MCP Access
-description: Hosted MCP-compatible API surface for OMNI Client API.
+description: Legacy MCP-compatible API routes under /v1, maintained for migration compatibility.
 ---
 
 # Client API MCP Access
 
-OMNI exposes a hosted MCP-compatible surface under Client API v1.
+OMNI exposes legacy MCP-compatible routes under Client API v1.
+
+Canonical hosted transport is documented at `/sources/client-api-mcp-hosted`.
 
 ## Endpoints
 
@@ -39,3 +41,7 @@ OMNI exposes a hosted MCP-compatible surface under Client API v1.
 - Successful invocations (`2xx/3xx`) generate billable usage events.
 - Replayed idempotent responses are not double-billed.
 - Usage is written to OMNI shadow ledger and can be forwarded to Stripe metering.
+
+## Migration note
+
+Use `/mcp` for new integrations. `/v1/mcp/*` routes are compatibility paths.

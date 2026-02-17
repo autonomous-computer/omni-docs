@@ -1,0 +1,71 @@
+---
+title: Client API Errors
+description: Error taxonomy, codes, retry guidance, and JSON-RPC MCP error mapping.
+---
+
+# Client API Errors
+
+## REST error envelope
+
+```json
+{
+  "error": {
+    "type": "invalid_request | auth_error | permission_error | rate_limit_error | api_error",
+    "code": "machine_readable_code",
+    "message": "Human-readable message",
+    "request_id": "req_xxx"
+  }
+}
+```
+
+## Core REST error codes
+
+| `error.type` | `error.code` | HTTP | Meaning |
+| --- | --- | --- | --- |
+| `auth_error` | `missing_api_key` | 401 | Authorization header missing or malformed. |
+| `auth_error` | `invalid_api_key` | 401 | API key invalid/revoked/unauthorized. |
+| `auth_error` | `auth_rejected` | 403 | Authentication rejected by control plane. |
+| `api_error` | `auth_backend_unavailable` | 503 | Auth/control-plane backend unavailable. |
+| `api_error` | `service_disabled` | 503 | Client API kill-switch enabled. |
+| `rate_limit_error` | `rate_limit_exceeded` | 429 | Burst or sustained limit exceeded. |
+| `invalid_request` | `missing_idempotency_key` | 400 | Idempotency-Key required for mutating route. |
+| `invalid_request` | `invalid_json` | 400 | Request body not valid JSON. |
+| `invalid_request` | `invalid_payload` | 400 | Body shape is invalid for endpoint. |
+| `invalid_request` | `invalid_parameter` | 400 | Type/value cannot be parsed (example: invalid int). |
+| `invalid_request` | `idempotency_conflict` | 409 | Same idempotency key is currently in-flight. |
+| `invalid_request` | `unknown_tool` | 400 | Tool does not exist in catalog. |
+| `invalid_request` | `missing_q` | 400 | Required `q` argument for `fred.search` missing. |
+| `invalid_request` | `missing_series_id` | 400 | Required `series_id` argument for `fred.series` missing. |
+| `invalid_request` | `fred_invalid_request` | 4xx | FRED request invalid. |
+| `api_error` | `fred_upstream_error` | 5xx | FRED upstream error. |
+
+## Retry guidance
+
+| Condition | Retry? | Guidance |
+| --- | --- | --- |
+| `429 rate_limit_exceeded` | Yes | Honor `Retry-After`. |
+| `503 auth_backend_unavailable` | Yes | Exponential backoff with jitter. |
+| `invalid_request` (4xx input errors) | No | Fix request payload/parameters first. |
+| `auth_error` | No | Rotate/use valid key and retry after fix. |
+
+## Hosted MCP JSON-RPC errors
+
+MCP errors are JSON-RPC compliant and additionally carry `omni_code` in `error.data`.
+
+| JSON-RPC code | Meaning | Typical mapping |
+| --- | --- | --- |
+| `-32700` | Parse error | Invalid JSON body. |
+| `-32600` | Invalid request | Missing method or malformed object. |
+| `-32601` | Method not found | Unsupported MCP method. |
+| `-32602` | Invalid params | Missing/invalid params, unknown tool, missing idempotency. |
+| `-32603` | Internal error | Unexpected internal failure. |
+| `-32001` | Auth/permission error | API key auth or permission failure. |
+| `-32002` | Rate limit error | Rate-limit exceeded. |
+
+## Idempotency error behavior
+
+When an idempotent request is replayed:
+
+- Response is returned from cache.
+- `Idempotency-Replayed: true` is added.
+- Replays are not double-billed.

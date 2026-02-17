@@ -48,8 +48,15 @@
         "pages": [
           "sources/overview",
           "sources/mcp-servers",
+          "sources/client-api-reference",
+          "sources/client-api-openapi",
           "sources/client-api-auth",
+          "sources/client-api-errors",
           "sources/client-api-mcp",
+          "sources/client-api-mcp-hosted",
+          "sources/client-api-webhooks",
+          "sources/client-api-changelog",
+          "sources/client-api-v1-5-roadmap",
           "sources/client-api-internal-beta-policy",
           "sources/apis",
           "sources/local-folders"
