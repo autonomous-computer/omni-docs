@@ -9,7 +9,7 @@ OMNI Client API v1 is currently in **internal beta** with allowlisted accounts.
 
 ## 1. Create an API key
 
-Use an authenticated Omni session token (your normal app auth) and create a key:
+Use an authenticated OMNI session token (your normal app auth) and create a key:
 
 ```bash
 curl -X POST https://agent-backend.omnibrief.app/api/client/keys \
@@ -41,7 +41,7 @@ Response includes the key once:
 curl "https://api.omnibrief.app/v1/fred/search?q=unemployment&limit=5" \
   -H "Authorization: Bearer omni_live_..." \
   -H "X-Request-Id: req_demo_001" \
-  -H "Omni-Version: 2026-02-17"
+  -H "OMNI-Version: 2026-02-17"
 ```
 
 ## 3. MCP tool catalog

@@ -1,5 +1,4 @@
 {
-  "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
   "name": "OMNI Documentation",
   "logo": {
@@ -19,7 +18,7 @@
     }
   ],
   "topbarCtaButton": {
-    "name": "Launch Omni",
+    "name": "Launch OMNI",
     "url": "https://app.omnibrief.app"
   },
   "navigation": {
@@ -32,7 +31,7 @@
           "getting-started/installation",
           "getting-started/client-api-quickstart",
           "getting-started/client-api-versioning",
-          "getting-started/craft-parity-audit"
+          "getting-started/platform-scope"
         ]
       },
       {
@@ -87,7 +86,7 @@
         ]
       },
       {
-        "group": "Omni Intelligence",
+        "group": "OMNI Intelligence",
         "pages": [
           "omni-intelligence/daily-briefing-pipeline",
           "omni-intelligence/portfolio-intelligence",
@@ -129,7 +128,6 @@
     ]
   },
   "footerSocials": {
-    "website": "https://omnibrief.app",
-    "github": "https://github.com/omnibrief"
+    "website": "https://omnibrief.app"
   }
 }

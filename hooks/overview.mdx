@@ -1,11 +1,11 @@
 ---
 title: Hooks
-description: Event-driven automation runtime for Omni agent sessions.
+description: Event-driven automation runtime for OMNI agent sessions.
 ---
 
 # Hooks
 
-Omni now runs a production Hook runtime in `agent-backend` with Craft-style config, validation, scheduling, and execution.
+OMNI runs a production Hook runtime in `agent-backend` with config validation, scheduling, and execution controls.
 
 ## Current Truth State
 
@@ -43,7 +43,7 @@ Hooks connect events to actions.
 - Prompt hooks are supported on app events, including scheduler ticks.
 - Scheduler runs every minute and applies cron/timezone matching.
 - Per-event rate limits are active to prevent runaway loops.
-- Hook commands receive both `CRAFT_*` and `OMNI_*` env vars.
+- Hook commands receive `OMNI_*` runtime env vars.
 
 ## Operator Guidance
 
