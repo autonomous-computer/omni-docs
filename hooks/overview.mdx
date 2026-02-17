@@ -1,50 +1,54 @@
 ---
-title: Hooks (Preview)
-description: Event-driven automation contract and current Omni availability.
+title: Hooks
+description: Event-driven automation runtime for Omni agent sessions.
 ---
 
-# Hooks (Preview)
+# Hooks
 
-This page is intentionally **live** in docs to preserve Craft parity, but Hook runtime support in Omni is currently a **preview contract**, not full GA.
+Omni now runs a production Hook runtime in `agent-backend` with Craft-style config, validation, scheduling, and execution.
 
 ## Current Truth State
 
 | Area | Status |
 |---|---|
 | Docs/API contract | Live |
-| Full runtime parity with Craft Hook system | In progress |
-| Recommended production automation path | Skills + statuses/labels + scheduled backend pipelines |
+| Runtime support | Live in `@omni/agent-backend` |
+| Config file | `hooks.json` in agent data workspace |
+| Event log | `events.jsonl` in agent data workspace |
+| Runtime controls | REST (`/api/hooks/*`) + WebSocket (`hooks:*`) |
 
-## Hook Model (Target)
+## Hook Model
 
 Hooks connect events to actions.
 
-### Common events
+### Events currently wired
 
 - Label add/remove
 - Session status change
 - Scheduled tick
 - Tool lifecycle events
+- User prompt submit
+- Session start/end
+- Permission request
+- Stop (abort signal)
+- Setup (runtime init)
 
-### Common actions
+### Actions
 
-- Command action
-- Prompt/session creation action
+- Command hooks with safety modes (`safe`, `ask`, `allow-all`)
+- Prompt hooks that create autonomous sessions
 
-## Why Keep This Page Live
+## Runtime Notes
 
-- Maintains feature-parity visibility
-- Enables forward-compatible workflow design
-- Prevents hidden drift between docs and roadmap
+- Prompt hooks are supported on app events, including scheduler ticks.
+- Scheduler runs every minute and applies cron/timezone matching.
+- Per-event rate limits are active to prevent runaway loops.
+- Hook commands receive both `CRAFT_*` and `OMNI_*` env vars.
 
-## Practical Guidance Today
+## Operator Guidance
 
-For production use now:
+Recommended production usage:
 
-1. Use status + label workflows for routing/triage
-2. Use skills for repeatable automation logic
-3. Use scheduled data pipelines for recurring briefings
-
-## Migration Guidance
-
-As hook runtime support expands, workflows documented here should map cleanly into native Hook configs with minimal changes.
+1. Use labels/status transitions for deterministic routing.
+2. Use prompt hooks for recurring briefings and autonomous research sessions.
+3. Use command hooks for trusted automation with explicit permission mode.
