@@ -1,0 +1,11 @@
+/*
+ * OMNI docs customization.
+ *
+ * Goal: keep the docs UI OMNI-focused by hiding third-party "Powered by" footer
+ * attribution that ships with the default theme.
+ */
+
+#footer a[href*="utm_campaign=poweredBy"] {
+  display: none !important;
+}
+
