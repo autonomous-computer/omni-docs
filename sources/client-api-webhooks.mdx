@@ -24,15 +24,15 @@ Webhook infrastructure is built for public-beta readiness and remains gated duri
 
 Each webhook request includes:
 
-- `Omni-Signature`
-- `Omni-Timestamp`
+- `OMNI-Signature`
+- `OMNI-Timestamp`
 - `X-Request-Id`
 
 Recommended verification steps:
 
 1. Reject events older than your replay window.
 2. Recompute HMAC from timestamp + raw request body.
-3. Constant-time compare against `Omni-Signature`.
+3. Constant-time compare against `OMNI-Signature`.
 4. Persist event ID for deduplication.
 
 ## Replay protection
