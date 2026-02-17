@@ -68,7 +68,7 @@
         ]
       },
       {
-        "group": "Automation (Preview)",
+        "group": "Automation",
         "pages": [
           "hooks/overview"
         ]
