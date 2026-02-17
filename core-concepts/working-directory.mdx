@@ -1,23 +1,21 @@
 ---
 title: Working Directory
-description: Omni's context model for file and execution scope.
+description: OMNI context model for file and execution scope.
 ---
 
 # Working Directory
 
-Craft documents this as a central concept. Omni keeps the capability, but applies it through session context rather than a workspace-first UX.
+OMNI applies working-directory capability through session context and execution metadata.
 
-## Omni approach
+## OMNI approach
 
 A session can carry a `workingDirectory` and related execution metadata. In practice:
 
 - Chat context controls scope of file/tool operations
-- Execution tools read the active session context
+- Execution tools read the active session scope
 - File uploads and extracted artifacts become part of the turn context
 
-## How this differs from Craft Workspaces
-
-Omni intentionally does **not** center the docs around user-managed workspaces.
+## Context composition
 
 Instead, context is composed from:
 

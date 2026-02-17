@@ -1,24 +1,24 @@
 ---
 title: Architecture
-description: System architecture for Omni's web app, agent backend, and intelligence pipelines.
+description: System architecture for OMNI web app, agent backend, and intelligence pipelines.
 ---
 
 # Architecture
 
-Omni is a web-first, agent-driven financial intelligence platform.
+OMNI is a web-first, agent-driven financial intelligence platform.
 
 ## Topology
 
 ```mermaid
 flowchart LR
-  U[User] --> W[Omni Web (Next.js)]
-  U --> D[Omni Desktop (optional shell)]
+  U[User] --> W[OMNI Web App]
+  U --> D[OMNI Desktop]
 
   W --> B[Agent Backend (Hono/WebSocket)]
   D --> B
 
   B --> A[LLM Providers]
-  B --> O[Omni API]
+  B --> O[OMNI API]
   B --> M[MCP Sources]
   B --> S[(Session Storage)]
   B --> R[(R2 / Artifacts)]
@@ -35,7 +35,7 @@ flowchart LR
 
 ## Intelligence Data Plane
 
-Omni intelligence features are served through first-party adapters:
+OMNI intelligence features are served through first-party adapters:
 
 - Symbol and market endpoints
 - Portfolio and holdings pulse endpoints
