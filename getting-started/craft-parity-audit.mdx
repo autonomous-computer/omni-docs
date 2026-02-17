@@ -1,0 +1,56 @@
+---
+title: Craft Parity Audit
+description: What was cloned from Craft docs, what was adapted for Omni, and what is intentionally excluded.
+---
+
+# Craft Parity Audit
+
+This docs structure was rebuilt to track Craft Agents documentation shape, then adapted for Omni's product model.
+
+## Audit Scope
+
+Source baseline:
+
+- [Craft Agents Guide](https://agents.craft.do/docs/getting-started/introduction)
+- [Craft Agents Config Reference](https://agents.craft.do/docs/reference/configuration-file)
+
+## Parity Mapping
+
+| Craft Docs Area | Omni Docs Area | Adaptation |
+|---|---|---|
+| Getting Started | Getting Started | Rewritten with Omni app + backend workflows |
+| Core Concepts | Core Concepts | Preserved with Omni session/context model |
+| Sources | Sources | Preserved with Omni API-first finance pattern |
+| Skills | Skills & Superpowers | Expanded with backend superpower mapping |
+| Statuses | Statuses & Labels | Preserved and adapted to inbox/archive semantics |
+| Labels | Statuses & Labels | Preserved with typed value and regex automation detail |
+| Hooks | Automation (Preview) | Kept live in docs; runtime parity documented as preview |
+| Customisation | Customisation | Preserved conceptually with Omni theme/icon patterns |
+| Go Further | Go Further | Extended with data-table + preview + mermaid guidance |
+| Reference | Folded into section pages + backend pages | Focused on operator workflows |
+
+## Intentional Omissions
+
+The following Craft concepts are intentionally removed from Omni docs:
+
+- Workspace-first user mental model
+- GitHub Copilot support path
+
+## Hooks Decision (#2)
+
+Status implemented:
+
+- **Kept live in docs navigation**
+- **Explicitly marked preview in docs**
+- **No false GA claim**
+
+This preserves discoverability while keeping the docs truthful to runtime availability.
+
+## Omni-First Additions
+
+Added sections not present in Craft docs at this depth:
+
+- Daily Briefing synthesis pipeline
+- Portfolio intelligence workflows
+- Factors/news/events fusion patterns
+- Agentic chat Superpowers mapped to concrete backend tools

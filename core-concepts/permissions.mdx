@@ -1,0 +1,79 @@
+---
+title: Permissions
+description: Execution controls for tools, sources, and high-risk actions.
+---
+
+# Permissions
+
+Omni uses layered permission controls to keep agent execution safe while preserving speed.
+
+## Overview
+
+Permission is evaluated across:
+
+- Session permission mode (`safe`, `ask`, `allow-all`)
+- Tool preset (`skills` vs `full`)
+- Source-specific restrictions
+- Runtime approval flow for sensitive actions
+
+## Permission Modes
+
+| Product Label | Internal Value | Behavior |
+|---|---|---|
+| Explore | `safe` | Read-only and low-risk tools |
+| Ask to Edit | `ask` | Mutating and dangerous calls require confirmation |
+| Execute | `allow-all` | Full execution (for trusted contexts) |
+
+## Tool Preset Gating
+
+Omni enforces preset rules in two places:
+
+1. Schema exposure (model cannot see blocked tools)
+2. Execution-time enforcement (blocked calls never run)
+
+Preset summary:
+
+- `skills`: product-safe tools (`omni_api_*`, `python_run`, `submit_plan`, etc.)
+- `full`: internal/developer surface (allowlisted)
+
+## Source Permission Scoping
+
+For connected sources, Omni can apply source-level controls:
+
+- `allowedTools`
+- `blockedTools`
+- `requireApproval`
+
+`safe` mode remains the strictest guardrail even when source config is permissive.
+
+## Approval Flow
+
+In `ask` mode, sensitive calls use an async approval pipeline:
+
+1. Tool call requests confirmation
+2. Backend emits `permission-request`
+3. User approves/rejects
+4. Backend resumes or skips execution
+
+This prevents silent execution drift.
+
+## Best Practices
+
+- Default to `safe` for broad market/news analysis
+- Use `ask` for mixed analysis + light mutation workflows
+- Use `allow-all` only in bounded, trusted sessions
+- Keep source rules narrower than global mode where possible
+
+## Troubleshooting
+
+### "Tool blocked in safe mode"
+
+Expected if the tool is not read-only in current policy.
+
+### "Permission request did not resolve"
+
+Check session connectivity and ensure approval events are reaching the active client.
+
+### "Tool unavailable"
+
+Confirm tool preset, source permissions, and registration in backend tool index.

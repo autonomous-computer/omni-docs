@@ -1,0 +1,52 @@
+---
+title: Sources Overview
+description: Connect Omni to MCP servers, APIs, and context data safely.
+---
+
+# Sources Overview
+
+Sources connect external systems to Omni's agentic runtime.
+
+## Setup Process (Omni Adaptation)
+
+Use this sequence for reliable source onboarding:
+
+1. Define the user intent and workflow outcome
+2. Choose source type (`mcp`, `api`, `custom`)
+3. Configure authentication and transport
+4. Apply permission constraints before enabling
+5. Test connectivity and tool discovery
+6. Validate behavior with a real prompt
+
+## Source Types
+
+| Type | Best For | Typical Config |
+|---|---|---|
+| MCP | Tool ecosystems and protocol-native integrations | URL + transport + optional headers |
+| API | OAuth/service providers | provider + scopes + credential flow |
+| Custom | Narrow internal services | endpoint + auth mode |
+
+## Runtime Lifecycle
+
+- Source added via backend source APIs
+- Status transitions: `disconnected` -> `connecting` -> `connected`/`error`
+- Tool list discovered and attached to source metadata
+- Session execution respects permission + preset gates
+
+## Financial-First Guidance
+
+For market intelligence workflows, prefer first-party Omni tools before external connectors.
+
+Start with:
+
+- Symbol and market tools
+- Portfolio/model/factor tools
+- News proxy tools
+
+Then add external sources for capability gaps.
+
+## Related
+
+- [/sources/mcp-servers](/sources/mcp-servers)
+- [/sources/apis](/sources/apis)
+- [/sources/local-folders](/sources/local-folders)

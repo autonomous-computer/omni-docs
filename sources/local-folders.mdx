@@ -1,0 +1,34 @@
+---
+title: Local Folders
+description: Local-file context in Omni without a workspace-first model.
+---
+
+# Local Files and Context
+
+Craft's folder-source model is adapted in Omni to file-first, session-scoped context.
+
+## Primary Omni Pattern
+
+1. Upload files in chat
+2. Run extraction pipeline (`/api/files/init`, upload, `/api/files/complete`)
+3. Inject extracted text/tables into message parts
+4. Use skills/tools for structured analysis
+
+## Supported Analysis Flows
+
+- PDF analysis
+- DOCX analysis
+- XLSX/table analysis
+- Mixed file + market context synthesis
+
+## When to Prefer This Path
+
+Use local-file context for:
+
+- Proprietary research documents
+- Earnings decks and transcripts
+- Model exports and diligence packets
+
+## When to Prefer Sources/APIs
+
+For repeatable recurring workflows, source/API integrations are more robust than repeated file uploads.

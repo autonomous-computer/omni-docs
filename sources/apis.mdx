@@ -1,0 +1,50 @@
+---
+title: APIs
+description: API integrations, OAuth flows, and Omni API proxy patterns.
+---
+
+# APIs
+
+Omni uses OAuth-backed providers and first-party API proxy tools.
+
+## OAuth Providers
+
+Backend OAuth routes currently support:
+
+- Google
+- Microsoft
+- Slack
+- MCP OAuth workflows
+
+## OAuth Lifecycle
+
+1. Start auth (`/oauth/:provider/start`)
+2. Complete callback and token exchange
+3. Persist encrypted credentials
+4. Refresh/revoke via provider routes when needed
+
+## Omni API-First Pattern
+
+For financial workflows, Omni prefers first-party `omni_api_*` tools for stability and observability.
+
+Examples:
+
+- `omni_api_get_symbol`
+- `omni_api_get_portfolio`
+- `omni_api_get_factor_loadings`
+- `omni_api_get_security_intel`
+
+## Perigon Proxy Pattern
+
+`omni_api_perigon` routes to `/api/news/perigon/request` and keeps provider keys server-side.
+
+Common paths:
+
+- `/v2/answers`
+- `/v2/summarizer`
+
+## Security Guidelines
+
+- Keep tokens and keys server-side only
+- Restrict outbound path/method where proxying is used
+- Enforce source and mode permission constraints

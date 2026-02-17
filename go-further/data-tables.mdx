@@ -1,0 +1,45 @@
+---
+title: Data Tables
+description: Structured table outputs for Omni analysis workflows.
+---
+
+# Data Tables
+
+Use data tables when users need structured, auditable outputs instead of prose-only summaries.
+
+## When To Use
+
+- Multi-asset comparisons
+- Factor contribution matrices
+- Portfolio model scorecards
+- Event timeline summaries
+
+## Table Guidance
+
+- Keep column names explicit and stable
+- Prefer typed values over decorated strings
+- Include units (%, bps, USD) in header or legend
+
+## Common Patterns
+
+### Symbol comparison table
+
+Columns:
+
+- Symbol
+- Return windows (1D, 1M, YTD)
+- Valuation metric(s)
+- Event signal count
+
+### Factor decomposition table
+
+Columns:
+
+- Factor
+- Beta / weighted beta
+- Contribution (bps)
+- Statistical confidence proxy
+
+## Tooling Tip
+
+When results are large or computed, use `python_run` to transform inputs into concise final tables.

@@ -1,0 +1,39 @@
+---
+title: Customizing Statuses
+description: Configure status labels, colors, and icons.
+---
+
+# Customizing Statuses
+
+Omni supports status customization while preserving workflow integrity.
+
+## Configuration Concepts
+
+- Color supports semantic or light/dark explicit values
+- Icons support emoji, URL, or local file
+- Ordering is explicit via numeric rank
+
+## Icon Resolution Priority
+
+1. Local icon file
+2. Downloaded URL icon
+3. Emoji fallback
+
+## Practical Rules
+
+- Keep IDs stable after adoption
+- Avoid overlapping status semantics
+- Reserve closed statuses for truly terminal outcomes
+
+## Validation Checklist
+
+- Required fixed statuses still present
+- Categories are correctly assigned
+- Colors maintain accessibility contrast
+- Icons render in both themes
+
+## Example Status Intent
+
+- `todo`: ready to execute
+- `needs-review`: partial output awaiting validation
+- `done`: completed and ready to archive

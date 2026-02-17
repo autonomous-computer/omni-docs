@@ -1,0 +1,43 @@
+---
+title: Auto-Apply Rules
+description: Regex-driven label automation for session metadata.
+---
+
+# Auto-Apply Rules
+
+Auto-apply rules attach labels automatically when message text matches configured regex patterns.
+
+## Rule Schema
+
+A rule can define:
+
+- `pattern`: regex
+- `flags`: regex flags (global matching enforced)
+- `valueTemplate`: capture substitution (e.g. `$1`)
+- `description`: optional human-readable intent
+
+## Example Patterns
+
+### Ticket detection
+
+- Pattern: `([A-Z]+-\\d+)`
+- Value template: `$1`
+- Result: `ticket::OMNI-321`
+
+### Ticker tagging
+
+- Pattern: `\\b([A-Z]{1,5})\\b`
+- Value template: `$1`
+- Result: `ticker::AAPL`
+
+## Evaluation Notes
+
+- Rules run against user-originated message text
+- Captured values are normalized before persistence
+- Conflicting or noisy rules should be pruned early
+
+## Best Practices
+
+- Prefer precise regex over broad wildcard rules
+- Keep rule descriptions explicit for maintenance
+- Test against realistic prompt samples

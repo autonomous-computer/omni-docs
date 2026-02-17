@@ -1,0 +1,59 @@
+---
+title: MCP Servers
+description: How Omni connects to MCP servers and exposes their tools in chat.
+---
+
+# MCP Servers
+
+Omni supports MCP-based source connections through backend-managed transports.
+
+## Supported Transports
+
+- `sse` (Server-Sent Events)
+- `http` (streamable HTTP)
+
+## MCP Config Shape
+
+```json
+{
+  "id": "research-mcp",
+  "name": "Research MCP",
+  "type": "mcp",
+  "config": {
+    "type": "mcp",
+    "url": "https://mcp.example.com/sse",
+    "transport": "sse",
+    "headers": {
+      "Authorization": "Bearer <token>"
+    }
+  }
+}
+```
+
+## Connection Flow
+
+1. Backend registers source config
+2. MCP manager attempts connection
+3. Tools are discovered and indexed
+4. Source status and tool list are persisted
+
+## Testing Checklist
+
+- Endpoint reachable
+- Auth headers valid
+- Tool list non-empty
+- Expected tool names appear in source metadata
+
+## Failure Patterns
+
+### Transport mismatch
+
+Ensure server transport matches `sse` vs `http` configuration.
+
+### Auth errors
+
+Re-check bearer headers and token scope.
+
+### No tools discovered
+
+Validate MCP server `tools/list` behavior and permissions.

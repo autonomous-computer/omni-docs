@@ -1,0 +1,70 @@
+---
+title: Agentic Chat Superpowers
+description: Omni's high-impact skill + backend capability stack for analysis and execution.
+---
+
+# Agentic Chat Superpowers
+
+A Superpower is a skill-directed workflow that invokes specialized backend capabilities.
+
+## Superpower Stack
+
+Each superpower composes:
+
+1. Skill intent and output contract
+2. Tool orchestration (`omni_api_*`, utility, execution)
+3. Data/runtime systems (market APIs, ETL snapshots, secure proxies)
+
+## Superpower Families
+
+### Market + Symbol Intelligence
+
+- Robust symbol search and unified symbol retrieval
+- Indices/markets pulse and status context
+- Security intel timelines with event context
+
+### Portfolio + Model Intelligence
+
+- Portfolio summary/history and holdings pulse
+- Model performance and contributor analysis
+- Model-level factor exposure
+
+### Factor + Event Synthesis
+
+- Factor loadings and return decomposition
+- Related-stocks and profile similarity
+- News clustering + summarization with secure provider proxying
+
+### Briefing Intelligence
+
+- Daily/weekly/monthly briefing retrieval
+- Briefing-aware narrative generation
+- ETL artifact drill-down via controlled readers
+
+### Document + Code Execution
+
+- PDF/DOCX/XLSX extraction skills
+- Remote Python execution for transforms and derived outputs
+- Diagram/document validation workflows
+
+## Backend Mapping
+
+| Superpower | Primary Tools | Backend Layer |
+|---|---|---|
+| Symbol/market explainability | `omni_api_get_symbol`, `omni_api_get_markets_pulse` | Omni API adapters |
+| Portfolio diagnostics | `omni_api_get_portfolio`, `omni_api_get_holdings_pulse` | Portfolio endpoints |
+| Factor attribution | `omni_api_get_factor_loadings`, `omni_api_get_return_decomposition` | Factor services |
+| News clustering | `omni_api_news_all_stories`, `omni_api_perigon` | Perigon proxy + news endpoints |
+| Briefing synthesis | `omni_api_list_briefings`, `omni_api_get_briefing` | Briefing pipeline outputs |
+| Structured computation | `python_run` | Remote runner + artifact storage |
+
+## Safety Built In
+
+Superpowers are constrained by:
+
+- Permission modes
+- Tool preset gating
+- Source-specific constraints
+- Prompt/output guardrails
+
+This keeps execution powerful without losing control boundaries.

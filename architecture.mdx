@@ -1,112 +1,69 @@
 ---
-title: "Architecture"
-description: "Understanding OMNI's system architecture"
+title: Architecture
+description: System architecture for Omni's web app, agent backend, and intelligence pipelines.
 ---
 
-OMNI uses a modular architecture with clear separation of concerns.
+# Architecture
 
-## System Overview
+Omni is a web-first, agent-driven financial intelligence platform.
 
-```
-┌─────────────┐    ┌─────────────┐    ┌─────────────┐
-│   Web App   │    │  Desktop    │    │   Mobile    │
-│  (Next.js)  │    │  (Electron) │    │  (Future)   │
-└──────┬──────┘    └──────┬──────┘    └──────┬──────┘
-       │                  │                  │
-       └──────────────────┼──────────────────┘
-                          │
-                          ▼
-┌─────────────────────────────────────────────────────┐
-│                 Agent Backend                        │
-│  ┌───────────┐  ┌───────────┐  ┌───────────┐       │
-│  │  Claude   │  │   Tools   │  │   MCP     │       │
-│  │  Agent    │  │  System   │  │  Client   │       │
-│  └───────────┘  └───────────┘  └───────────┘       │
-└─────────────────────────┬───────────────────────────┘
-                          │
-       ┌──────────────────┼──────────────────┐
-       ▼                  ▼                  ▼
-┌─────────────┐    ┌─────────────┐    ┌─────────────┐
-│  PostgreSQL │    │     R2      │    │   Claude    │
-│  (Sessions) │    │  (Storage)  │    │   (API)     │
-└─────────────┘    └─────────────┘    └─────────────┘
+## Topology
+
+```mermaid
+flowchart LR
+  U[User] --> W[Omni Web (Next.js)]
+  U --> D[Omni Desktop (optional shell)]
+
+  W --> B[Agent Backend (Hono/WebSocket)]
+  D --> B
+
+  B --> A[LLM Providers]
+  B --> O[Omni API]
+  B --> M[MCP Sources]
+  B --> S[(Session Storage)]
+  B --> R[(R2 / Artifacts)]
 ```
 
-## Agent Backend
+## Core Backend Responsibilities
 
-The agent backend is the core service that powers OMNI's AI capabilities.
+- Session and turn orchestration
+- Skill indexing and runtime selection
+- Tool registration and execution
+- Permission + preset enforcement
+- Source connectivity and OAuth handling
+- Streaming protocol to clients
 
-### Request Flow
+## Intelligence Data Plane
 
-<Steps>
-  <Step title="Connect">
-    Client connects via WebSocket
-  </Step>
-  <Step title="Authenticate">
-    Authentication via JWT token
-  </Step>
-  <Step title="Route">
-    Messages routed to agent
-  </Step>
-  <Step title="Process">
-    Agent processes with Claude API
-  </Step>
-  <Step title="Execute">
-    Tool calls executed
-  </Step>
-  <Step title="Stream">
-    Responses streamed back
-  </Step>
-</Steps>
+Omni intelligence features are served through first-party adapters:
 
-### Key Components
+- Symbol and market endpoints
+- Portfolio and holdings pulse endpoints
+- Model and factor analysis endpoints
+- News/event synthesis endpoints
+- Briefing retrieval endpoints
 
-| Component | Purpose |
-|-----------|---------|
-| OmniAgent | Main agent orchestration |
-| ToolRegistry | Tool discovery and execution |
-| McpManager | MCP server connections |
-| PermissionManager | Access control |
-| SessionStorage | Session persistence |
+## Context Injection Pipeline
 
-## Web App
+For each turn, backend context can include:
 
-Next.js application with:
+- Active skills selected for the prompt
+- User preference/addressing context
+- Data-source snapshot metadata (Merlin ETL)
+- Permission and tool preset overrides
 
-- Server components for initial render
-- Client components for interactivity
-- WebSocket for real-time updates
-- IndexedDB for offline support
+## Execution and Safety Plane
 
-## Desktop App
+- Mode-based permission manager
+- Source-level permission filters
+- Approval flow for sensitive calls
+- Input extraction and output leakage guards
+- Redaction-aware logging/monitoring
 
-Electron application that:
+## Reference Surfaces
 
-- Embeds the web app
-- Provides native features (notifications, file access)
-- Secure token storage via OS keychain
-- Auto-updates via GitHub releases
-
-## Data Flow
-
-### Message Flow
-
-```
-User Input → WebSocket → Agent → Claude API
-                            ↓
-UI Update ← WebSocket ← Agent ← Response
-```
-
-### Storage
-
-<CardGroup cols={3}>
-  <Card title="Sessions" icon="database">
-    PostgreSQL for cross-device sync
-  </Card>
-  <Card title="Attachments" icon="file">
-    R2 for file storage
-  </Card>
-  <Card title="Credentials" icon="key">
-    OS keychain (desktop) or secure cookie (web)
-  </Card>
-</CardGroup>
+- `apps/agent-backend/src/stream.ts`
+- `apps/agent-backend/src/tools/index.ts`
+- `apps/agent-backend/src/tools/presets.ts`
+- `apps/agent-backend/src/data-sources/merlin-etl.ts`
+- `packages/skills/skills/*`

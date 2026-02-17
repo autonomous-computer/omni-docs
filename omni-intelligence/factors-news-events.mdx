@@ -1,0 +1,43 @@
+---
+title: Factors, News, and Events
+description: How Omni fuses factor analytics with event intelligence.
+---
+
+# Factors, News, and Events
+
+A core Omni differentiator is combining **factor diagnostics** with **structured event intelligence**.
+
+## Factor superpowers
+
+Omni exposes dedicated factor tools:
+
+- `omni_api_get_factor_loadings`
+- `omni_api_get_factor_returns`
+- `omni_api_get_return_decomposition`
+- `omni_api_get_related_stocks`
+- `omni_api_get_model_factor_exposure`
+
+These support questions like:
+
+- "What actually drove this move?"
+- "Was this idiosyncratic or factor-driven?"
+- "Which names share this factor profile?"
+
+## News/event superpowers
+
+Event intelligence comes from:
+
+- `omni_api_news_all_stories`
+- `omni_api_get_security_intel`
+- `omni_api_perigon` (proxy to Perigon vector/summarizer paths)
+
+This allows clustering and summarizing story flow while preserving secure key handling.
+
+## Combined workflow pattern
+
+1. Fetch returns and factor exposures
+2. Pull relevant event clusters/news summaries
+3. Reconcile factor and event signals
+4. Produce an explainable narrative with next-step watch items
+
+This is the backbone of Omni's "why did this move" and briefing-quality synthesis behavior.

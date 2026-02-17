@@ -1,86 +1,53 @@
 ---
-title: "Creating Skills"
-description: "Build workflow automations with skills"
+title: Agent Backend Skills
+description: Skill loading, ranking, and runtime injection in Omni.
 ---
 
-Skills are predefined workflows that combine tools and prompts.
+# Agent Backend Skills
 
-## Skill Structure
+Skills provide structured behavior layers above raw tool calling.
 
-```
-.claude/skills/my-skill/
-├── instructions.md    # Skill instructions
-└── config.yaml        # Optional configuration
-```
+## Skill Sources
 
-## Basic Example
+- Built-in skill pack (`packages/skills/skills/*`)
+- User/session skill storage via backend skill store
 
-Create a skill by adding a markdown file with instructions:
+## Runtime Mechanics
 
-```markdown
-# My Skill
+1. Load built-in index
+2. Search and score by prompt intent
+3. Select top active skills
+4. Inject instructions into the agent run context
 
-## Trigger
+## Skill Metadata Used At Runtime
 
-Use this skill when the user asks to [describe trigger].
+- `id`, `name`, `summary`
+- status/tags
+- required tools and allowlists (where defined)
 
-## Instructions
+## Why Skill Injection Matters
 
-1. First, [step 1]
-2. Then, [step 2]
-3. Finally, [step 3]
+It improves:
 
-## Available Tools
+- Workflow consistency
+- Output quality
+- Tool selection precision
+- Repeatability for common financial tasks
 
-- `read_file`: Read file contents
-- `write_file`: Write file contents
-- `bash`: Run shell commands
-```
+## Skill Governance
 
-## Skill Configuration
+Use skill contracts and endpoint mappings to avoid drift between documented behavior and executable capability.
 
-Add a `config.yaml` for more control:
+## Troubleshooting
 
-```yaml
-# config.yaml
-name: my-skill
-description: Does something useful
-trigger:
-  keywords: [keyword1, keyword2]
-  patterns:
-    - regex: "pattern.*"
-tools:
-  allow: [read_file, write_file]
-  deny: [bash]
-```
+### Skill not activating
 
-## Invoking Skills
+- Prompt intent may not strongly match metadata
+- Skill status may not be active
+- Selection limit may exclude lower-scored skills
 
-Users can invoke skills with a slash command:
+### Skill activates but underperforms
 
-```
-/my-skill
-```
-
-Or the agent may invoke them automatically based on context.
-
-## Best Practices
-
-<CardGroup cols={2}>
-  <Card title="Clear triggers" icon="bullseye">
-    Define when to use the skill
-  </Card>
-  <Card title="Step-by-step" icon="list-ol">
-    Break down complex workflows
-  </Card>
-  <Card title="Error handling" icon="shield">
-    Handle failures gracefully
-  </Card>
-  <Card title="Examples" icon="code">
-    Show expected inputs/outputs
-  </Card>
-</CardGroup>
-
-<Note>
-Skills are a powerful way to create repeatable workflows. They combine the flexibility of natural language instructions with the precision of defined tool sets.
-</Note>
+- Tighten instructions
+- Add clearer output contract
+- Verify required tools are available in current preset/mode

@@ -1,74 +1,10 @@
 ---
-title: "Getting Started"
-description: "Set up your development environment for OMNI"
+title: Getting Started (Moved)
+description: This page moved into the Getting Started section.
 ---
 
-This guide walks you through setting up a development environment
-for OMNI.
+Use the new onboarding pages:
 
-## Prerequisites
-
-- Node.js 20+
-- pnpm 8+
-- PostgreSQL 16+ (optional, for full features)
-- Docker (optional, for containerized development)
-
-## Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/omnibrief/omni-app-new.git
-cd omni-app-new
-
-# Install dependencies
-pnpm install
-
-# Set up environment
-cp apps/agent-backend/.env.example apps/agent-backend/.env
-# Edit .env with your API keys
-```
-
-## Running Locally
-
-### Option 1: Individual Services
-
-```bash
-# Terminal 1: Web app
-pnpm --filter @omni/web dev
-
-# Terminal 2: Agent backend
-pnpm --filter @omni/agent-backend dev
-
-# Terminal 3: Desktop (optional)
-pnpm --filter @omni/desktop dev
-```
-
-### Option 2: Docker Compose
-
-```bash
-cd apps/agent-backend
-docker-compose up
-```
-
-## Verification
-
-1. Web app: http://localhost:3000
-2. Agent backend: http://localhost:3001/health
-3. Desktop: Launch opens automatically
-
-## Next Steps
-
-<CardGroup cols={2}>
-  <Card title="Architecture" icon="sitemap" href="/architecture">
-    Understand how OMNI is structured
-  </Card>
-  <Card title="Tools" icon="wrench" href="/agent-backend/tools">
-    Learn to create custom tools
-  </Card>
-  <Card title="Skills" icon="brain" href="/agent-backend/skills">
-    Build workflow automations
-  </Card>
-  <Card title="Troubleshooting" icon="bug" href="/troubleshooting">
-    Common issues and solutions
-  </Card>
-</CardGroup>
+- [/getting-started/quickstart](/getting-started/quickstart)
+- [/getting-started/installation](/getting-started/installation)
+- [/getting-started/craft-parity-audit](/getting-started/craft-parity-audit)

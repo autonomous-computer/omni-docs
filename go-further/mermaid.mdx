@@ -1,0 +1,33 @@
+---
+title: Mermaid Diagrams
+description: Using mermaid outputs for architecture and workflow communication.
+---
+
+# Mermaid Diagrams
+
+Mermaid is useful for summarizing architecture, process flow, and entity relationships directly in chat/docs outputs.
+
+## Recommended Diagram Types
+
+- `flowchart` for workflow and data movement
+- `sequenceDiagram` for runtime interactions
+- `erDiagram` for schema-level communication
+
+## Omni Workflow Pattern
+
+1. Draft diagram from analysis context
+2. Validate syntax with `mermaid_validate`
+3. Refine labels for readability
+4. Publish with short explanatory notes
+
+## Best Practices
+
+- Keep diagrams narrowly scoped
+- Use clear node labels and explicit directions
+- Avoid mixing unrelated concerns in one chart
+
+## Common Failure Modes
+
+- Parser errors from unescaped characters
+- Overly dense node sets
+- Ambiguous arrow semantics

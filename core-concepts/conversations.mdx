@@ -1,0 +1,50 @@
+---
+title: Conversations
+description: How Omni sessions, turns, and agent state work.
+---
+
+# Conversations
+
+Omni conversations are durable sessions with rich turn metadata, not just plain text threads.
+
+## Session model
+
+A chat session stores:
+
+- Title and model selection
+- Context type (`sidebar` or `terminal`)
+- Message count and preview metadata
+- Todo/status state, labels, flags, archive state
+- Permission mode and enabled sources
+- Token usage aggregates
+
+## Message model
+
+Messages support structured parts for richer rendering and execution:
+
+- Markdown text
+- Tool call/result blocks
+- Thinking summaries
+- File attachments
+- Context badges (sources, skills, files)
+
+This enables auditability of what the agent did, not just what it said.
+
+## Streaming lifecycle
+
+Typical turn flow:
+
+1. User message arrives
+2. Backend resolves active skills and source snapshot
+3. Model streams text/thinking/tool events
+4. Tool calls execute with permission controls
+5. Final response and usage are persisted
+
+## Session contexts
+
+Omni uses two context behaviors:
+
+- `sidebar`: shared conversational state across tabs
+- `terminal`: tab-local focused execution context
+
+Use terminal context for deep analysis and tool-heavy workflows.
