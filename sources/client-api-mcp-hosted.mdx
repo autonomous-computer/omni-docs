@@ -1,0 +1,78 @@
+---
+title: Hosted MCP Protocol
+description: Official OMNI hosted MCP endpoint, transport modes, and method semantics.
+---
+
+# Hosted MCP Protocol
+
+OMNI’s official hosted MCP endpoint is:
+
+```text
+https://api.omnibrief.app/mcp
+```
+
+Compatibility endpoint:
+
+```text
+https://api.omnibrief.app/sse
+```
+
+## Transport model
+
+- Primary: streamable HTTP (`/mcp`)
+- Compatibility: SSE (`/sse`) for clients expecting legacy event stream bootstrap
+
+## Authentication
+
+All requests require:
+
+```http
+Authorization: Bearer omni_live_...
+```
+
+For `tools/call`, include:
+
+```http
+Idempotency-Key: <unique-per-call>
+```
+
+## Supported methods
+
+| Method | Description |
+| --- | --- |
+| `initialize` | Handshake and capability negotiation. |
+| `ping` | Connectivity health check. |
+| `tools/list` | Enumerate OMNI MCP tools. |
+| `tools/call` | Invoke a specific tool with arguments. |
+| `notifications/initialized` | Initialization notification (no `id`). |
+
+## Example sequence
+
+1. `initialize`
+2. `notifications/initialized`
+3. `tools/list`
+4. `tools/call`
+
+## Tool parity policy
+
+Hosted MCP tool behavior maps to OMNI Client API semantics:
+
+- same auth model
+- same rate limits and quotas
+- same request ID behavior
+- same billing semantics (`2xx/3xx` billable, failures non-billable)
+
+## Current tools
+
+- `fred.search`
+- `fred.series`
+
+## Session behavior
+
+- `MCP-Session-Id` header is returned for hosted transport sessions.
+- `DELETE /mcp` closes the active session context.
+
+## Official adapters (internal beta)
+
+- JavaScript: `omni-system/sdk/omni-mcp-js`
+- Python: `omni-system/sdk/omni-mcp-py`

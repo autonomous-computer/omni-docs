@@ -1,0 +1,52 @@
+---
+title: Client API Webhooks
+description: Event model, signatures, retries, and operational guidance for OMNI Client API webhooks.
+---
+
+# Client API Webhooks
+
+Webhook infrastructure is built for public-beta readiness and remains gated during internal beta.
+
+## Event families
+
+- `usage.threshold_reached`
+- `invoice.finalized`
+- `invoice.payment_failed`
+- `api_key.revoked`
+
+## Delivery model
+
+1. At-least-once delivery.
+2. Exponential retry with bounded maximum attempts.
+3. Idempotent consumer requirement on webhook receiver.
+
+## Signature verification
+
+Each webhook request includes:
+
+- `Omni-Signature`
+- `Omni-Timestamp`
+- `X-Request-Id`
+
+Recommended verification steps:
+
+1. Reject events older than your replay window.
+2. Recompute HMAC from timestamp + raw request body.
+3. Constant-time compare against `Omni-Signature`.
+4. Persist event ID for deduplication.
+
+## Replay protection
+
+- Store processed event IDs for at least 7 days.
+- Reject duplicate event IDs.
+- Keep handler logic idempotent.
+
+## Failure handling playbook
+
+1. `4xx` responses are treated as terminal (configuration/payload error).
+2. `5xx` responses are retried automatically.
+3. Repeated failures should trigger runbook escalation and delivery diagnostics.
+
+## Internal beta status
+
+Webhook event families and signature spec are documented and contract-defined but remain feature-flag gated.

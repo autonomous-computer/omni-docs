@@ -1,0 +1,35 @@
+---
+title: Client API v1.5 Execution Roadmap
+description: Implementation backlog, ownership model, and week-by-week gates for OMNI Client API v1.5.
+---
+
+# Client API v1.5 Execution Roadmap
+
+This page tracks implementation status for the v1.5 program.
+
+## Active ticket groups
+
+1. Contract and architecture: `V15-001` to `V15-010`
+2. Billing, onboarding, and webhooks: `V15-011` to `V15-015`
+3. Docs and DX: `V15-016` to `V15-020`
+4. Hosted MCP and adapters: `V15-021` to `V15-025`
+5. Evals, parity, ops hardening: `V15-026` to `V15-032`
+
+## Completed in this iteration
+
+- Hosted MCP transport foundation at `/mcp` with `/sse` compatibility.
+- Canonical OpenAPI contract endpoint at `/v1/openapi.json`.
+- Initial endpoint inventory and disposition matrix artifacts.
+- Executable Braintrust eval harness and CI workflow.
+- Reference-grade docs expansion (reference, errors, openapi, mcp hosted, webhooks, changelog).
+- Initial internal adapter packages:
+  - `omni-system/sdk/omni-mcp-js`
+  - `omni-system/sdk/omni-mcp-py`
+
+## Remaining high-priority milestones
+
+1. Deploy and verify hosted MCP transport in production.
+2. Complete full backend service disposition across non-FRED endpoint families.
+3. Finish public-beta readiness controls (onboarding automation, abuse prevention, runbooks).
+4. Convert docs reference rendering to generated OpenAPI-backed pages.
+5. Complete parity evidence package against craft-agents for this initiative scope.

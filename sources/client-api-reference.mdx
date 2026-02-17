@@ -1,0 +1,183 @@
+---
+title: Client API Reference
+description: Endpoint-by-endpoint reference for OMNI Client API v1 and hosted MCP transport.
+---
+
+# Client API Reference
+
+## Base URL
+
+Production:
+
+```text
+https://api.omnibrief.app
+```
+
+## Authentication
+
+All endpoints require an API key:
+
+```http
+Authorization: Bearer omni_live_...
+```
+
+## Versioning and tracing headers
+
+- `Omni-Version` (optional request pin, echoed in responses)
+- `X-Request-Id` (optional inbound trace id, echoed in responses)
+
+## Endpoint catalog
+
+| Endpoint | Method | Idempotency-Key | Purpose |
+| --- | --- | --- | --- |
+| `/v1/openapi.json` | GET | No | Canonical OpenAPI contract for v1. |
+| `/v1/health` | GET | No | Authenticated health and key sanity check. |
+| `/v1/fred/search` | GET | No | Search FRED series by query. |
+| `/v1/fred/series/{series_id}` | GET | No | Fetch observations for one FRED series. |
+| `/v1/mcp/tools` | GET | No | Legacy MCP-compatible tool catalog route. |
+| `/v1/mcp/invoke` | POST | Yes | Legacy MCP-compatible tool invocation route. |
+| `/mcp` | POST | Required for `tools/call` | Hosted MCP protocol endpoint (JSON-RPC over HTTP). |
+| `/mcp` | GET | No | Hosted MCP stream transport channel. |
+| `/mcp` | DELETE | No | Hosted MCP session close. |
+| `/sse` | GET | No | SSE compatibility transport endpoint. |
+
+## `GET /v1/health`
+
+Returns `object=health` with `status=ok` when auth succeeds.
+
+```bash
+curl "https://api.omnibrief.app/v1/health" \
+  -H "Authorization: Bearer omni_live_..." \
+  -H "X-Request-Id: req_health_001"
+```
+
+## `GET /v1/fred/search`
+
+Query params:
+
+- `q` (required, string)
+- `limit` (optional, integer 1-50, default 10)
+
+```bash
+curl "https://api.omnibrief.app/v1/fred/search?q=unemployment&limit=5" \
+  -H "Authorization: Bearer omni_live_..."
+```
+
+## `GET /v1/fred/series/{series_id}`
+
+Query params:
+
+- `observation_start` (optional, `YYYY-MM-DD`)
+- `observation_end` (optional, `YYYY-MM-DD`)
+- `limit` (optional, integer, default 1000)
+
+```bash
+curl "https://api.omnibrief.app/v1/fred/series/CPIAUCSL?limit=24" \
+  -H "Authorization: Bearer omni_live_..."
+```
+
+## `GET /v1/mcp/tools` (legacy compatibility)
+
+```bash
+curl "https://api.omnibrief.app/v1/mcp/tools" \
+  -H "Authorization: Bearer omni_live_..."
+```
+
+## `POST /v1/mcp/invoke` (legacy compatibility)
+
+```bash
+curl -X POST "https://api.omnibrief.app/v1/mcp/invoke" \
+  -H "Authorization: Bearer omni_live_..." \
+  -H "Idempotency-Key: idem_mcp_legacy_001" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tool": "fred.search",
+    "arguments": {"q": "cpi", "limit": 3}
+  }'
+```
+
+## Hosted MCP protocol (`POST /mcp`)
+
+### `initialize`
+
+```bash
+curl -X POST "https://api.omnibrief.app/mcp" \
+  -H "Authorization: Bearer omni_live_..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "initialize",
+    "params": {"protocolVersion": "2025-11-05"}
+  }'
+```
+
+### `tools/list`
+
+```bash
+curl -X POST "https://api.omnibrief.app/mcp" \
+  -H "Authorization: Bearer omni_live_..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 2,
+    "method": "tools/list",
+    "params": {}
+  }'
+```
+
+### `tools/call`
+
+```bash
+curl -X POST "https://api.omnibrief.app/mcp" \
+  -H "Authorization: Bearer omni_live_..." \
+  -H "Idempotency-Key: idem_mcp_call_001" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 3,
+    "method": "tools/call",
+    "params": {
+      "name": "fred.search",
+      "arguments": {"q": "inflation", "limit": 5}
+    }
+  }'
+```
+
+## SDK-style examples
+
+### TypeScript
+
+```ts
+const res = await fetch("https://api.omnibrief.app/v1/fred/search?q=cpi&limit=5", {
+  headers: {
+    Authorization: `Bearer ${process.env.OMNI_API_KEY}`,
+    "X-Request-Id": "req_ts_001",
+  },
+});
+const body = await res.json();
+```
+
+### Python
+
+```python
+import requests
+
+res = requests.get(
+    "https://api.omnibrief.app/v1/fred/search",
+    params={"q": "cpi", "limit": 5},
+    headers={"Authorization": f"Bearer {OMNI_API_KEY}"},
+    timeout=15,
+)
+body = res.json()
+```
+
+### Go
+
+```go
+req, _ := http.NewRequest("GET", "https://api.omnibrief.app/v1/fred/search?q=cpi&limit=5", nil)
+req.Header.Set("Authorization", "Bearer "+os.Getenv("OMNI_API_KEY"))
+resp, err := http.DefaultClient.Do(req)
+```
+
+See `/sources/client-api-openapi` for schema-level request/response definitions.
