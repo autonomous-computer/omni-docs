@@ -1,94 +1,108 @@
 ---
 title: Hosted MCP Compatibility Policy
-description: Protocol versioning, transport guarantees, and tool compatibility for OMNI hosted MCP.
+description: Versioning, transport guarantees, tool evolution rules, and SDK compatibility contract for hosted OMNI MCP.
 ---
 
 # Hosted MCP Compatibility Policy
 
-This page defines what OMNI considers stable for hosted MCP integrations, and how we evolve the protocol and tool surface without breaking you.
+This policy defines what is stable, what can change, and how breaking evolution is handled for hosted MCP.
 
-## Endpoints
+## Canonical endpoints
 
-- Primary hosted MCP endpoint: `https://api.omnibrief.app/mcp`
-- SSE compatibility endpoint: `https://api.omnibrief.app/sse`
+- Primary: `https://api.omnibrief.app/mcp`
+- SSE compatibility: `https://api.omnibrief.app/sse`
 
-## Authentication
+## Protocol negotiation and supported versions
 
-All requests require:
+OMNI negotiates protocol on `initialize`.
 
-```http
-Authorization: Bearer omni_live_...
-```
+- Requested supported version: echoed in `result.protocolVersion`
+- Requested unsupported version: server falls back to default supported version
 
-## Protocol version negotiation
-
-OMNI selects a protocol version during `initialize`:
-
-- If you request a supported version, OMNI echoes it back in `result.protocolVersion`.
-- If you request an unsupported version, OMNI falls back to the default supported version.
-
-Current supported protocol versions (internal beta):
+Supported versions (internal beta):
 
 - `2025-11-05` (default)
 - `2025-06-18`
 - `2025-03-26`
 
-## Method stability
+## Stability classes
 
-These methods are considered stable during internal beta:
+| Surface | Stability class | Notes |
+| --- | --- | --- |
+| `/mcp` JSON-RPC transport | Stable | Canonical endpoint for MCP integrations |
+| `/sse` transport | Compatibility | Maintained for client compatibility; `/mcp` is preferred |
+| `initialize`, `notifications/initialized`, `ping`, `tools/list`, `tools/call` | Stable | Method semantics are contract-protected |
+| tool identifiers (`fred.search`, `fred.series`) | Stable | Breaking changes require new identifier |
 
-- `initialize`
-- `ping`
-- `tools/list`
-- `tools/call`
-- `notifications/initialized`
+## Tool evolution rules
 
-Adding new methods is non-breaking.
+Non-breaking:
 
-Removing or changing method semantics is breaking and requires:
+- add optional fields to `inputSchema`
+- expand result payload with additive fields
 
-- a new supported protocol version, and
-- a migration note in the changelog.
+Breaking:
 
-## Tool stability
+- remove required field
+- change meaning of existing field
+- repurpose tool behavior
 
-### Tool identifiers
+Breaking changes require:
 
-Tool names (for example `fred.search`) are treated as stable identifiers.
+1. new tool identifier (for example `fred.search.v2`)
+2. migration guide + changelog entry
+3. sunset window for prior identifier
 
-If a tool needs a breaking change:
-
-- we will introduce a new tool name (for example `fred.search.v2`) and keep the old tool available through a documented sunset window.
-
-### Input schemas
-
-Tool `inputSchema` is a contract:
-
-- Adding new optional fields is non-breaking.
-- Changing required fields or changing field meaning is breaking.
-
-## Idempotency contract
+## Idempotency and billing parity
 
 `tools/call` requires:
 
 ```http
-Idempotency-Key: <unique-per-operation>
+Idempotency-Key: idem_...
 ```
 
-This enables safe retries and prevents double-billing.
+Parity guarantees with Client API:
 
-## Billing and error semantics parity
+- same auth + scope model
+- same rate limits + request IDs
+- same error semantics (`omni_code` mapping)
+- same billable semantics: first successful write-like operation only
 
-Hosted MCP is a strict adapter over OMNI Client API semantics:
+## SDK compatibility matrix (internal beta)
 
-- same auth model and scopes
-- same rate limits / quotas
-- same request IDs (echoed in `X-Request-Id`)
-- billable unit: successful tool operations only (`2xx/3xx`)
+| SDK line | Distribution | Supported MCP protocol versions |
+| --- | --- | --- |
+| `omni-mcp-js 0.1.x` | GitHub Release `.tgz` artifact | `2025-11-05`, `2025-06-18`, `2025-03-26` |
+| `omni-mcp-py 0.1.x` | GitHub Release `.whl`/`.tar.gz` artifacts | `2025-11-05`, `2025-06-18`, `2025-03-26` |
 
-## Roadmap (public-beta-ready)
+Release integrity artifacts:
 
-- publish a formal “compatibility matrix” mapping SDK versions ↔ supported protocol versions
-- conformance tests that validate MCP behavior end-to-end against production
-- stronger lifecycle guarantees (deprecation notice windows and fixed sunset dates)
+- `SHA256SUMS`
+- `MCP_COMPATIBILITY_POLICY.md`
 
+## Compatibility lifecycle policy
+
+- additive protocol/tool changes: allowed without breaking notice
+- behavioral non-breaking changes: changelog + rationale
+- deprecations: minimum 180-day target sunset window
+- breaking changes: minimum 90-day migration window after replacement is live
+
+## Conformance gating
+
+Every SDK release tag (`mcp-sdks-v*`) is gated by live conformance checks against `https://api.omnibrief.app/mcp`:
+
+- JS: `sdk/omni-mcp-js/scripts/conformance.mjs`
+- Python: `sdk/omni-mcp-py/scripts/conformance.py`
+
+Required successful sequence:
+
+1. `initialize`
+2. `tools/list` includes `fred.search`
+3. `tools/call` returns structured content
+
+## Related docs
+
+- `/sources/client-api-mcp-hosted`
+- `/sources/client-api-sdks`
+- `/getting-started/client-api-sdk-quickstart`
+- `/sources/client-api-migrations`
