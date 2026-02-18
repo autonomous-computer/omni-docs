@@ -9,7 +9,7 @@ This page is the operations companion to `/sources/client-api-webhooks` (contrac
 
 If you run webhooks in production, this page defines the minimum reliability and security posture.
 
-## Design goals
+## Operating model
 
 Your receiver must be:
 
@@ -22,119 +22,159 @@ Your receiver must be:
 ## Reference architecture
 
 1. Ingress handler receives raw body + headers.
-2. Signature and timestamp checks run before parsing JSON.
-3. Payload enqueued durably.
+2. Signature/timestamp checks run before JSON parse.
+3. Payload is persisted to queue/storage.
 4. Handler returns `2xx` immediately.
 5. Worker processes idempotently and records outcome.
+
+## Webhook payload and correlation fields
+
+Minimum fields your pipeline should persist:
+
+- `event.id`
+- `event.type`
+- `event.created`
+- `event.requestId` (originating OMNI API request)
+- ingress `X-Request-Id`
+- signature verification result
+- enqueue and processing timestamps
 
 ## HTTP response policy
 
 - return `2xx` only after durable enqueue
-- return `4xx` for permanent failures (bad secret, invalid shape)
-- return `5xx` for transient failures (queue outage, dependency outage)
+- return `4xx` only for permanent validation failures
+- return `5xx` for transient infrastructure failures
 
-## Security baseline
-
-## Signature verification
+## Signature verification baseline
 
 When signing is enabled, verify against raw bytes:
 
 `HMAC_SHA256(secret, "{Omni-Timestamp}.{raw_body}")`
 
-Minimum controls:
+Required controls:
 
-- enforce timestamp tolerance (default 300s)
-- use constant-time comparison
-- reject missing/invalid signature in signed environments
+- enforce replay tolerance (default 300s)
+- constant-time signature comparison
+- strict raw-body verification (never parsed JSON)
+- dual-secret verification during rotation window
 
-## Secret rotation runbook
+### TypeScript (Node) verification snippet
 
-1. Deploy receiver that accepts primary + secondary secrets.
-2. Rotate OMNI signing secret.
-3. Observe zero signature failures for one full event cycle.
-4. Remove old secret.
+```ts
+import crypto from "node:crypto";
 
-## Dedupe + idempotency
+export function verifyOmniSignature(opts: {
+  secret: string;
+  timestamp: string;
+  signature: string;
+  rawBody: Buffer;
+  toleranceSeconds?: number;
+}) {
+  const tolerance = opts.toleranceSeconds ?? 300;
+  const ts = Number(opts.timestamp);
+  if (!Number.isFinite(ts)) throw new Error("invalid Omni-Timestamp");
 
-Use `event.id` as dedupe key.
+  const age = Math.abs(Date.now() / 1000 - ts);
+  if (age > tolerance) throw new Error("event outside replay window");
 
-Recommendations:
+  const payload = Buffer.concat([Buffer.from(`${opts.timestamp}.`), opts.rawBody]);
+  const expectedHex = crypto.createHmac("sha256", opts.secret).update(payload).digest("hex");
+  const expected = Buffer.from(expectedHex, "hex");
+  const provided = Buffer.from(opts.signature, "hex");
+  if (expected.length !== provided.length) throw new Error("invalid signature");
+  if (!crypto.timingSafeEqual(expected, provided)) throw new Error("invalid signature");
+}
+```
 
-- retain dedupe records for at least 7 days
-- store payload hash for anomaly detection (`same event.id`, different body)
-- enforce downstream unique constraints where possible
+### Python verification snippet
 
-## Observability contract
+```python
+import hashlib
+import hmac
+import time
 
-Log and metric tags for every delivery:
 
-- `X-Request-Id`
-- `event.id`
-- `event.type`
-- `event.requestId` (originating API request, when present)
-- signature present/verified flags
-- enqueue success/failure
-- end-to-end latency
+def verify_omni_signature(*, secret: str, timestamp: str, signature: str, raw_body: bytes, tolerance_seconds: int = 300) -> None:
+    ts = int(timestamp)
+    if abs(int(time.time()) - ts) > tolerance_seconds:
+        raise ValueError("event outside replay window")
+
+    payload = (timestamp + ".").encode("utf-8") + raw_body
+    expected = hmac.new(secret.encode("utf-8"), payload, hashlib.sha256).hexdigest()
+    if not hmac.compare_digest(expected, signature):
+        raise ValueError("invalid signature")
+```
+
+## Dedupe and idempotency contract
+
+- dedupe key: `event.id`
+- retention window: minimum 7 days (recommended 30 days)
+- reject duplicates before worker business logic
+- enforce downstream idempotency by unique keys on business side effects
+
+## Retry + DLQ policy (public-beta-ready target)
+
+Recommended retry schedule for transient failures:
+
+| Attempt | Delay |
+| --- | --- |
+| 1 | immediate |
+| 2 | 1 minute |
+| 3 | 5 minutes |
+| 4 | 30 minutes |
+| 5 | 2 hours |
+| 6 | 12 hours |
+
+After terminal retry failure:
+
+- route to DLQ with full metadata
+- require explicit operator replay decision
+
+DLQ record minimum fields:
+
+- `event.id`, `event.type`
+- failure class (`signature`, `validation`, `dependency`, `timeout`, `unknown`)
+- last error payload/stack
+- first seen / last attempted timestamps
+- replay count
 
 ## SLO targets (recommended)
 
-- ingress ACK p95 < 500ms
-- worker success rate >= 99.9%
-- replay success rate >= 99%
-- DLQ growth = 0 sustained
+- ingress ACK p95 `< 500ms`
+- successful processing rate `>= 99.9%`
+- replay success rate `>= 99%`
+- sustained DLQ growth `= 0`
 
-## Incident matrix
+## Incident response matrix
 
-| Symptom | Likely cause | Immediate action | Long-term fix |
+| Symptom | Likely cause | Immediate action | Hardening follow-up |
 | --- | --- | --- | --- |
-| Signature failures spike | Raw-body mutation, stale secret, clock skew | Fail closed, disable problematic deploy, validate NTP/secret | Add dual-secret rotation + raw-body tests |
-| Duplicate side effects | Missing dedupe or non-idempotent writes | Enable event-id dedupe gate | Add DB uniqueness + idempotent workers |
-| ACK latency/timeouts | Business logic in ingress path | Move work to queue and ACK after enqueue | Hard timeout + queue health alerts |
-| Repeated worker failures | Poison-pill event | Route to DLQ and quarantine | Add typed validators + replay tooling |
+| Signature failures spike | wrong secret, raw-body mutation, clock skew | fail closed, validate NTP + secret, roll back receiver changes | add dual-secret rollout and fixture tests |
+| Duplicate side effects | dedupe gap or non-idempotent worker | pause processing, enforce event-id lock | add DB uniqueness and idempotent writes |
+| ACK timeout spike | blocking work in ingress path | move to queue-first ACK | add timeout budgets and ingress SLO alerts |
+| Rising DLQ volume | poison-pill events or dependency outage | isolate failing class, replay after fix | typed validators + automated classifier |
 
-## Replay + DLQ playbook
+## Replay runbook
 
-1. Inspect failed event payload and worker logs.
-2. Patch code/config issue.
-3. Replay from DLQ using original `event.id` context.
+1. Identify failed `event.id` and root-cause class.
+2. Patch code/config.
+3. Replay via replay tooling with original `event.id` context.
 4. Verify no duplicate side effects.
-5. Close incident with root-cause and preventive action.
+5. Close incident with preventive action and monitor window.
 
-## Beta caveats
+## Beta caveat
 
-During internal beta:
+In internal beta, signatures/retries may not be enabled for every account yet. Build receiver behavior as if full signing and at-least-once retries are already active.
 
-- signatures may not be enabled for all accounts/environments
-- automatic retries may not be fully enabled yet
+## Production readiness checklist
 
-Engineering rule: build as if full signing + retries are already active.
-
-## Validation checklist before go-live
-
-- [ ] raw-body signature test fixtures pass
-- [ ] replay-window validation enabled
-- [ ] dedupe by `event.id` in persistent store
-- [ ] async queue path in place; ingress is thin
-- [ ] DLQ + replay tool available
-- [ ] alerting on signature failures, enqueue failures, DLQ growth
-- [ ] on-call runbook includes event/request correlation fields
-
-## Framework notes
-
-### Node / Express
-
-- Use raw-body middleware on webhook route.
-- Do not verify against parsed JSON.
-
-### Next.js route handlers
-
-- Read raw bytes first.
-- Verify signature before `request.json()`.
-
-### FastAPI
-
-- Use `await request.body()` for raw bytes.
-- Verify prior to JSON parse.
+- [ ] raw-body signature verification tests pass
+- [ ] replay-window checks enabled
+- [ ] dedupe store in persistent DB/redis
+- [ ] queue-first ingress and thin handler
+- [ ] DLQ + replay tooling implemented
+- [ ] alerts on signature failures, enqueue failures, DLQ growth
+- [ ] runbook includes `event.id` + `request_id` correlation steps
 
 ## Related docs
 

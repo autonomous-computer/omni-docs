@@ -12,8 +12,8 @@ Internal beta distribution model: SDKs are shipped as GitHub Release artifacts (
 ## 1. Prerequisites
 
 - OMNI Client API key (`omni_live_*`)
-- Recommended scopes: `mcp.tools.read`, `mcp.invoke`, plus tool scopes (example: `fred.read`)
-- GitHub CLI authenticated for artifact download
+- recommended scopes: `mcp.tools.read`, `mcp.invoke`, `fred.read`
+- GitHub CLI authenticated for artifact downloads
 
 ## 2. Install SDK artifacts
 
@@ -43,7 +43,7 @@ gh release download mcp-sdks-v0.1.4-internal-beta \
 pip install ./*.whl
 ```
 
-### Integrity + compatibility artifacts (required for production)
+### Integrity + compatibility artifacts (required)
 
 ```bash
 gh release download mcp-sdks-v0.1.4-internal-beta \
@@ -54,7 +54,7 @@ gh release download mcp-sdks-v0.1.4-internal-beta \
 shasum -a 256 -c SHA256SUMS
 ```
 
-## 3. Initialize + list tools + call a tool
+## 3. Initialize, list tools, and call a tool
 
 ### JavaScript
 
@@ -69,7 +69,6 @@ const client = new OmniMcpClient({
 });
 
 await client.initialize();
-
 const tools = await client.listTools();
 console.log(tools.tools.map((t) => t.name));
 
@@ -89,7 +88,6 @@ from omni_mcp_py import OmniMCPClient
 client = OmniMCPClient(api_key=os.environ["OMNI_API_KEY"])
 
 client.initialize()
-
 tools = client.list_tools()
 print([t["name"] for t in tools.get("tools", [])])
 
@@ -101,9 +99,47 @@ result = client.call_tool(
 print(result.get("structuredContent"))
 ```
 
-## 4. Production wrapper patterns
+### Go (raw hosted MCP JSON-RPC)
 
-### JavaScript: bounded retry wrapper (write-safe)
+```go
+package main
+
+import (
+  "bytes"
+  "encoding/json"
+  "fmt"
+  "io"
+  "net/http"
+  "os"
+)
+
+func main() {
+  payload := map[string]any{
+    "jsonrpc": "2.0",
+    "id":      1,
+    "method":  "initialize",
+    "params":  map[string]any{"protocolVersion": "2025-11-05"},
+  }
+  body, _ := json.Marshal(payload)
+
+  req, _ := http.NewRequest("POST", "https://api.omnibrief.app/mcp", bytes.NewReader(body))
+  req.Header.Set("Authorization", "Bearer "+os.Getenv("OMNI_API_KEY"))
+  req.Header.Set("Content-Type", "application/json")
+
+  resp, err := http.DefaultClient.Do(req)
+  if err != nil {
+    panic(err)
+  }
+  defer resp.Body.Close()
+
+  raw, _ := io.ReadAll(resp.Body)
+  fmt.Println(resp.StatusCode, string(raw))
+}
+```
+
+## 4. Production retry wrappers
+
+### JavaScript (write-safe retry)
 
 ```ts
 export async function callToolSafe(client: OmniMcpClient, name: string, arguments_: Record<string, unknown>) {
@@ -126,7 +162,7 @@ export async function callToolSafe(client: OmniMcpClient, name: string, argument
 }
 ```
 
-### Python: bounded retry wrapper (write-safe)
+### Python (write-safe retry)
 
 ```python
 import random
@@ -152,23 +188,43 @@ def call_tool_safe(client, name: str, arguments: dict):
     raise RuntimeError("unreachable")
 ```
 
-## 5. Non-optional production rules
+## 5. Conformance gate before promotion
 
-1. Set request timeouts globally.
-2. Retry only transient failures (`429`, `5xx`).
-3. Reuse the same idempotency key when retrying write-like calls.
-4. Log request IDs and structured SDK error metadata.
-5. Verify artifact checksums before promotion.
-6. Track SDK and compatibility-policy versions together in deployment metadata.
+For release tags, OMNI runs live conformance against hosted MCP. You should run equivalent checks in your rollout pipeline.
 
-## 6. Release promotion checklist
+### JS conformance
 
-- [ ] Download artifacts from approved tag
-- [ ] Verify `SHA256SUMS`
-- [ ] Confirm `MCP_COMPATIBILITY_POLICY.md` matches target environment
-- [ ] Run smoke flow (`initialize` -> `tools/list` -> `tools/call`) against target
-- [ ] Confirm error handling captures request IDs
-- [ ] Confirm billing semantics in staging/prod canary
+```bash
+OMNI_CLIENT_API_BASE_URL=https://api.omnibrief.app \
+OMNI_CLIENT_API_KEY=omni_live_... \
+node sdk/omni-mcp-js/scripts/conformance.mjs
+```
+
+### Python conformance
+
+```bash
+OMNI_CLIENT_API_BASE_URL=https://api.omnibrief.app \
+OMNI_CLIENT_API_KEY=omni_live_... \
+python sdk/omni-mcp-py/scripts/conformance.py
+```
+
+## 6. Non-optional production rules
+
+1. set explicit request timeouts
+2. retry only transient failures (`429`, `5xx`)
+3. reuse idempotency keys for retried write-like calls
+4. log request ids and structured SDK error metadata
+5. verify artifact checksums before promotion
+6. track SDK version + compatibility policy version together
+
+## 7. Release promotion checklist
+
+- [ ] download artifacts from approved tag
+- [ ] verify `SHA256SUMS`
+- [ ] verify `MCP_COMPATIBILITY_POLICY.md`
+- [ ] run smoke flow (`initialize` -> `tools/list` -> `tools/call`)
+- [ ] run conformance scripts
+- [ ] validate billing semantics in canary
 
 ## Related docs
 
