@@ -70,6 +70,20 @@ def _strip_fastapi_validation_errors(spec: Dict[str, Any]) -> None:
     framework-specific schema into the public contract and confuses consumers.
     """
 
+    def _is_fastapi_validation_422(resp: Any) -> bool:
+        if not isinstance(resp, dict):
+            return False
+        content = resp.get("content")
+        if not isinstance(content, dict):
+            return False
+        app_json = content.get("application/json")
+        if not isinstance(app_json, dict):
+            return False
+        schema = app_json.get("schema")
+        if not isinstance(schema, dict):
+            return False
+        return schema.get("$ref") == "#/components/schemas/HTTPValidationError"
+
     paths = spec.get("paths")
     if not isinstance(paths, dict):
         return
@@ -82,7 +96,9 @@ def _strip_fastapi_validation_errors(spec: Dict[str, Any]) -> None:
             if method not in http_methods or not isinstance(op, dict):
                 continue
             responses = op.get("responses")
-            if isinstance(responses, dict) and "422" in responses:
+            if not isinstance(responses, dict) or "422" not in responses:
+                continue
+            if _is_fastapi_validation_422(responses.get("422")):
                 responses.pop("422", None)
 
 
