@@ -18,6 +18,22 @@ Supported key prefixes:
 - `omni_live_...`
 - `omni_test_...`
 
+## Scopes (restricted keys)
+
+OMNI supports restricted API keys via scopes.
+
+Behavior:
+
+- Keys with **no scopes** are treated as unrestricted.
+- Keys with scopes must include the required scopes for the endpoint/tool.
+
+If a scoped key is missing permissions, OMNI returns:
+
+- HTTP `403`
+- `error.type = permission_error`
+- `error.code = insufficient_scope`
+- `Omni-Required-Scopes` header may be present to help you debug
+
 ## Request tracing
 
 Optional inbound request ID:
@@ -33,10 +49,10 @@ The API echoes `X-Request-Id` in responses.
 Optional version header:
 
 ```http
-OMNI-Version: 2026-02-17
+Omni-Version: 2026-02-17
 ```
 
-The API echoes `OMNI-Version` in responses.
+The API echoes `Omni-Version` in responses.
 
 ## Idempotency
 

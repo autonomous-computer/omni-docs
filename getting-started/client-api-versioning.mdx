@@ -8,12 +8,12 @@ description: Versioning policy and change communication for OMNI Client API.
 ## Version model
 
 - Base path versioning: `/v1/...`
-- Optional request pin: `OMNI-Version` header
-- Response echoes selected `OMNI-Version`
+- Optional request pin: `Omni-Version` header
+- Response echoes selected `Omni-Version`
 
-### `OMNI-Version` format
+### `Omni-Version` format
 
-`OMNI-Version` is a date-based pin:
+`Omni-Version` is a date-based pin:
 
 ```text
 YYYY-MM-DD
@@ -22,10 +22,10 @@ YYYY-MM-DD
 Example:
 
 ```http
-OMNI-Version: 2026-02-17
+Omni-Version: 2026-02-17
 ```
 
-If you omit `OMNI-Version`, you get the current default behavior for `/v1`.
+If you omit `Omni-Version`, you get the current default behavior for `/v1`.
 
 ## When to pin
 

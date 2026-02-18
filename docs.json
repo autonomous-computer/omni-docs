@@ -53,6 +53,7 @@
           "sources/client-api-errors",
           "sources/client-api-mcp",
           "sources/client-api-mcp-hosted",
+          "sources/client-api-mcp-compatibility",
           "sources/client-api-sdks",
           "sources/client-api-webhooks",
           "sources/client-api-changelog",

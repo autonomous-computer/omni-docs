@@ -1,87 +1,105 @@
 ---
 title: Client API SDKs
-description: Official SDKs, installation paths, and versioning policy for OMNI Client API and hosted MCP.
+description: Official internal-beta SDK adapters for the OMNI Client API and hosted MCP transport.
 ---
 
 # Client API SDKs
 
-OMNI’s SDK story is intentionally SDK-first, but the packages themselves are currently **internal/private beta**.
+During internal beta, OMNI ships official SDK adapters as **GitHub Release artifacts** (not npm / PyPI yet).
 
-## What exists today
+These SDKs are intentionally thin wrappers over the hosted MCP endpoint (`/mcp`) so:
 
-- Hosted MCP SDK (JavaScript): `@omni/omni-mcp-js`
-- Hosted MCP SDK (Python): `omni-mcp-py`
-- REST Client API: use standard HTTP clients (first-party REST SDKs are planned for v1.5)
+- auth, rate limits, usage metering, and error semantics match the raw HTTP contract
+- you can always drop down to raw HTTP without changing your integration model
 
-## Internal beta distribution model
+## Where to get builds
 
-During private beta, SDKs are distributed as GitHub Release artifacts from the `omni-system` repo.
+SDK artifacts are published as assets on tagged GitHub Releases in `autonomous-computer/omni-system`.
 
-Release tags follow:
+Look for tags with the prefix:
 
 ```text
-mcp-sdks-v<version>
+mcp-sdks-v*
 ```
 
-The release workflow is gated by live conformance against `https://api.omnibrief.app/mcp`.
+## Hosted MCP SDKs
 
-## Install (internal beta)
+### JavaScript: `@omni/omni-mcp-js` (internal beta)
 
-JavaScript:
+Install from a GitHub Release `.tgz` asset:
 
 ```bash
-gh release download mcp-sdks-v0.1.0-internal-beta \
-  --repo autonomous-computer/omni-system \
-  --pattern "*.tgz"
-
-pnpm add ./*.tgz
+# Option A: download the .tgz and install from disk
+pnpm add ./omni-omni-mcp-js-<version>.tgz
 ```
 
-Python:
-
-```bash
-gh release download mcp-sdks-v0.1.0-internal-beta \
-  --repo autonomous-computer/omni-system \
-  --pattern "*.whl"
-
-pip install ./*.whl
-```
-
-## Quickstart: hosted MCP (JavaScript)
+Usage:
 
 ```ts
-import crypto from "node:crypto";
 import { OmniMcpClient } from "@omni/omni-mcp-js";
 
-const client = new OmniMcpClient({ apiKey: process.env.OMNI_CLIENT_API_KEY! });
+const client = new OmniMcpClient({
+  apiKey: process.env.OMNI_API_KEY!,
+  // baseUrl: "https://api.omnibrief.app",
+  // timeoutMs: 20000,
+});
+
 await client.initialize();
+
+const tools = await client.listTools();
+console.log(tools.tools.map((t) => t.name));
 
 const result = await client.callTool(
   "fred.search",
-  { q: "inflation", limit: 3 },
-  `idem_${crypto.randomUUID()}`
+  { q: "inflation", limit: 5 },
+  `idem_${Date.now()}`,
 );
 
 console.log(result.structuredContent);
 ```
 
-## Quickstart: hosted MCP (Python)
+Notes:
+
+- `tools/call` requires `Idempotency-Key` for safe retries; pass it as the third argument to `callTool`.
+- Errors currently throw plain `Error` with the server-provided message.
+
+### Python: `omni-mcp-py` (internal beta)
+
+Install from a GitHub Release wheel (`.whl`) or source distribution (`.tar.gz`):
+
+```bash
+# Option A: download the wheel and install from disk
+pip install ./omni_mcp_py-<version>-py3-none-any.whl
+```
+
+Usage:
 
 ```python
 from omni_mcp_py import OmniMCPClient
 
 client = OmniMCPClient(api_key="omni_live_...")
+
 client.initialize()
+
+tools = client.list_tools()
+print([t["name"] for t in tools.get("tools", [])])
 
 result = client.call_tool(
     name="fred.search",
-    arguments={"q": "inflation", "limit": 3},
-    idempotency_key="idem_example_001",
+    arguments={"q": "inflation", "limit": 5},
 )
+
 print(result.get("structuredContent"))
 ```
 
-## Roadmap
+Notes:
 
-- Publish SDKs to npm/PyPI for public beta, with a stable compatibility contract.
-- Add REST-first SDKs (TS/Python/Go) aligned to `/v1/openapi.json`.
+- `call_tool` auto-generates an idempotency key if you do not provide one.
+- Errors currently raise `RuntimeError` with the server-provided message.
+
+## Roadmap (public-beta-ready)
+
+- publish packages to npm / PyPI with stable versioning guarantees
+- typed error classes with `status`, `requestId`, and `omni_code`
+- first-party integration templates (Next.js, FastAPI, Rails)
+

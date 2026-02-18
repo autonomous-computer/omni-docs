@@ -1,0 +1,94 @@
+---
+title: Hosted MCP Compatibility Policy
+description: Protocol versioning, transport guarantees, and tool compatibility for OMNI hosted MCP.
+---
+
+# Hosted MCP Compatibility Policy
+
+This page defines what OMNI considers stable for hosted MCP integrations, and how we evolve the protocol and tool surface without breaking you.
+
+## Endpoints
+
+- Primary hosted MCP endpoint: `https://api.omnibrief.app/mcp`
+- SSE compatibility endpoint: `https://api.omnibrief.app/sse`
+
+## Authentication
+
+All requests require:
+
+```http
+Authorization: Bearer omni_live_...
+```
+
+## Protocol version negotiation
+
+OMNI selects a protocol version during `initialize`:
+
+- If you request a supported version, OMNI echoes it back in `result.protocolVersion`.
+- If you request an unsupported version, OMNI falls back to the default supported version.
+
+Current supported protocol versions (internal beta):
+
+- `2025-11-05` (default)
+- `2025-06-18`
+- `2025-03-26`
+
+## Method stability
+
+These methods are considered stable during internal beta:
+
+- `initialize`
+- `ping`
+- `tools/list`
+- `tools/call`
+- `notifications/initialized`
+
+Adding new methods is non-breaking.
+
+Removing or changing method semantics is breaking and requires:
+
+- a new supported protocol version, and
+- a migration note in the changelog.
+
+## Tool stability
+
+### Tool identifiers
+
+Tool names (for example `fred.search`) are treated as stable identifiers.
+
+If a tool needs a breaking change:
+
+- we will introduce a new tool name (for example `fred.search.v2`) and keep the old tool available through a documented sunset window.
+
+### Input schemas
+
+Tool `inputSchema` is a contract:
+
+- Adding new optional fields is non-breaking.
+- Changing required fields or changing field meaning is breaking.
+
+## Idempotency contract
+
+`tools/call` requires:
+
+```http
+Idempotency-Key: <unique-per-operation>
+```
+
+This enables safe retries and prevents double-billing.
+
+## Billing and error semantics parity
+
+Hosted MCP is a strict adapter over OMNI Client API semantics:
+
+- same auth model and scopes
+- same rate limits / quotas
+- same request IDs (echoed in `X-Request-Id`)
+- billable unit: successful tool operations only (`2xx/3xx`)
+
+## Roadmap (public-beta-ready)
+
+- publish a formal “compatibility matrix” mapping SDK versions ↔ supported protocol versions
+- conformance tests that validate MCP behavior end-to-end against production
+- stronger lifecycle guarantees (deprecation notice windows and fixed sunset dates)
+
