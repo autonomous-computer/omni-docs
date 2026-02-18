@@ -72,11 +72,13 @@ Hosted MCP tool behavior maps to OMNI Client API semantics:
 - `MCP-Session-Id` header is returned for hosted transport sessions.
 - `DELETE /mcp` closes the active session context.
 
-## Official adapters (private beta)
+See `/sources/client-api-mcp-compatibility` for protocol and tool compatibility guarantees.
 
-During private beta, OMNI provides first-party adapters to make MCP integration straightforward.
+## Official adapters (internal beta)
 
-These adapters are not published to npm/PyPI yet. For internal/private beta they are distributed as GitHub Release artifacts from the `omni-system` repo, gated by live conformance against `https://api.omnibrief.app/mcp`.
+During internal beta, OMNI provides first-party adapters to make MCP integration straightforward.
+
+These adapters are not published to npm/PyPI yet. For internal beta they are distributed as GitHub Release artifacts from the `omni-system` repo, gated by live conformance against `https://api.omnibrief.app/mcp`.
 
 ### JavaScript (`@omni/omni-mcp-js`)
 
@@ -97,7 +99,7 @@ import crypto from "node:crypto";
 import { OmniMcpClient } from "@omni/omni-mcp-js";
 
 const client = new OmniMcpClient({
-  apiKey: process.env.OMNI_CLIENT_API_KEY!,
+  apiKey: process.env.OMNI_API_KEY!,
   // baseUrl: "https://api.omnibrief.app",
 });
 
@@ -123,7 +125,7 @@ pip install ./*.whl
 Usage:
 
 ```python
-from omni_mcp_py import OmniMCPClient, OmniMCPError
+from omni_mcp_py import OmniMCPClient
 
 client = OmniMCPClient(api_key="omni_live_...")
 
@@ -136,11 +138,11 @@ try:
         idempotency_key="idem_example_001",
     )
     print(result.get("structuredContent"))
-except OmniMCPError as exc:
-    print(exc.kind, exc.status_code, exc.request_id, str(exc))
+except RuntimeError as exc:
+    print(str(exc))
     raise
 ```
 
 ### Availability
 
-These adapters are currently available to private beta customers. If you do not have access, use the raw HTTP examples above and request adapter access when it becomes available for your account.
+These adapters are currently available to internal beta customers. If you do not have access, use the raw HTTP examples above and request adapter access when it becomes available for your account.

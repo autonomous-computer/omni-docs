@@ -5,19 +5,18 @@ description: Quickstart for generating API keys and calling OMNI Client API v1.
 
 # Client API Quickstart
 
-OMNI Client API v1 is currently in **private beta**. Access is granted by invitation.
+OMNI Client API v1 is currently in **internal beta**. Access is allowlisted and not open to public traffic.
 
 ## 1. Create an API key
 
 Use an authenticated OMNI session token (your normal app auth) and create a key:
 
 ```bash
-curl -X POST https://agent-backend.omnibrief.app/api/client/keys \
+curl -X POST https://omni-mcp.fly.dev/api/client/keys \
   -H "Authorization: Bearer <omni_user_jwt>" \
-  -H "Idempotency-Key: idem_create_key_001" \
   -H "Content-Type: application/json" \
   -d '{
-    "name": "private-beta-main",
+    "name": "internal-beta-main",
     "mode": "live",
     "scopes": ["fred.read", "mcp.tools.read"]
   }'
@@ -41,7 +40,7 @@ Response includes the key once:
 curl "https://api.omnibrief.app/v1/fred/search?q=unemployment&limit=5" \
   -H "Authorization: Bearer omni_live_..." \
   -H "X-Request-Id: req_demo_001" \
-  -H "OMNI-Version: 2026-02-17"
+  -H "Omni-Version: 2026-02-17"
 ```
 
 ## 3. MCP tool catalog
@@ -85,8 +84,8 @@ curl "https://api.omnibrief.app/v1/openapi.json" \
   -H "Authorization: Bearer omni_live_..."
 ```
 
-## Private beta notes
+## Internal beta notes
 
 - Some accounts may not have Client API access yet.
 - Usage is metered for successful calls.
-- During beta, new endpoints and tools may ship quickly; use the changelog and optional `OMNI-Version` pinning for stability.
+- During beta, new endpoints and tools may ship quickly; use the changelog and optional `Omni-Version` pinning for stability.
