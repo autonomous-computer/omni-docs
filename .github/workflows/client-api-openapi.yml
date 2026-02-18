@@ -1,0 +1,62 @@
+name: Client API OpenAPI Drift Guard
+
+on:
+  pull_request:
+    paths:
+      - "openapi/**"
+      - "docs.json"
+      - "scripts/**"
+      - ".github/workflows/client-api-openapi.yml"
+  workflow_dispatch:
+  schedule:
+    - cron: "23 7 * * *"
+
+jobs:
+  check:
+    name: Verify OpenAPI snapshot is up to date
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Refresh OpenAPI snapshot
+        run: python scripts/update_client_api_openapi.py
+
+      - name: Assert no drift
+        run: |
+          if ! git diff --exit-code; then
+            echo "OpenAPI snapshot drift detected. Run scripts/update_client_api_openapi.py and commit the changes."
+            exit 1
+          fi
+
+  auto-pr:
+    name: Auto-update OpenAPI snapshot (scheduled)
+    if: github.event_name == 'schedule'
+    needs: check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Refresh OpenAPI snapshot
+        run: python scripts/update_client_api_openapi.py
+
+      - name: Create PR if changed
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "docs(openapi): refresh omni-client-api.v1.json"
+          title: "docs(openapi): refresh OMNI Client API OpenAPI snapshot"
+          body: "Automated refresh of openapi/omni-client-api.v1.json from production OpenAPI contract."
+          branch: "automation/openapi-refresh"
+          delete-branch: true
+
