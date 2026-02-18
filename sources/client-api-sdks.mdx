@@ -35,6 +35,19 @@ Look for tags with the prefix:
 mcp-sdks-v*
 ```
 
+Current validated internal-beta release:
+
+```text
+mcp-sdks-v0.1.4-internal-beta
+```
+
+Each release ships:
+
+- JS package artifact (`*.tgz`)
+- Python artifacts (`*.whl`, `*.tar.gz`)
+- `SHA256SUMS`
+- `MCP_COMPATIBILITY_POLICY.md`
+
 ## Versioning and compatibility (internal beta)
 
 - Adapter versions follow semver.
@@ -80,7 +93,7 @@ console.log(result.structuredContent);
 Notes:
 
 - `tools/call` requires `Idempotency-Key` for safe retries; pass it as the third argument to `callTool`.
-- Errors currently throw plain `Error` with the server-provided message. Always log `X-Request-Id` from the response when debugging.
+- Errors throw `OmniMcpError` with structured metadata (`kind`, `status`, `requestId`, `rpcCode`, `data`).
 
 #### Quickstart: robust invocation wrapper (TypeScript)
 
@@ -111,7 +124,7 @@ pip install ./omni_mcp_py-<version>-py3-none-any.whl
 Usage:
 
 ```python
-from omni_mcp_py import OmniMCPClient
+from omni_mcp_py import OmniMCPClient, OmniMCPError
 
 client = OmniMCPClient(api_key="omni_live_...")
 
@@ -131,7 +144,7 @@ print(result.get("structuredContent"))
 Notes:
 
 - `call_tool` auto-generates an idempotency key if you do not provide one.
-- Errors currently raise `RuntimeError` with the server-provided message.
+- Errors raise `OmniMCPError` with structured metadata (`kind`, `status_code`, `request_id`, `rpc_code`, `data`).
 
 ## Roadmap (public-beta-ready)
 
