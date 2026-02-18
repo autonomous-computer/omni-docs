@@ -48,6 +48,7 @@
         "pages": [
           "sources/overview",
           "sources/mcp-servers",
+          "sources/client-api-endpoints",
           "sources/client-api-reference",
           "sources/client-api-openapi",
           "sources/client-api-keys",
