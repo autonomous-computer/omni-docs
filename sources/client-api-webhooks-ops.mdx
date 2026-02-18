@@ -113,3 +113,47 @@ Fix:
 - Use `await request.body()` to get raw bytes.
 - Verify signature before parsing JSON.
 
+## Testing and debugging (recommended)
+
+### Build a local verifier test
+
+Before you ever point a production URL at OMNI, add a unit test that:
+
+1. loads a fixture event payload as raw bytes
+2. computes a signature using your secret
+3. asserts your verification passes for:
+   - valid signature
+   - invalid signature
+   - expired timestamp
+
+This is the most common source of webhook integration failures.
+
+### Validate your raw-body handling
+
+If your handler uses a JSON body parser middleware that consumes and re-serializes the body, signature verification will fail.
+
+To validate:
+
+1. log the length of `raw_body` (not the contents)
+2. compare it to the `Content-Length` header
+3. ensure they match
+
+## Operational runbook
+
+### If deliveries start failing
+
+1. Confirm your endpoint is returning a `2xx` quickly (enqueue then ack).
+2. If signing is enabled, confirm you are verifying against **raw bytes**.
+3. Check for replay window rejections:
+   - ensure your server clock is correct
+4. Check dedupe:
+   - confirm you dedupe by `event.id`, not by request ID
+5. If you return `4xx`, treat it as a permanent rejection:
+   - OMNI should not retry permanent failures
+
+### If you see duplicates
+
+Assume at-least-once delivery and make duplication safe:
+
+- store processed `event.id` for at least 7 days
+- make the underlying business operation idempotent (your own DB constraints, upserts, etc.)

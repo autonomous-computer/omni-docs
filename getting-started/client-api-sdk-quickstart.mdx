@@ -1,0 +1,112 @@
+---
+title: Client API SDK Quickstart
+description: SDK-first quickstart for OMNI hosted MCP (internal beta) with production-grade retry + idempotency posture.
+---
+
+# Client API SDK Quickstart
+
+This page is the **SDK-first** companion to `/getting-started/client-api-quickstart`.
+
+Internal beta note: official SDKs are distributed as **GitHub Release artifacts** (not npm / PyPI yet).
+
+## 1. Prerequisites
+
+- An OMNI Client API key: `omni_live_*`
+- Scopes (recommended for MCP): `mcp.tools.read`, `mcp.invoke`, and the tool scopes you intend to use (example: `fred.read`)
+
+## 2. Install the SDK artifacts
+
+SDK artifacts are published as assets on tagged GitHub Releases in `autonomous-computer/omni-system`.
+
+Tag prefix:
+
+```text
+mcp-sdks-v*
+```
+
+### JavaScript (pnpm)
+
+Download a `.tgz` asset and install from disk:
+
+```bash
+gh release download mcp-sdks-v0.1.0-internal-beta \
+  --repo autonomous-computer/omni-system \
+  --pattern "*.tgz"
+
+pnpm add ./*.tgz
+```
+
+### Python (pip)
+
+Download a `.whl` asset and install from disk:
+
+```bash
+gh release download mcp-sdks-v0.1.0-internal-beta \
+  --repo autonomous-computer/omni-system \
+  --pattern "*.whl"
+
+pip install ./*.whl
+```
+
+## 3. Initialize + list tools + call a tool
+
+### JavaScript example
+
+```ts
+import crypto from "node:crypto";
+import { OmniMcpClient } from "@omni/omni-mcp-js";
+
+const client = new OmniMcpClient({
+  apiKey: process.env.OMNI_API_KEY!,
+  // baseUrl: "https://api.omnibrief.app",
+  // timeoutMs: 20_000,
+});
+
+// 1) initialize (handshake)
+await client.initialize();
+
+// 2) tools/list (read-only, safe to retry but each success can be billable)
+const tools = await client.listTools();
+console.log(tools.tools.map((t) => t.name));
+
+// 3) tools/call (requires idempotency)
+const idempotencyKey = `idem_${crypto.randomUUID()}`;
+const result = await client.callTool("fred.search", { q: "inflation", limit: 5 }, idempotencyKey);
+console.log(result.structuredContent);
+```
+
+### Python example
+
+```python
+import os
+import uuid
+
+from omni_mcp_py import OmniMCPClient
+
+client = OmniMCPClient(api_key=os.environ["OMNI_API_KEY"])
+
+# 1) initialize
+client.initialize()
+
+# 2) tools/list
+tools = client.list_tools()
+print([t["name"] for t in tools.get("tools", [])])
+
+# 3) tools/call (idempotency)
+result = client.call_tool(
+    name="fred.search",
+    arguments={"q": "inflation", "limit": 5},
+    idempotency_key=f"idem_{uuid.uuid4()}",
+)
+print(result.get("structuredContent"))
+```
+
+## 4. Production integration rules (non-optional)
+
+1. Set timeouts on every request.
+2. Use exponential backoff with jitter for retries.
+3. Only retry write-like calls (`tools/call`, `POST /v1/mcp/invoke`) with the **same** `Idempotency-Key`.
+4. Log `X-Request-Id` from every response.
+
+See `/sources/client-api-retries` and `/sources/client-api-errors`.
+

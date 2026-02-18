@@ -28,23 +28,25 @@ Authorization: Bearer omni_live_...
 
 ## Endpoint catalog
 
-| Endpoint | Method | Idempotency-Key | Purpose |
-| --- | --- | --- | --- |
-| `/v1/openapi.json` | GET | No | Canonical OpenAPI contract for v1. |
-| `/v1/health` | GET | No | Authenticated health and key sanity check. |
-| `/v1/fred/search` | GET | No | Search FRED series by query. |
-| `/v1/fred/series/{series_id}` | GET | No | Fetch observations for one FRED series. |
-| `/v1/mcp/tools` | GET | No | Legacy MCP-compatible tool catalog route. |
-| `/v1/mcp/invoke` | POST | Yes | Legacy MCP-compatible tool invocation route. |
-| `/mcp` | POST | Required for `tools/call` | Hosted MCP protocol endpoint (JSON-RPC over HTTP). |
-| `/mcp` | GET | No | Hosted MCP stream transport channel. |
-| `/mcp` | DELETE | No | Hosted MCP session close. |
-| `/sse` | GET | No | SSE compatibility transport endpoint. |
-
-For schema-level request/response definitions, see:
+For schema-level request/response definitions, use the generated OpenAPI reference:
 
 - `/sources/client-api-openapi`
 - `Client API (Generated)` in the left navigation
+
+This page focuses on semantics, required headers, and migration posture.
+
+| Endpoint | Method | Scopes | Idempotency-Key | Purpose |
+| --- | --- | --- | --- |
+| `/v1/openapi.json` | GET | none | No | Canonical OpenAPI contract for v1. |
+| `/v1/health` | GET | none | No | Authenticated health and key sanity check. |
+| `/v1/fred/search` | GET | `fred.read` | No | Search FRED series by query. |
+| `/v1/fred/series/{series_id}` | GET | `fred.read` | No | Fetch observations for one FRED series. |
+| `/v1/mcp/tools` | GET | `mcp.tools.read` | No | Legacy MCP-compatible tool catalog route. |
+| `/v1/mcp/invoke` | POST | `mcp.invoke` + tool scope | Yes | Legacy MCP-compatible tool invocation route. |
+| `/mcp` | POST | varies by method | Required for `tools/call` | Hosted MCP protocol endpoint (JSON-RPC over HTTP). |
+| `/mcp` | GET | none | No | Hosted MCP stream transport channel. |
+| `/mcp` | DELETE | none | No | Hosted MCP session close. |
+| `/sse` | GET | none | No | SSE compatibility transport endpoint. |
 
 ## `GET /v1/health`
 

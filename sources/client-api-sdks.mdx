@@ -12,6 +12,10 @@ These SDKs are intentionally thin wrappers over the hosted MCP endpoint (`/mcp`)
 - auth, rate limits, usage metering, and error semantics match the raw HTTP contract
 - you can always drop down to raw HTTP without changing your integration model
 
+If you want a runnable, end-to-end “first call” flow, start with:
+
+- `/getting-started/client-api-sdk-quickstart`
+
 ## Where to get builds
 
 SDK artifacts are published as assets on tagged GitHub Releases in `autonomous-computer/omni-system`.
@@ -21,6 +25,12 @@ Look for tags with the prefix:
 ```text
 mcp-sdks-v*
 ```
+
+## Versioning and compatibility (internal beta)
+
+- Adapter versions follow semver.
+- A given adapter version may support multiple MCP protocol versions; see `/sources/client-api-mcp-compatibility`.
+- During internal beta, we may publish quickly; you should pin the adapter version in production-like integrations.
 
 ## Hosted MCP SDKs
 
@@ -61,7 +71,7 @@ console.log(result.structuredContent);
 Notes:
 
 - `tools/call` requires `Idempotency-Key` for safe retries; pass it as the third argument to `callTool`.
-- Errors currently throw plain `Error` with the server-provided message.
+- Errors currently throw plain `Error` with the server-provided message. Always log `X-Request-Id` from the response when debugging.
 
 ### Python: `omni-mcp-py` (internal beta)
 
@@ -102,4 +112,3 @@ Notes:
 - publish packages to npm / PyPI with stable versioning guarantees
 - typed error classes with `status`, `requestId`, and `omni_code`
 - first-party integration templates (Next.js, FastAPI, Rails)
-

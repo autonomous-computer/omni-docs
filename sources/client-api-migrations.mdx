@@ -1,0 +1,82 @@
+---
+title: Client API Migrations
+description: Migration guides for evolving OMNI Client API and hosted MCP without breaking integrations.
+---
+
+# Client API Migrations
+
+This page is intentionally practical: if you follow the checklists below, you should be able to migrate safely with high confidence and without double-billing.
+
+## Migration north stars
+
+1. Prefer **additive** evolution: new fields, new endpoints, new tools.
+2. If a change is breaking, ship a **new versioned surface** (new endpoint path, new tool name, new protocol version) and keep the old one during a sunset window.
+3. Always make retries safe:
+   - timeouts
+   - idempotency keys for any side effects
+4. Always keep correlation intact:
+   - send your own `X-Request-Id`
+   - log OMNI's echoed `X-Request-Id` on every response
+
+## Migrate legacy MCP routes to hosted MCP (`/v1/mcp/*` -> `/mcp`)
+
+### Why migrate
+
+`/v1/mcp/tools` and `/v1/mcp/invoke` are maintained for compatibility, but hosted MCP (`/mcp`) is the canonical transport:
+
+- cleaner long-term contract (MCP JSON-RPC)
+- explicit compatibility policy and protocol negotiation
+- tighter parity with future SDKs and tooling
+
+### Mapping table
+
+| Legacy route | Hosted MCP equivalent |
+| --- | --- |
+| `GET /v1/mcp/tools` | `POST /mcp` with method `tools/list` |
+| `POST /v1/mcp/invoke` | `POST /mcp` with method `tools/call` |
+
+### Checklist
+
+1. Replace transport:
+   - from `https://api.omnibrief.app/v1/mcp/...`
+   - to `https://api.omnibrief.app/mcp`
+2. Implement `initialize` and `notifications/initialized`.
+3. Replace tool list call with `tools/list`.
+4. Replace tool invocation with `tools/call`.
+5. Ensure `Idempotency-Key` is present for every `tools/call`.
+6. Confirm scopes:
+   - `mcp.tools.read` for `tools/list`
+   - `mcp.invoke` for `tools/call`
+   - tool-specific scopes (example: `fred.read`)
+
+## Migrate unscoped keys to scoped keys
+
+During internal beta, OMNI may allow keys with an empty scope set (compatibility posture).
+
+You should migrate to scoped keys early so authorization issues are caught before public beta.
+
+Recommended minimum scopes for hosted MCP + FRED:
+
+```json
+["mcp.tools.read", "mcp.invoke", "fred.read"]
+```
+
+If you receive `403` with `error.code = insufficient_scope`, check:
+
+- your key’s scope list
+- the `Omni-Required-Scopes` response header (when present)
+
+## Version pinning migrations (`Omni-Version`)
+
+If your integration is sensitive to behavioral drift, pin a version:
+
+```http
+Omni-Version: 2026-02-18
+```
+
+When you update the pinned version:
+
+1. Read `/sources/client-api-changelog` for behavioral/breaking notes.
+2. Run your integration tests against the new pinned value.
+3. Roll forward gradually (per key / per environment) if you operate multiple keys.
+
