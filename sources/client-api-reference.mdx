@@ -5,6 +5,13 @@ description: Endpoint-by-endpoint reference for OMNI Client API v1 and hosted MC
 
 # Client API Reference
 
+This is the operational, endpoint-by-endpoint reference for the OMNI Client API.
+
+For schema-level request/response definitions (and interactive “try it” functionality), use:
+
+- `Client API (Generated)` in the left navigation
+- `/sources/client-api-openapi`
+
 ## Base URL
 
 Production:
@@ -21,32 +28,51 @@ All endpoints require an API key:
 Authorization: Bearer omni_live_...
 ```
 
-## Versioning and tracing headers
+## Global request headers
 
-- `Omni-Version` (optional request pin, echoed in responses)
-- `X-Request-Id` (optional inbound trace id, echoed in responses)
+| Header | Required | Used for |
+| --- | --- | --- |
+| `Authorization: Bearer ...` | Yes | Auth to Client API and hosted MCP transport. |
+| `Omni-Version: YYYY-MM-DD` | No | Behavior pinning during beta. Recommended for production integrations. |
+| `X-Request-Id: req_...` | No | End-to-end trace correlation (echoed back and included in errors). |
+| `Idempotency-Key: idem_...` | Sometimes | Required for mutating operations: `POST /v1/mcp/invoke` and hosted MCP `tools/call` over `POST /mcp`. |
+| `Content-Type: application/json` | Sometimes | Required when sending JSON bodies (`POST /v1/mcp/invoke`, `POST /mcp`). |
+
+## Global conventions (non-negotiable)
+
+- Errors: REST endpoints return a consistent `{"error": {...}}` envelope. See `/sources/client-api-errors`.
+- Scopes: scoped keys are strongly recommended. If a key is missing scopes, OMNI responds with `403` and `error.code=insufficient_scope` and may include `Omni-Required-Scopes` for fast diagnosis.
+- Billing: successful calls (`2xx/3xx`) are billable. Failures (`4xx/5xx`) are not billable. Idempotent replays are not double-billed. Read-only retries can be billed more than once if multiple attempts succeed. See `/sources/client-api-usage-billing` and `/sources/client-api-retries`.
 
 ## Endpoint catalog
 
-For schema-level request/response definitions, use the generated OpenAPI reference:
-
-- `/sources/client-api-openapi`
-- `Client API (Generated)` in the left navigation
-
-This page focuses on semantics, required headers, and migration posture.
-
 | Endpoint | Method | Scopes | Idempotency-Key | Purpose |
 | --- | --- | --- | --- |
-| `/v1/openapi.json` | GET | none | No | Canonical OpenAPI contract for v1. |
-| `/v1/health` | GET | none | No | Authenticated health and key sanity check. |
+| `/v1/openapi.json` | GET | (auth only) | No | Canonical OpenAPI contract for v1. |
+| `/v1/health` | GET | (auth only) | No | Authenticated health and key sanity check. |
 | `/v1/fred/search` | GET | `fred.read` | No | Search FRED series by query. |
 | `/v1/fred/series/{series_id}` | GET | `fred.read` | No | Fetch observations for one FRED series. |
 | `/v1/mcp/tools` | GET | `mcp.tools.read` | No | Legacy MCP-compatible tool catalog route. |
 | `/v1/mcp/invoke` | POST | `mcp.invoke` + tool scope | Yes | Legacy MCP-compatible tool invocation route. |
-| `/mcp` | POST | varies by method | Required for `tools/call` | Hosted MCP protocol endpoint (JSON-RPC over HTTP). |
-| `/mcp` | GET | none | No | Hosted MCP stream transport channel. |
-| `/mcp` | DELETE | none | No | Hosted MCP session close. |
-| `/sse` | GET | none | No | SSE compatibility transport endpoint. |
+| `/mcp` | POST | per method | Required for `tools/call` | Hosted MCP protocol endpoint (JSON-RPC over HTTP). |
+| `/mcp` | GET | (auth only) | No | Hosted MCP stream transport channel (internal beta; not required by most clients). |
+| `/mcp` | DELETE | (auth only) | No | Hosted MCP session close. |
+| `/sse` | GET | (auth only) | No | SSE compatibility transport endpoint. |
+
+## `GET /v1/openapi.json`
+
+Fetch the canonical OpenAPI contract for OMNI Client API v1.
+
+Common uses:
+
+- generate clients in Postman / Insomnia / Bruno
+- generate typed SDKs in your preferred language
+- diff contracts across versions in CI
+
+```bash
+curl "https://api.omnibrief.app/v1/openapi.json" \
+  -H "Authorization: Bearer omni_live_..."
+```
 
 ## `GET /v1/health`
 
@@ -56,6 +82,17 @@ Returns `object=health` with `status=ok` when auth succeeds.
 curl "https://api.omnibrief.app/v1/health" \
   -H "Authorization: Bearer omni_live_..." \
   -H "X-Request-Id: req_health_001"
+```
+
+Example response:
+
+```json
+{
+  "object": "health",
+  "status": "ok",
+  "request_id": "req_health_001",
+  "mode": "live"
+}
 ```
 
 ## `GET /v1/fred/search`
@@ -68,6 +105,26 @@ Query params:
 ```bash
 curl "https://api.omnibrief.app/v1/fred/search?q=unemployment&limit=5" \
   -H "Authorization: Bearer omni_live_..."
+```
+
+Example response (truncated):
+
+```json
+{
+  "object": "fred.search_result",
+  "data": {
+    "query": "unemployment",
+    "count": 2,
+    "results": [
+      {
+        "series_id": "UNRATE",
+        "title": "Unemployment Rate",
+        "frequency": "Monthly",
+        "units": "Percent"
+      }
+    ]
+  }
+}
 ```
 
 ## `GET /v1/fred/series/{series_id}`
@@ -83,11 +140,45 @@ curl "https://api.omnibrief.app/v1/fred/series/CPIAUCSL?limit=24" \
   -H "Authorization: Bearer omni_live_..."
 ```
 
+Example response (truncated):
+
+```json
+{
+  "object": "fred.series_result",
+  "data": {
+    "series_id": "CPIAUCSL",
+    "title": "Consumer Price Index for All Urban Consumers: All Items in U.S. City Average",
+    "frequency": "Monthly",
+    "observations": [
+      { "date": "2024-01-01", "value": 308.417 },
+      { "date": "2024-02-01", "value": 310.326 }
+    ]
+  }
+}
+```
+
 ## `GET /v1/mcp/tools` (legacy compatibility)
 
 ```bash
 curl "https://api.omnibrief.app/v1/mcp/tools" \
   -H "Authorization: Bearer omni_live_..."
+```
+
+Example response (truncated):
+
+```json
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "tool_fred_search",
+      "name": "fred.search",
+      "method": "POST",
+      "path": "/v1/fred/search",
+      "description": "Search Federal Reserve Economic Data (FRED) time series by keyword."
+    }
+  ]
+}
 ```
 
 ## `POST /v1/mcp/invoke` (legacy compatibility)
@@ -103,7 +194,29 @@ curl -X POST "https://api.omnibrief.app/v1/mcp/invoke" \
   }'
 ```
 
+Example response (shape only):
+
+```json
+{
+  "object": "mcp.tool_result",
+  "tool": "fred.search",
+  "data": {}
+}
+```
+
 ## Hosted MCP protocol (`POST /mcp`)
+
+Hosted MCP is the canonical transport for MCP clients. It is a JSON-RPC endpoint with a small number of methods.
+
+Required scopes by method:
+
+| JSON-RPC method | Required scopes |
+| --- | --- |
+| `initialize` | (auth only) |
+| `notifications/initialized` | (auth only) |
+| `tools/list` | `mcp.tools.read` |
+| `tools/call` | `mcp.invoke` + tool scope (example: `fred.read`) |
+| `ping` | (auth only) |
 
 ### `initialize`
 
@@ -116,6 +229,19 @@ curl -X POST "https://api.omnibrief.app/mcp" \
     "id": 1,
     "method": "initialize",
     "params": {"protocolVersion": "2025-11-05"}
+  }'
+```
+
+After `initialize`, send `notifications/initialized` (no `id`) before calling tools:
+
+```bash
+curl -X POST "https://api.omnibrief.app/mcp" \
+  -H "Authorization: Bearer omni_live_..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "notifications/initialized",
+    "params": {}
   }'
 ```
 
@@ -151,7 +277,11 @@ curl -X POST "https://api.omnibrief.app/mcp" \
   }'
 ```
 
-## SDK-style examples
+## `GET /sse` (compatibility transport)
+
+`/sse` exists for MCP clients that expect an SSE-style bootstrap. New integrations should prefer streamable HTTP via `/mcp`.
+
+## SDK-style examples (raw HTTP)
 
 ### TypeScript
 
