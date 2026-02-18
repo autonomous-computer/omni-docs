@@ -30,14 +30,25 @@ For production runbooks, see: `/sources/client-api-webhooks-ops`.
 
 ### Current (internal beta)
 
-- Best-effort delivery.
-- No automatic retry loop yet.
+- At-least-once intent with bounded retry for transient delivery failures.
+- Retry classes: network error (`status=0`), `408`, `429`, `5xx`.
+- Default retry profile: `3` attempts, exponential backoff from `500ms` with jitter.
+- Retry settings are exposed in internal beta diagnostics as `retryPolicy.maxAttempts` and `retryPolicy.baseDelayMs`.
 
 ### Target (public-beta-ready)
 
 - At-least-once delivery.
 - Exponential retry with bounded maximum attempts.
 - Idempotent consumer requirement on the receiver.
+
+## Delivery diagnostics (internal beta)
+
+Webhook delivery diagnostics include retry metadata:
+
+- `attempts`: number of delivery attempts made for an endpoint
+- `retryExhausted`: `true` when a retryable failure exhausted max attempts
+
+These fields are visible in internal-beta webhook diagnostics and should be included in operational triage.
 
 ## Event shape
 

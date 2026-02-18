@@ -130,6 +130,22 @@ After terminal retry failure:
 - route to DLQ with full metadata
 - require explicit operator replay decision
 
+## Current internal-beta retry behavior (live)
+
+For configured webhook endpoints, OMNI currently retries transient delivery failures with bounded attempts.
+
+- retryable classes: network failure (`status=0`), `408`, `429`, `5xx`
+- default max attempts: `3`
+- default base delay: `500ms`
+- backoff: exponential with jitter
+
+Delivery diagnostics expose:
+
+- `attempts`
+- `retryExhausted`
+
+Use these fields to separate transient failures from exhausted retries in incident triage.
+
 DLQ record minimum fields:
 
 - `event.id`, `event.type`
@@ -164,7 +180,7 @@ DLQ record minimum fields:
 
 ## Beta caveat
 
-In internal beta, signatures/retries may not be enabled for every account yet. Build receiver behavior as if full signing and at-least-once retries are already active.
+In internal beta, signing and retry posture may vary by account/environment configuration. Build receiver behavior as if full signing and at-least-once retries are always active.
 
 ## Production readiness checklist
 
