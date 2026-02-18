@@ -11,6 +11,31 @@ description: Versioning policy and change communication for OMNI Client API.
 - Optional request pin: `OMNI-Version` header
 - Response echoes selected `OMNI-Version`
 
+### `OMNI-Version` format
+
+`OMNI-Version` is a date-based pin:
+
+```text
+YYYY-MM-DD
+```
+
+Example:
+
+```http
+OMNI-Version: 2026-02-17
+```
+
+If you omit `OMNI-Version`, you get the current default behavior for `/v1`.
+
+## When to pin
+
+Pin when you want deterministic behavior across time, especially during beta when the API surface is evolving.
+
+Recommended posture:
+
+- Production integrations: always pin.
+- Prototypes: omit pinning, but expect drift.
+
 ## Change categories
 
 - Additive: new endpoints/fields, non-breaking
@@ -31,3 +56,7 @@ For each release:
 - Contract changes
 - Migration steps
 - Sunset dates (if applicable)
+
+## Related
+
+- [Client API changelog and migration policy](/sources/client-api-changelog)

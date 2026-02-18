@@ -5,6 +5,14 @@ description: Error taxonomy, codes, retry guidance, and JSON-RPC MCP error mappi
 
 # Client API Errors
 
+OMNI Client API uses a consistent, machine-readable error contract across REST (`/v1/...`) and hosted MCP (`/mcp`).
+
+Design your integration so it can:
+
+- Log `error.request_id` on every failure (and pass your own `X-Request-Id` for correlation).
+- Branch on `error.type` and `error.code` (stable programmatic values).
+- Retry only when the failure is transient (`rate_limit_error`, select `api_error`), and only with idempotency.
+
 ## REST error envelope
 
 ```json
@@ -18,28 +26,53 @@ description: Error taxonomy, codes, retry guidance, and JSON-RPC MCP error mappi
 }
 ```
 
-## Core REST error codes
+### REST error fields
 
-| `error.type` | `error.code` | HTTP | Meaning |
+| Field | Type | Notes |
+| --- | --- | --- |
+| `error.type` | string | High-level category. Stable. |
+| `error.code` | string | Specific cause. Stable. Use for programmatic handling and alerting. |
+| `error.message` | string | Human-readable explanation. Not stable across versions. Do not parse. |
+| `error.request_id` | string | Correlates with OMNI logs and support. Always include it when escalating. |
+
+### HTTP status mapping (REST)
+
+| `error.type` | Typical status codes |
+| --- | --- |
+| `invalid_request` | 400, 409 |
+| `auth_error` | 401, 403 |
+| `permission_error` | 403 |
+| `rate_limit_error` | 429 |
+| `api_error` | 500, 502, 503 |
+
+## Error codes (v1)
+
+The table below lists the codes currently used by the OMNI Client API v1 surface.
+
+If you encounter an uncatalogued code, treat it as `api_error` unless the HTTP status is `4xx` (input/auth issue), and include the `error.request_id` when reporting it.
+
+| `error.type` | `error.code` | HTTP | Retry? | Meaning | What to do |
 | --- | --- | --- | --- |
-| `auth_error` | `missing_api_key` | 401 | Authorization header missing or malformed. |
-| `auth_error` | `invalid_api_key` | 401 | API key invalid/revoked/unauthorized. |
-| `auth_error` | `auth_rejected` | 403 | Authentication rejected by control plane. |
-| `api_error` | `auth_backend_unavailable` | 503 | Auth/control-plane backend unavailable. |
-| `api_error` | `service_disabled` | 503 | Client API kill-switch enabled. |
-| `rate_limit_error` | `rate_limit_exceeded` | 429 | Burst or sustained limit exceeded. |
-| `invalid_request` | `missing_idempotency_key` | 400 | Idempotency-Key required for mutating route. |
-| `invalid_request` | `invalid_json` | 400 | Request body not valid JSON. |
-| `invalid_request` | `invalid_payload` | 400 | Body shape is invalid for endpoint. |
-| `invalid_request` | `invalid_parameter` | 400 | Type/value cannot be parsed (example: invalid int). |
-| `invalid_request` | `idempotency_conflict` | 409 | Same idempotency key is currently in-flight. |
-| `invalid_request` | `unknown_tool` | 400 | Tool does not exist in catalog. |
-| `invalid_request` | `missing_q` | 400 | Required `q` argument for `fred.search` missing. |
-| `invalid_request` | `missing_series_id` | 400 | Required `series_id` argument for `fred.series` missing. |
-| `invalid_request` | `fred_invalid_request` | 4xx | FRED request invalid. |
-| `api_error` | `fred_upstream_error` | 5xx | FRED upstream error. |
+| `auth_error` | `missing_api_key` | 401 | No | Authorization header missing or malformed. | Add `Authorization: Bearer omni_live_...`. |
+| `auth_error` | `invalid_api_key` | 401 | No | API key invalid/revoked/unauthorized. | Create/rotate a valid key and retry. |
+| `auth_error` | `auth_rejected` | 403 | No | Authentication rejected by control plane. | Confirm allowlist, key status, and account entitlements. |
+| `api_error` | `auth_backend_unavailable` | 503 | Yes | Auth/control-plane backend unavailable. | Retry with exponential backoff + jitter. |
+| `api_error` | `service_disabled` | 503 | Yes | Client API kill-switch enabled. | Retry later; check status/alerts. |
+| `rate_limit_error` | `rate_limit_exceeded` | 429 | Yes | Burst or sustained limit exceeded. | Honor `Retry-After` when present; otherwise backoff. |
+| `invalid_request` | `missing_idempotency_key` | 400 | No | `Idempotency-Key` required for mutating routes. | Generate a unique key per logical operation; retry safely. |
+| `invalid_request` | `invalid_json` | 400 | No | Body is not valid JSON. | Fix client serialization; send `Content-Type: application/json`. |
+| `invalid_request` | `invalid_payload` | 400 | No | Body shape invalid for endpoint. | Fix required fields/types. |
+| `invalid_request` | `invalid_parameter` | 400 | No | Query/body param cannot be parsed. | Fix parameter types/ranges. |
+| `invalid_request` | `idempotency_conflict` | 409 | Yes | Same idempotency key is currently in-flight. | Wait briefly and retry with the same key. |
+| `invalid_request` | `unknown_tool` | 400 | No | Tool does not exist in catalog. | Call `tools/list` and use an existing tool name. |
+| `invalid_request` | `missing_q` | 400 | No | `fred.search` missing required `q`. | Provide `q`. |
+| `invalid_request` | `missing_series_id` | 400 | No | `fred.series` missing required `series_id`. | Provide a series ID (example: `CPIAUCSL`). |
+| `invalid_request` | `fred_invalid_request` | 4xx | No | FRED request invalid. | Validate series ID and query parameters. |
+| `api_error` | `fred_upstream_error` | 5xx | Yes | FRED upstream error. | Retry with backoff; treat as transient. |
 
 ## Retry guidance
+
+Retries must be paired with idempotency for any operation that can create side effects (including `tools/call`).
 
 | Condition | Retry? | Guidance |
 | --- | --- | --- |
@@ -50,7 +83,7 @@ description: Error taxonomy, codes, retry guidance, and JSON-RPC MCP error mappi
 
 ## Hosted MCP JSON-RPC errors
 
-MCP errors are JSON-RPC compliant and additionally carry `omni_code` in `error.data`.
+Hosted MCP errors are JSON-RPC compliant and additionally carry `omni_code` in `error.data` so you can unify handling with REST.
 
 | JSON-RPC code | Meaning | Typical mapping |
 | --- | --- | --- |
@@ -61,6 +94,23 @@ MCP errors are JSON-RPC compliant and additionally carry `omni_code` in `error.d
 | `-32603` | Internal error | Unexpected internal failure. |
 | `-32001` | Auth/permission error | API key auth or permission failure. |
 | `-32002` | Rate limit error | Rate-limit exceeded. |
+
+### Example hosted MCP error
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 3,
+  "error": {
+    "code": -32001,
+    "message": "Unauthorized",
+    "data": {
+      "omni_code": "invalid_api_key",
+      "request_id": "req_123"
+    }
+  }
+}
+```
 
 ## Idempotency error behavior
 
