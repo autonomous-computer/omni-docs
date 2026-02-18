@@ -11,6 +11,29 @@ description: Release notes, compatibility guarantees, and migration windows for 
 2. Behavioral and breaking changes require explicit changelog entries.
 3. Deprecated endpoints must include replacement path and sunset date.
 
+## Deprecation and sunset windows
+
+OMNI uses a conservative deprecation posture for anything customer-facing.
+
+During **private beta**, we may move faster, but we still commit to:
+
+- Announcing behavioral and breaking changes in the changelog.
+- Providing a migration path or compatibility shim where feasible.
+- Never removing an endpoint without a documented replacement.
+
+For **public beta**, the default target is:
+
+- 30+ days notice for breaking changes
+- 90+ days notice for endpoint removal
+
+## What counts as a breaking change
+
+- Removing a response field that was documented.
+- Changing a field type (string → object, number → string).
+- Changing authentication requirements.
+- Changing error `type`/`code` taxonomy.
+- Changing idempotency requirements for an existing method.
+
 ## Changelog template
 
 Each release entry includes:
@@ -20,6 +43,11 @@ Each release entry includes:
 - Change category (`additive`, `behavioral`, `breaking`)
 - Migration steps
 - Sunset date (if deprecating)
+
+## How to use this changelog
+
+- If you pin `OMNI-Version`, you can adopt changes on your own schedule.
+- If you do not pin, you should subscribe to changelog updates and treat them as part of your upgrade process.
 
 ## Current release log
 

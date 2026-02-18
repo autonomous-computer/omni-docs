@@ -76,45 +76,48 @@ Hosted MCP tool behavior maps to OMNI Client API semantics:
 
 During private beta, OMNI provides first-party adapters to make MCP integration straightforward.
 
+These adapters are not published to npm/PyPI yet. For internal/private beta they are distributed as GitHub Release artifacts from the `omni-system` repo, gated by live conformance against `https://api.omnibrief.app/mcp`.
+
 ### JavaScript (`@omni/omni-mcp-js`)
 
-Install:
+Download and install (internal beta):
 
 ```bash
-pnpm add @omni/omni-mcp-js
+gh release download mcp-sdks-v0.1.0-internal-beta \
+  --repo autonomous-computer/omni-system \
+  --pattern "*.tgz"
+
+pnpm add ./*.tgz
 ```
 
 Usage:
 
 ```ts
-import { OmniMcpClient, OmniMcpError } from "@omni/omni-mcp-js";
+import crypto from "node:crypto";
+import { OmniMcpClient } from "@omni/omni-mcp-js";
 
 const client = new OmniMcpClient({
-  apiKey: process.env.OMNI_API_KEY!,
+  apiKey: process.env.OMNI_CLIENT_API_KEY!,
   // baseUrl: "https://api.omnibrief.app",
-  // omniVersion: "2026-02-17",
 });
 
 await client.initialize();
 
-try {
-  const result = await client.callTool("fred.search", { q: "inflation", limit: 5 });
-  console.log(result.structuredContent);
-} catch (err) {
-  if (err instanceof OmniMcpError) {
-    // Use requestId to correlate with OMNI logs / support.
-    console.error(err.kind, err.status, err.requestId, err.message);
-  }
-  throw err;
-}
+const idempotencyKey = `idem_${crypto.randomUUID()}`;
+const result = await client.callTool("fred.search", { q: "inflation", limit: 5 }, idempotencyKey);
+console.log(result.structuredContent);
 ```
 
 ### Python (`omni-mcp-py`)
 
-Install:
+Download and install (internal beta):
 
 ```bash
-pip install omni-mcp-py
+gh release download mcp-sdks-v0.1.0-internal-beta \
+  --repo autonomous-computer/omni-system \
+  --pattern "*.whl"
+
+pip install ./*.whl
 ```
 
 Usage:
@@ -130,6 +133,7 @@ try:
     result = client.call_tool(
         name="fred.search",
         arguments={"q": "inflation", "limit": 5},
+        idempotency_key="idem_example_001",
     )
     print(result.get("structuredContent"))
 except OmniMCPError as exc:

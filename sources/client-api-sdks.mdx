@@ -1,0 +1,87 @@
+---
+title: Client API SDKs
+description: Official SDKs, installation paths, and versioning policy for OMNI Client API and hosted MCP.
+---
+
+# Client API SDKs
+
+OMNI’s SDK story is intentionally SDK-first, but the packages themselves are currently **internal/private beta**.
+
+## What exists today
+
+- Hosted MCP SDK (JavaScript): `@omni/omni-mcp-js`
+- Hosted MCP SDK (Python): `omni-mcp-py`
+- REST Client API: use standard HTTP clients (first-party REST SDKs are planned for v1.5)
+
+## Internal beta distribution model
+
+During private beta, SDKs are distributed as GitHub Release artifacts from the `omni-system` repo.
+
+Release tags follow:
+
+```text
+mcp-sdks-v<version>
+```
+
+The release workflow is gated by live conformance against `https://api.omnibrief.app/mcp`.
+
+## Install (internal beta)
+
+JavaScript:
+
+```bash
+gh release download mcp-sdks-v0.1.0-internal-beta \
+  --repo autonomous-computer/omni-system \
+  --pattern "*.tgz"
+
+pnpm add ./*.tgz
+```
+
+Python:
+
+```bash
+gh release download mcp-sdks-v0.1.0-internal-beta \
+  --repo autonomous-computer/omni-system \
+  --pattern "*.whl"
+
+pip install ./*.whl
+```
+
+## Quickstart: hosted MCP (JavaScript)
+
+```ts
+import crypto from "node:crypto";
+import { OmniMcpClient } from "@omni/omni-mcp-js";
+
+const client = new OmniMcpClient({ apiKey: process.env.OMNI_CLIENT_API_KEY! });
+await client.initialize();
+
+const result = await client.callTool(
+  "fred.search",
+  { q: "inflation", limit: 3 },
+  `idem_${crypto.randomUUID()}`
+);
+
+console.log(result.structuredContent);
+```
+
+## Quickstart: hosted MCP (Python)
+
+```python
+from omni_mcp_py import OmniMCPClient
+
+client = OmniMCPClient(api_key="omni_live_...")
+client.initialize()
+
+result = client.call_tool(
+    name="fred.search",
+    arguments={"q": "inflation", "limit": 3},
+    idempotency_key="idem_example_001",
+)
+print(result.get("structuredContent"))
+```
+
+## Roadmap
+
+- Publish SDKs to npm/PyPI for public beta, with a stable compatibility contract.
+- Add REST-first SDKs (TS/Python/Go) aligned to `/v1/openapi.json`.

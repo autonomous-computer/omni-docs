@@ -5,7 +5,16 @@ description: Event model, signatures, retries, and operational guidance for OMNI
 
 # Client API Webhooks
 
-Webhook infrastructure is built for public-beta readiness and is currently gated while the Client API is in private beta.
+Webhook infrastructure is designed for public-beta readiness but is currently gated while the Client API remains in private beta.
+
+This page documents the contract and operational guidance so you can build and test your receiver now.
+
+## Summary: what you must do
+
+1. Verify signatures using the raw request body.
+2. Enforce a replay window using the included timestamp.
+3. Treat delivery as at-least-once: dedupe using `event.id`.
+4. Return `2xx` quickly and process asynchronously.
 
 ## Event families
 
@@ -14,26 +23,133 @@ Webhook infrastructure is built for public-beta readiness and is currently gated
 - `invoice.payment_failed`
 - `api_key.revoked`
 
-## Delivery model
+## Delivery model (operational contract)
 
 1. At-least-once delivery.
 2. Exponential retry with bounded maximum attempts.
 3. Idempotent consumer requirement on webhook receiver.
 
+## Event shape
+
+Webhook POSTs carry a JSON payload with this high-level shape:
+
+```json
+{
+  "id": "evt_...",
+  "type": "invoice.finalized",
+  "created": 1739750400,
+  "livemode": true,
+  "data": {
+    "object": { }
+  },
+  "request": {
+    "id": "req_...",
+    "idempotency_key": "idem_..."
+  }
+}
+```
+
 ## Signature verification
 
-Each webhook request includes:
+Every webhook request includes:
 
 - `OMNI-Signature`
 - `OMNI-Timestamp`
 - `X-Request-Id`
 
-Recommended verification steps:
+### Signing payload
+
+Compute the signature over:
+
+```text
+${OMNI-Timestamp}.${raw_request_body}
+```
+
+Where:
+
+- `OMNI-Timestamp` is the exact header value (string).
+- `raw_request_body` is the exact raw bytes received over HTTP (before JSON parsing).
+
+### Algorithm
+
+- HMAC-SHA256
+- Secret: your webhook signing secret
+- Output format: lowercase hex digest
+
+### Verification steps
 
 1. Reject events older than your replay window.
 2. Recompute HMAC from timestamp + raw request body.
 3. Constant-time compare against `OMNI-Signature`.
 4. Persist event ID for deduplication.
+
+### TypeScript (Node.js) example
+
+```ts
+import crypto from "node:crypto";
+
+function timingSafeEqualHex(a: string, b: string) {
+  const ab = Buffer.from(a, "hex");
+  const bb = Buffer.from(b, "hex");
+  if (ab.length !== bb.length) return false;
+  return crypto.timingSafeEqual(ab, bb);
+}
+
+export function verifyOmniWebhookSignature(opts: {
+  secret: string;
+  timestamp: string;
+  signature: string;
+  rawBody: Buffer;
+  toleranceSeconds?: number;
+}) {
+  const toleranceSeconds = opts.toleranceSeconds ?? 5 * 60;
+  const ts = Number(opts.timestamp);
+  if (!Number.isFinite(ts)) throw new Error("invalid OMNI-Timestamp");
+  const ageSeconds = Math.abs(Date.now() / 1000 - ts);
+  if (ageSeconds > toleranceSeconds) throw new Error("event outside replay window");
+
+  const payload = Buffer.concat([Buffer.from(`${opts.timestamp}.`), opts.rawBody]);
+  const expected = crypto.createHmac("sha256", opts.secret).update(payload).digest("hex");
+  if (!timingSafeEqualHex(expected, opts.signature)) throw new Error("invalid signature");
+}
+```
+
+### Python example
+
+```python
+import hashlib
+import hmac
+import time
+
+
+def verify_omni_webhook_signature(*, secret: str, timestamp: str, signature: str, raw_body: bytes, tolerance_seconds: int = 300) -> None:
+    try:
+        ts = int(timestamp)
+    except Exception as exc:
+        raise ValueError("invalid OMNI-Timestamp") from exc
+
+    age = abs(int(time.time()) - ts)
+    if age > tolerance_seconds:
+        raise ValueError("event outside replay window")
+
+    payload = (timestamp + ".").encode("utf-8") + raw_body
+    expected = hmac.new(secret.encode("utf-8"), payload, hashlib.sha256).hexdigest()
+    if not hmac.compare_digest(expected, signature):
+        raise ValueError("invalid signature")
+```
+
+### Go example
+
+```go
+mac := hmac.New(sha256.New, []byte(secret))
+mac.Write([]byte(timestamp))
+mac.Write([]byte("."))
+mac.Write(rawBody)
+expected := hex.EncodeToString(mac.Sum(nil))
+if !hmac.Equal([]byte(expected), []byte(signature)) {
+  return errors.New("invalid signature")
+}
+```
 
 ## Replay protection
 
@@ -46,6 +162,13 @@ Recommended verification steps:
 1. `4xx` responses are treated as terminal (configuration/payload error).
 2. `5xx` responses are retried automatically.
 3. Repeated failures should trigger runbook escalation and delivery diagnostics.
+
+## Recommended receiver behavior
+
+- Acknowledge fast: respond `2xx` quickly and queue work to background processing.
+- Dedupe: use `event.id` as your primary dedupe key.
+- Handle out-of-order: do not assume event ordering.
+- Use request IDs: log `X-Request-Id` and any `event.request.id` for correlation.
 
 ## Beta status
 
