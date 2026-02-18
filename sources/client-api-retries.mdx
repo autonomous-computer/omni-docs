@@ -11,11 +11,15 @@ OMNI Client API is designed to be safe to integrate with standard production ret
 - exponential backoff + jitter
 - idempotency for operations that can create side effects
 
-This page is written to be prescriptive. If you follow it, you should not double-bill, double-invoke tools, or create duplicate work on retries.
+This page is written to be prescriptive. If you follow it, you should not double-invoke tools or create duplicate work on retries.
+
+Billing note: retries of **billable read-only calls** can still be billed more than once if multiple attempts succeed.
 
 ## What is safe to retry
 
-### Always safe (read-only)
+### Safe from side effects (read-only)
+
+These calls do not create server-side side effects, but **each successful HTTP response is still billable**. If you retry and multiple attempts succeed, you should expect multiple billable units.
 
 - `GET /v1/health`
 - `GET /v1/openapi.json`
@@ -67,7 +71,8 @@ If you retry these without idempotency, you are asking for duplicate work.
 
 - Successful calls (`2xx/3xx`) are billable.
 - Failed calls (`4xx/5xx`) are non-billable.
-- Idempotent replays are not double-billed.
+- Idempotent replays (same `Idempotency-Key` + same payload) that return a cached result are not billed again.
+- Read-only retries (`GET` and hosted `tools/list`) can be billed more than once if multiple attempts succeed.
 
 ## Example: TypeScript fetch with retries
 
@@ -143,4 +148,3 @@ def omni_get(url: str, *, headers: dict, params: dict | None = None, timeout_sec
 
     raise RuntimeError("unreachable")
 ```
-

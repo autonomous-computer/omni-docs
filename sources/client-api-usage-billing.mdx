@@ -9,7 +9,7 @@ OMNI Client API is designed to support usage-based billing with Stripe-grade tru
 
 - Bill only successful operations (`2xx/3xx`)
 - Do not bill failures (`4xx/5xx`)
-- Do not double-bill idempotent replays
+- Do not intentionally double-bill cached idempotency replays (for endpoints that support idempotency)
 
 This page documents the current internal beta behavior and the control plane endpoints you can use to audit usage.
 
@@ -34,7 +34,8 @@ Idempotency is required for tool execution:
 Billing rules:
 
 - A successful first attempt is billable.
-- Retries that replay the cached result are **not** billed again.
+- If an idempotent retry returns a cached replay response, it is **not** billed again.
+- For read-only calls (`GET` and hosted `tools/list`), each successful HTTP response is billable. Retries can be billed more than once if multiple attempts succeed.
 
 ## Internal beta billing mode
 
@@ -138,4 +139,3 @@ This gives you a stable join key across:
 - your logs
 - OMNI support investigations
 - usage ledger rows
-

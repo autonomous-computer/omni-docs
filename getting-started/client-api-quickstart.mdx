@@ -167,7 +167,17 @@ curl -X POST "https://api.omnibrief.app/mcp" \
     "params": { "protocolVersion": "2025-11-05" }
   }'
 
-# 2) tools/list
+# 2) notifications/initialized (JSON-RPC notification, no id)
+curl -X POST "https://api.omnibrief.app/mcp" \
+  -H "Authorization: Bearer omni_live_..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "notifications/initialized",
+    "params": {}
+  }'
+
+# 3) tools/list
 curl -X POST "https://api.omnibrief.app/mcp" \
   -H "Authorization: Bearer omni_live_..." \
   -H "Content-Type: application/json" \
@@ -178,7 +188,7 @@ curl -X POST "https://api.omnibrief.app/mcp" \
     "params": {}
   }'
 
-# 3) tools/call (Idempotency-Key required)
+# 4) tools/call (Idempotency-Key required)
 curl -X POST "https://api.omnibrief.app/mcp" \
   -H "Authorization: Bearer omni_live_..." \
   -H "Idempotency-Key: idem_mcp_call_001" \

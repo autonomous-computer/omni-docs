@@ -99,11 +99,7 @@ Notes:
 
 ## Scope catalog
 
-| Scope | What it allows | Used by |
-| --- | --- | --- |
-| `fred.read` | Read access to FRED REST endpoints and FRED MCP tools. | `GET /v1/fred/*`, `tools/call` for `fred.*`, `POST /v1/mcp/invoke` with `fred.*` tool ids |
-| `mcp.tools.read` | Read the tool catalog. | `GET /v1/mcp/tools`, hosted `tools/list` over `POST /mcp` |
-| `mcp.invoke` | Invoke tools. | `POST /v1/mcp/invoke`, hosted `tools/call` over `POST /mcp` |
+Canonical scope definitions live in `/sources/client-api-auth#scope-catalog-v1` (single source of truth to prevent drift).
 
 ## Recommended scope bundles
 
@@ -128,4 +124,3 @@ Check:
 
 - your key’s scopes
 - the `Omni-Required-Scopes` response header (when present)
-
