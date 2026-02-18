@@ -74,5 +74,69 @@ Hosted MCP tool behavior maps to OMNI Client API semantics:
 
 ## Official adapters (internal beta)
 
-- JavaScript: `omni-system/sdk/omni-mcp-js`
-- Python: `omni-system/sdk/omni-mcp-py`
+During internal beta, we ship first-party adapters to make MCP integration trivial.
+
+### JavaScript (`@omni/omni-mcp-js`)
+
+Install:
+
+```bash
+pnpm add @omni/omni-mcp-js
+```
+
+Usage:
+
+```ts
+import { OmniMcpClient, OmniMcpError } from "@omni/omni-mcp-js";
+
+const client = new OmniMcpClient({
+  apiKey: process.env.OMNI_API_KEY!,
+  // baseUrl: "https://api.omnibrief.app",
+  // omniVersion: "2026-02-17",
+});
+
+await client.initialize();
+
+try {
+  const result = await client.callTool("fred.search", { q: "inflation", limit: 5 });
+  console.log(result.structuredContent);
+} catch (err) {
+  if (err instanceof OmniMcpError) {
+    // Use requestId to correlate with OMNI logs / support.
+    console.error(err.kind, err.status, err.requestId, err.message);
+  }
+  throw err;
+}
+```
+
+### Python (`omni-mcp-py`)
+
+Install:
+
+```bash
+pip install omni-mcp-py
+```
+
+Usage:
+
+```python
+from omni_mcp_py import OmniMCPClient, OmniMCPError
+
+client = OmniMCPClient(api_key="omni_live_...")
+
+client.initialize()
+
+try:
+    result = client.call_tool(
+        name="fred.search",
+        arguments={"q": "inflation", "limit": 5},
+    )
+    print(result.get("structuredContent"))
+except OmniMCPError as exc:
+    print(exc.kind, exc.status_code, exc.request_id, str(exc))
+    raise
+```
+
+### Publication status
+
+Internal beta is allowlisted and these adapters may not be publicly published yet. The contract and examples are written to be public-beta-ready.
