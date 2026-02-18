@@ -80,12 +80,15 @@ If you encounter an uncatalogued code, treat it as `api_error` unless the HTTP s
 | `invalid_request` | `invalid_json` | 400 | No | Body is not valid JSON. | Fix client serialization; send `Content-Type: application/json`. |
 | `invalid_request` | `invalid_payload` | 400 | No | Body shape invalid for endpoint. | Fix required fields/types. |
 | `invalid_request` | `invalid_parameter` | 400 | No | Query/body param cannot be parsed. | Fix parameter types/ranges. |
+| `invalid_request` | `not_found` | 404 | No | Route does not exist. | Check the path; use `GET /v1/openapi.json` to discover routes. |
+| `invalid_request` | `method_not_allowed` | 405 | No | Wrong HTTP method for the route. | Use the method documented in the generated reference. |
 | `invalid_request` | `idempotency_conflict` | 409 | Yes | Same idempotency key is currently in-flight. | Wait briefly and retry with the same key. |
 | `invalid_request` | `unknown_tool` | 400 | No | Tool does not exist in catalog. | Call `tools/list` and use an existing tool name. |
 | `invalid_request` | `missing_q` | 400 | No | `fred.search` missing required `q`. | Provide `q`. |
 | `invalid_request` | `missing_series_id` | 400 | No | `fred.series` missing required `series_id`. | Provide a series ID (example: `CPIAUCSL`). |
 | `invalid_request` | `fred_invalid_request` | 4xx | No | FRED request invalid. | Validate series ID and query parameters. |
 | `api_error` | `fred_upstream_error` | 5xx | Yes | FRED upstream error. | Retry with backoff; treat as transient. |
+| `api_error` | `internal_error` | 500 | Yes | Unexpected server failure. | Retry with backoff; if persistent, report `error.request_id`. |
 
 ## Recommended error-handling pattern
 

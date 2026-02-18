@@ -17,6 +17,11 @@ Compatibility endpoint:
 https://api.omnibrief.app/sse
 ```
 
+If you want a compact endpoint catalog, see:
+
+- `/sources/client-api-reference`
+- `/sources/client-api-endpoints`
+
 ## Transport model
 
 - Primary: streamable HTTP (`/mcp`)
@@ -36,6 +41,12 @@ For `tools/call`, include:
 Idempotency-Key: <unique-per-call>
 ```
 
+Recommended:
+
+```http
+X-Request-Id: req_...
+```
+
 ## Supported methods
 
 | Method | Description |
@@ -52,6 +63,124 @@ Idempotency-Key: <unique-per-call>
 2. `notifications/initialized`
 3. `tools/list`
 4. `tools/call`
+
+## JSON-RPC request/response shape
+
+Requests are JSON:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/list",
+  "params": {}
+}
+```
+
+Responses are either:
+
+- a `result` object, or
+- an `error` object
+
+OMNI always includes an HTTP `X-Request-Id` header on responses, and hosted MCP errors also include `error.data.request_id` for correlation.
+
+## `initialize`
+
+Minimal example:
+
+```bash
+curl -X POST "https://api.omnibrief.app/mcp" \
+  -H "Authorization: Bearer omni_live_..." \
+  -H "Content-Type: application/json" \
+  -H "X-Request-Id: req_mcp_init_001" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "initialize",
+    "params": {
+      "protocolVersion": "2025-11-05",
+      "clientInfo": {"name": "example", "version": "0.0.1"},
+      "capabilities": {}
+    }
+  }'
+```
+
+Notes:
+
+- OMNI may select a different protocol version if you request an unsupported one; see `/sources/client-api-mcp-compatibility`.
+- After `initialize`, send `notifications/initialized` (no `id`) before tool calls.
+
+## `tools/list`
+
+```bash
+curl -X POST "https://api.omnibrief.app/mcp" \
+  -H "Authorization: Bearer omni_live_..." \
+  -H "Content-Type: application/json" \
+  -H "X-Request-Id: req_mcp_tools_001" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 2,
+    "method": "tools/list",
+    "params": {}
+  }'
+```
+
+Typical required scope:
+
+```text
+mcp.tools.read
+```
+
+## `tools/call`
+
+`tools/call` is side-effecting in the general case and requires idempotency.
+
+```bash
+curl -X POST "https://api.omnibrief.app/mcp" \
+  -H "Authorization: Bearer omni_live_..." \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: idem_mcp_call_001" \
+  -H "X-Request-Id: req_mcp_call_001" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 3,
+    "method": "tools/call",
+    "params": {
+      "name": "fred.search",
+      "arguments": { "q": "inflation", "limit": 5 }
+    }
+  }'
+```
+
+Required scopes:
+
+- `mcp.invoke`
+- tool-specific scope (example: `fred.read`)
+
+If you retry a `tools/call` due to timeout or transient failure, retry with the **same** `Idempotency-Key`.
+
+## Error behavior (hosted MCP)
+
+Hosted MCP errors are JSON-RPC compliant and include `omni_code` for mapping into REST-style error handling.
+
+Example (shape only):
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 3,
+  "error": {
+    "code": -32001,
+    "message": "Unauthorized",
+    "data": {
+      "omni_code": "invalid_api_key",
+      "request_id": "req_123"
+    }
+  }
+}
+```
+
+See `/sources/client-api-errors` for JSON-RPC code mappings and retry guidance.
 
 ## Tool parity policy
 
