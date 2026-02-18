@@ -1,0 +1,150 @@
+---
+title: Client API Retries and Timeouts
+description: Stripe-grade retry + idempotency guidance for OMNI Client API REST and hosted MCP.
+---
+
+# Client API Retries and Timeouts
+
+OMNI Client API is designed to be safe to integrate with standard production retry behavior, but **only** if you pair retries with:
+
+- request timeouts
+- exponential backoff + jitter
+- idempotency for operations that can create side effects
+
+This page is written to be prescriptive. If you follow it, you should not double-invoke tools or create duplicate work on retries.
+
+Billing note: retries of **billable read-only calls** can still be billed more than once if multiple attempts succeed.
+
+## What is safe to retry
+
+### Safe from side effects (read-only)
+
+These calls do not create server-side side effects, but **each successful HTTP response is still billable**. If you retry and multiple attempts succeed, you should expect multiple billable units.
+
+- `GET /v1/health`
+- `GET /v1/openapi.json`
+- `GET /v1/fred/*`
+- `tools/list` over `POST /mcp`
+- `GET /v1/mcp/tools` (legacy compatibility)
+
+### Safe only with idempotency
+
+These operations require an `Idempotency-Key` so OMNI can dedupe and replay responses:
+
+- `POST /v1/mcp/invoke`
+- `tools/call` over `POST /mcp`
+
+If you retry these without idempotency, you are asking for duplicate work.
+
+## Status codes and retry guidance
+
+| Status | Meaning | Retry? | Notes |
+| --- | --- | --- | --- |
+| `400` | invalid request | No | Fix the request payload/params. |
+| `401` | invalid/missing key | No | Create/rotate key. |
+| `403` | not allowed | No | Fix scopes / allowlist / entitlements. |
+| `409` | idempotency conflict | Yes | Another request with the same idempotency key is in-flight; retry with the same key. |
+| `429` | rate limited | Yes | Honor `Retry-After` when present; otherwise backoff. |
+| `5xx` | server error | Yes | Treat as transient; backoff + jitter. |
+
+## Recommended client defaults
+
+- Timeout: `20s` per request.
+- Retry attempts:
+  - `GET`: up to `3` attempts.
+  - Idempotent `POST`: up to `3` attempts with the same `Idempotency-Key`.
+- Backoff:
+  - exponential (`250ms`, `500ms`, `1s`, `2s`, ...)
+  - add jitter (randomize by 0-100%)
+- Stop retrying immediately on:
+  - `400`, `401`, `403` (except `409` and `429`)
+
+## Idempotency details
+
+### Requirements
+
+- Generate a unique `Idempotency-Key` per logical operation.
+- Reuse the same `Idempotency-Key` across retries of that operation.
+- Keep the request payload stable across retries. If you change the payload, it is a new operation.
+
+### Billing behavior
+
+- Successful calls (`2xx/3xx`) are billable.
+- Failed calls (`4xx/5xx`) are non-billable.
+- Idempotent replays (same `Idempotency-Key` + same payload) that return a cached result are not billed again.
+- Read-only retries (`GET` and hosted `tools/list`) can be billed more than once if multiple attempts succeed.
+
+## Example: TypeScript fetch with retries
+
+```ts
+function sleep(ms: number) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
+function jitter(ms: number) {
+  return Math.floor(ms * (0.5 + Math.random()));
+}
+
+export async function omniFetch(input: RequestInfo, init: RequestInit & { timeoutMs?: number } = {}) {
+  const timeoutMs = init.timeoutMs ?? 20_000;
+  const maxAttempts = 3;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    const controller = new AbortController();
+    const t = setTimeout(() => controller.abort(), timeoutMs);
+
+    try {
+      const res = await fetch(input, { ...init, signal: controller.signal });
+      if (res.status < 500 && res.status !== 429 && res.status !== 409) return res;
+
+      const retryAfter = res.headers.get("retry-after");
+      const delayMs = retryAfter ? Number(retryAfter) * 1000 : jitter(250 * 2 ** (attempt - 1));
+      if (attempt === maxAttempts) return res;
+      await sleep(delayMs);
+      continue;
+    } catch (err) {
+      if (attempt === maxAttempts) throw err;
+      await sleep(jitter(250 * 2 ** (attempt - 1)));
+      continue;
+    } finally {
+      clearTimeout(t);
+    }
+  }
+
+  throw new Error("unreachable");
+}
+```
+
+## Example: Python requests with retries
+
+```python
+import random
+import time
+
+import requests
+
+
+def jitter(seconds: float) -> float:
+    return seconds * (0.5 + random.random())
+
+
+def omni_get(url: str, *, headers: dict, params: dict | None = None, timeout_seconds: int = 20) -> requests.Response:
+    max_attempts = 3
+    for attempt in range(1, max_attempts + 1):
+        try:
+            res = requests.get(url, headers=headers, params=params, timeout=timeout_seconds)
+            if res.status_code < 500 and res.status_code not in (409, 429):
+                return res
+
+            retry_after = res.headers.get("Retry-After")
+            delay = float(retry_after) if retry_after else jitter(0.25 * (2 ** (attempt - 1)))
+            if attempt == max_attempts:
+                return res
+            time.sleep(delay)
+        except requests.RequestException:
+            if attempt == max_attempts:
+                raise
+            time.sleep(jitter(0.25 * (2 ** (attempt - 1))))
+
+    raise RuntimeError("unreachable")
+```

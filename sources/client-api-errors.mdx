@@ -56,8 +56,9 @@ If you encounter an uncatalogued code, treat it as `api_error` unless the HTTP s
 | `auth_error` | `missing_api_key` | 401 | No | Authorization header missing or malformed. | Add `Authorization: Bearer omni_live_...`. |
 | `auth_error` | `invalid_api_key` | 401 | No | API key invalid/revoked/unauthorized. | Create/rotate a valid key and retry. |
 | `auth_error` | `auth_rejected` | 403 | No | Authentication rejected by control plane. | Confirm allowlist, key status, and account entitlements. |
-| `permission_error` | `insufficient_scope` | 403 | No | API key is missing required scopes for the operation. | Create a key with the required scopes (check `Omni-Required-Scopes` when present). |
+| `permission_error` | `insufficient_scope` | 403 | No | API key is missing required scopes for the operation. | Create a key with the required scopes (check `Omni-Required-Scopes`). |
 | `api_error` | `auth_backend_unavailable` | 503 | Yes | Auth/control-plane backend unavailable. | Retry with exponential backoff + jitter. |
+| `api_error` | `invalid_control_plane_response` | 503 | Yes | Control plane returned an incomplete or malformed key resolution payload. | Retry briefly; if persistent, report with `error.request_id`. |
 | `api_error` | `service_disabled` | 503 | Yes | Client API kill-switch enabled. | Retry later; check status/alerts. |
 | `rate_limit_error` | `rate_limit_exceeded` | 429 | Yes | Burst or sustained limit exceeded. | Honor `Retry-After` when present; otherwise backoff. |
 | `invalid_request` | `missing_idempotency_key` | 400 | No | `Idempotency-Key` required for mutating routes. | Generate a unique key per logical operation; retry safely. |

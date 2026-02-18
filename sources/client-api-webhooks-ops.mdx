@@ -1,0 +1,115 @@
+---
+title: Webhook Operations Handbook
+description: Stripe-grade operational guidance for running OMNI Client API webhooks in production.
+---
+
+# Webhook Operations Handbook
+
+This page is the operational companion to `/sources/client-api-webhooks`, which defines the webhook **contract**.
+
+If you run webhooks in production, treat the guidance below as non-optional.
+
+## Goals
+
+Your receiver must be:
+
+- secure (signature verification when enabled)
+- replay-resistant (timestamp window)
+- idempotent (dedupe by `event.id`)
+- fast (ack quickly, do work asynchronously)
+- observable (metrics + request IDs)
+
+## Receiver architecture (recommended)
+
+1. Ingress handler:
+   - reads headers
+   - reads raw body bytes
+   - verifies signature (if present)
+   - enforces timestamp tolerance
+2. Durable queue:
+   - enqueue the event payload + metadata
+3. Immediate ACK:
+   - return `2xx` once enqueued
+4. Worker:
+   - dedupe by `event.id`
+   - process business logic
+   - record success/failure
+
+## HTTP response rules
+
+- Return `2xx` when you have durably accepted the event.
+- Return `4xx` only for permanent failures (misconfiguration, invalid secret, invalid payload shape).
+- Return `5xx` only when you want OMNI to treat the delivery as transient failure.
+
+## Dedupe strategy
+
+Use `event.id` as the dedupe key.
+
+Recommendations:
+
+- store processed IDs for at least 7 days
+- store payload hash to detect unexpected duplicates with different bodies
+
+## Observability
+
+Log and emit metrics for:
+
+- `X-Request-Id` (ingress request)
+- `event.id`
+- `event.type`
+- `event.requestId` (originating OMNI request, when present)
+- signature verified? (boolean)
+- handler latency (p50/p95)
+
+## Internal beta caveats
+
+During internal beta:
+
+- OMNI may deliver webhook events without a signature if signing is not enabled for your account/environment.
+- Automatic retry loops may not be enabled yet.
+
+Build your receiver as if retries already exist. When retries turn on, you should not need to change your code.
+
+## Common failure modes (and fixes)
+
+### Signature verification fails intermittently
+
+Almost always caused by verifying against a parsed JSON body instead of the raw bytes.
+
+Fix:
+
+- verify against `raw_body` exactly as received over HTTP
+
+### Duplicate processing
+
+Caused by missing dedupe or deduping on `X-Request-Id` instead of `event.id`.
+
+Fix:
+
+- dedupe on `event.id`
+
+### Slow ACKs and timeouts
+
+Caused by doing business logic synchronously in the webhook handler.
+
+Fix:
+
+- enqueue, then ACK
+
+## Practical framework tips
+
+### Express / Node
+
+- Use a raw body middleware for the webhook route (do not use `express.json()` directly for this route).
+- Capture the raw bytes and pass them into signature verification.
+
+### Next.js route handlers
+
+- Read the raw request body as `Buffer` / `Uint8Array`.
+- Verify before calling `request.json()` if you need to.
+
+### FastAPI
+
+- Use `await request.body()` to get raw bytes.
+- Verify signature before parsing JSON.
+

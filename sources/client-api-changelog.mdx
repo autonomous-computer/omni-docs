@@ -51,6 +51,15 @@ Each release entry includes:
 
 ## Current release log
 
+## 2026-02-18
+
+### Fixed
+
+- Scope enforcement parity across hosted MCP (`/mcp`) and legacy MCP compatibility routes (`/v1/mcp/*`).
+- `tools/list` and `GET /v1/mcp/tools` require `mcp.tools.read` (for scoped keys).
+- `tools/call` and `POST /v1/mcp/invoke` require `mcp.invoke` (for scoped keys), in addition to any tool-specific scope (example: `fred.read`).
+- `GET /v1/openapi.json` no longer requires `mcp.invoke` (auth-only schema discovery).
+
 ## 2026-02-17
 
 ### Added
