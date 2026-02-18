@@ -5,7 +5,7 @@ description: Event model, signatures, retries, and operational guidance for OMNI
 
 # Client API Webhooks
 
-Webhook infrastructure is built for public-beta readiness and remains gated during internal beta.
+Webhook infrastructure is built for public-beta readiness and is currently gated while the Client API is in private beta.
 
 ## Event families
 
@@ -47,6 +47,6 @@ Recommended verification steps:
 2. `5xx` responses are retried automatically.
 3. Repeated failures should trigger runbook escalation and delivery diagnostics.
 
-## Internal beta status
+## Beta status
 
-Webhook event families and signature spec are documented and contract-defined but remain feature-flag gated.
+Webhook event families and signature spec are documented and contract-defined but may not be enabled for all accounts yet.

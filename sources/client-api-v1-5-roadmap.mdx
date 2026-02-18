@@ -1,35 +1,36 @@
 ---
-title: Client API v1.5 Execution Roadmap
-description: Implementation backlog, ownership model, and week-by-week gates for OMNI Client API v1.5.
+title: Client API Roadmap
+description: What’s shipping next for the OMNI Client API, plus what’s already available.
 ---
 
-# Client API v1.5 Execution Roadmap
+# Client API Roadmap
 
-This page tracks implementation status for the v1.5 program.
+This page summarizes the near-term roadmap for the OMNI Client API. For production changes and breaking-change notices, rely on the changelog.
 
-## Active ticket groups
+## Available today
 
-1. Contract and architecture: `V15-001` to `V15-010`
-2. Billing, onboarding, and webhooks: `V15-011` to `V15-015`
-3. Docs and DX: `V15-016` to `V15-020`
-4. Hosted MCP and adapters: `V15-021` to `V15-025`
-5. Evals, parity, ops hardening: `V15-026` to `V15-032`
+- Stable base path: `/v1/...`
+- OpenAPI contract: `/v1/openapi.json`
+- Hosted MCP transport: `/mcp` (and `/sse` compatibility)
+- Idempotent tool invocation: `POST /v1/mcp/invoke`
+- Webhooks (when enabled for your account)
+- Version pinning via `OMNI-Version`
 
-## Completed in this iteration
+## In progress
 
-- Hosted MCP transport foundation at `/mcp` with `/sse` compatibility.
-- Canonical OpenAPI contract endpoint at `/v1/openapi.json`.
-- Initial endpoint inventory and disposition matrix artifacts.
-- Executable Braintrust eval harness and CI workflow.
-- Reference-grade docs expansion (reference, errors, openapi, mcp hosted, webhooks, changelog).
-- Initial internal adapter packages:
-  - `omni-system/sdk/omni-mcp-js`
-  - `omni-system/sdk/omni-mcp-py`
+- Expanding endpoint coverage beyond FRED
+- Self-serve onboarding and key management improvements
+- More first-party MCP adapters and examples
+- Generated reference docs from OpenAPI, kept in sync with production
 
-## Remaining high-priority milestones
+## Planned (subject to change)
 
-1. Deploy and verify hosted MCP transport in production.
-2. Complete full backend service disposition across non-FRED endpoint families.
-3. Finish public-beta readiness controls (onboarding automation, abuse prevention, runbooks).
-4. Convert docs reference rendering to generated OpenAPI-backed pages.
-5. Complete platform evidence package for this initiative scope.
+- Public beta onboarding and abuse-prevention controls
+- Operational hardening (rate limiting, quotas, observability)
+- Additional webhook event families
+
+## Related
+
+- [/sources/client-api-changelog](/sources/client-api-changelog)
+- [/getting-started/client-api-versioning](/getting-started/client-api-versioning)
+- [/sources/client-api-mcp-hosted](/sources/client-api-mcp-hosted)

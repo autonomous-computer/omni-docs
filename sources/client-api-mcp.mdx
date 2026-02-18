@@ -14,7 +14,7 @@ Canonical hosted transport is documented at `/sources/client-api-mcp-hosted`.
 - `GET /v1/mcp/tools` — list available OMNI tools
 - `POST /v1/mcp/invoke` — invoke a tool with idempotency support
 
-## Tools in internal beta
+## Current tools
 
 - `fred.search`
 - `fred.series`
@@ -40,7 +40,7 @@ Canonical hosted transport is documented at `/sources/client-api-mcp-hosted`.
 
 - Successful invocations (`2xx/3xx`) generate billable usage events.
 - Replayed idempotent responses are not double-billed.
-- Usage is written to the OMNI shadow ledger and can be forwarded to configured metering sinks.
+- Usage can be forwarded to configured metering sinks.
 
 ## Migration note
 

@@ -18,7 +18,7 @@ Permission is evaluated across:
 
 ## Permission Modes
 
-| Product Label | Internal Value | Behavior |
+| Product label | API value | Behavior |
 |---|---|---|
 | Explore | `safe` | Read-only and low-risk tools |
 | Ask to Edit | `ask` | Mutating and dangerous calls require confirmation |
@@ -34,7 +34,7 @@ OMNI enforces preset rules in two places:
 Preset summary:
 
 - `skills`: product-safe tools (`omni_api_*`, `python_run`, `submit_plan`, etc.)
-- `full`: internal/developer surface (allowlisted)
+- `full`: advanced developer surface (limited access)
 
 ## Source Permission Scoping
 
