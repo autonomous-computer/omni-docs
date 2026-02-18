@@ -29,7 +29,7 @@ mcp-sdks-v*
 Download a `.tgz` asset and install from disk:
 
 ```bash
-gh release download mcp-sdks-v0.1.0-internal-beta \
+gh release download mcp-sdks-v0.1.4-internal-beta \
   --repo autonomous-computer/omni-system \
   --pattern "*.tgz"
 
@@ -41,11 +41,22 @@ pnpm add ./*.tgz
 Download a `.whl` asset and install from disk:
 
 ```bash
-gh release download mcp-sdks-v0.1.0-internal-beta \
+gh release download mcp-sdks-v0.1.4-internal-beta \
   --repo autonomous-computer/omni-system \
   --pattern "*.whl"
 
 pip install ./*.whl
+```
+
+Optional integrity + contract artifacts:
+
+```bash
+gh release download mcp-sdks-v0.1.4-internal-beta \
+  --repo autonomous-computer/omni-system \
+  --pattern "SHA256SUMS" \
+  --pattern "MCP_COMPATIBILITY_POLICY.md"
+
+shasum -a 256 -c SHA256SUMS
 ```
 
 ## 3. Initialize + list tools + call a tool
@@ -109,4 +120,3 @@ print(result.get("structuredContent"))
 4. Log `X-Request-Id` from every response.
 
 See `/sources/client-api-retries` and `/sources/client-api-errors`.
-

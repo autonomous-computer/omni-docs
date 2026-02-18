@@ -214,7 +214,7 @@ These adapters are not published to npm/PyPI yet. For internal beta they are dis
 Download and install (internal beta):
 
 ```bash
-gh release download mcp-sdks-v0.1.0-internal-beta \
+gh release download mcp-sdks-v0.1.4-internal-beta \
   --repo autonomous-computer/omni-system \
   --pattern "*.tgz"
 
@@ -244,7 +244,7 @@ console.log(result.structuredContent);
 Download and install (internal beta):
 
 ```bash
-gh release download mcp-sdks-v0.1.0-internal-beta \
+gh release download mcp-sdks-v0.1.4-internal-beta \
   --repo autonomous-computer/omni-system \
   --pattern "*.whl"
 
@@ -254,7 +254,7 @@ pip install ./*.whl
 Usage:
 
 ```python
-from omni_mcp_py import OmniMCPClient
+from omni_mcp_py import OmniMCPClient, OmniMCPError
 
 client = OmniMCPClient(api_key="omni_live_...")
 
@@ -267,7 +267,7 @@ try:
         idempotency_key="idem_example_001",
     )
     print(result.get("structuredContent"))
-except RuntimeError as exc:
+except OmniMCPError as exc:
     print(str(exc))
     raise
 ```
