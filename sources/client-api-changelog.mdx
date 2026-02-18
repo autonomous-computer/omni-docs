@@ -26,6 +26,16 @@ For **public beta**, the default target is:
 - 30+ days notice for breaking changes
 - 90+ days notice for endpoint removal
 
+## How deprecations are signaled (target posture)
+
+During internal beta, deprecation signals may be incomplete while endpoint coverage and compatibility shims are still being built.
+
+Public-beta-ready posture is:
+
+- Response headers: `Deprecation: true`, `Sunset: <RFC 3339 date>`, `Link: <https://docs.omnibrief.app/...>; rel="deprecation"`.
+- Replacement path: every deprecated endpoint must name its replacement endpoint and include migration steps in this changelog.
+- No silent removals: endpoints are never removed without a documented replacement.
+
 ## What counts as a breaking change
 
 - Removing a response field that was documented.
@@ -86,3 +96,9 @@ If you are integrating via MCP clients:
 2. Use JSON-RPC `tools/list` and `tools/call`.
 3. Provide `Idempotency-Key` for `tools/call`.
 4. Use `/sse` only for compatibility during migration windows.
+
+If you pin versions:
+
+1. Pick a stable `Omni-Version` for production.
+2. Review the changelog weekly.
+3. Adopt changes by moving your pinned date forward intentionally.

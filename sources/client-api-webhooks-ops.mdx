@@ -21,19 +21,10 @@ Your receiver must be:
 
 ## Receiver architecture (recommended)
 
-1. Ingress handler:
-   - reads headers
-   - reads raw body bytes
-   - verifies signature (if present)
-   - enforces timestamp tolerance
-2. Durable queue:
-   - enqueue the event payload + metadata
-3. Immediate ACK:
-   - return `2xx` once enqueued
-4. Worker:
-   - dedupe by `event.id`
-   - process business logic
-   - record success/failure
+1. Ingress handler: read headers and raw body bytes, verify signature (if present), enforce timestamp tolerance.
+2. Durable queue: enqueue the event payload and metadata.
+3. Immediate ACK: return `2xx` once enqueued.
+4. Worker: dedupe by `event.id`, execute business logic, record success/failure.
 
 ## HTTP response rules
 
@@ -113,3 +104,105 @@ Fix:
 - Use `await request.body()` to get raw bytes.
 - Verify signature before parsing JSON.
 
+## Operational runbooks (copy these into your on-call playbooks)
+
+### 1) Signature verification failures
+
+Signals:
+
+- sudden spike in `4xx` responses from your receiver
+- log lines like “invalid signature” or “event outside replay window”
+
+Root causes:
+
+- verifying against parsed JSON instead of raw bytes
+- a proxy or middleware is mutating body bytes (gzip, whitespace, charset)
+- the signing secret is incorrect or rotated out of sync
+- clock drift between your server and reality
+
+Actions:
+
+- confirm you verify `Omni-Signature` against `${Omni-Timestamp}.${raw_body}` bytes exactly
+- confirm the header values are read as strings without trimming
+- enforce NTP and alert if drift exceeds 30s
+- if you rotate secrets, overlap validity windows and deploy receiver changes before rotating
+
+### 2) Duplicate processing
+
+Signals:
+
+- business side effects executed multiple times per `event.id`
+
+Root causes:
+
+- missing dedupe store
+- deduping on `X-Request-Id` instead of `event.id`
+- processing is not idempotent (database writes without unique constraints)
+
+Actions:
+
+- enforce dedupe by `event.id` (store for 7+ days)
+- add unique constraints where possible (idempotency at the database layer)
+- record payload hash to detect “same id, different body” anomalies
+
+### 3) Receiver latency or timeouts
+
+Signals:
+
+- elevated request duration
+- elevated `5xx` from your receiver
+- ingress CPU spikes
+
+Root causes:
+
+- doing business logic inline in the webhook handler
+- synchronous third-party calls in the handler path
+- slow queue writes or deadlocks
+
+Actions:
+
+- move work behind a queue and acknowledge after enqueue
+- add a hard timeout to the ingress handler (example: 2s) and fail fast with `5xx` if the queue is unavailable
+- protect downstream workers with bounded concurrency
+
+### 4) Poison-pill events
+
+Signals:
+
+- the same event repeatedly fails in your worker
+- DLQ growth
+
+Actions:
+
+- route failed events to a DLQ after N attempts
+- add a manual replay tool that can re-run a DLQ message after code fixes
+- log `event.id`, `event.type`, and `event.requestId` for every failure
+
+## What to log (minimum viable observability)
+
+On every inbound delivery:
+
+- `X-Request-Id`
+- `event.id`
+- `event.type`
+- `event.requestId` (when present)
+- signature present? (boolean)
+- signature verified? (boolean, when present)
+- handler latency (ms)
+- queue enqueue result (ok/fail)
+
+On the worker:
+
+- processing latency by `event.type`
+- success/fail counts by `event.type`
+- DLQ counts
+
+## Load shedding and backpressure
+
+If your queue is down or saturated, it is safer to return `5xx` (transient) than to accept and drop events.
+
+Recommended posture:
+
+- fail closed when you cannot durably enqueue
+- scale workers independently of ingress
+- cap concurrency per event type (avoid stampeding)
