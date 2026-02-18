@@ -557,14 +557,58 @@
         "tags": [
           "client-api-mcp"
         ],
-        "summary": "Hosted Mcp Stream",
+        "summary": "Hosted MCP transport (streamable HTTP)",
+        "description": "Opens a `text/event-stream` response that advertises this server's MCP transport. For MCP JSON-RPC calls, use `POST /mcp`.",
         "operationId": "hosted_mcp_stream_mcp_get",
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "SSE stream with MCP transport information.",
+            "headers": {
+              "MCP-Session-Id": {
+                "description": "Session identifier for this MCP connection.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {}
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiErrorEnvelope"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiErrorEnvelope"
+                }
               }
             }
           }
@@ -574,14 +618,146 @@
         "tags": [
           "client-api-mcp"
         ],
-        "summary": "Hosted Mcp Invoke",
+        "summary": "Hosted MCP JSON-RPC endpoint",
+        "description": "JSON-RPC 2.0 endpoint implementing MCP methods such as `initialize`, `ping`, `tools/list`, and `tools/call`. For `tools/call`, the `Idempotency-Key` header is required to prevent duplicate executions and duplicate billing.",
         "operationId": "hosted_mcp_invoke_mcp_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "jsonrpc": {
+                    "type": "string",
+                    "const": "2.0",
+                    "title": "Jsonrpc",
+                    "default": "2.0"
+                  },
+                  "id": {
+                    "anyOf": [
+                      {},
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "title": "Id"
+                  },
+                  "method": {
+                    "type": "string",
+                    "title": "Method"
+                  },
+                  "params": {
+                    "additionalProperties": true,
+                    "type": "object",
+                    "title": "Params"
+                  }
+                },
+                "type": "object",
+                "required": [
+                  "method"
+                ],
+                "title": "JsonRpcRequest"
+              },
+              "examples": {
+                "initialize": {
+                  "summary": "Initialize",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "initialize",
+                    "params": {
+                      "protocolVersion": "2025-11-05"
+                    }
+                  }
+                },
+                "tools_list": {
+                  "summary": "List tools",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "id": 2,
+                    "method": "tools/list",
+                    "params": {}
+                  }
+                },
+                "tools_call": {
+                  "summary": "Call tool (requires Idempotency-Key)",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "id": 3,
+                    "method": "tools/call",
+                    "params": {
+                      "name": "fred.search",
+                      "arguments": {
+                        "q": "CPI"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "JSON-RPC response (success or error).",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/JsonRpcResponse"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Accepted (no response body), used for `notifications/initialized`."
+          },
+          "400": {
+            "description": "JSON-RPC error for invalid request/params.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonRpcResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "JSON-RPC error for auth failure.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonRpcResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "JSON-RPC error for permission failure.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonRpcResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "JSON-RPC error for rate limiting.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonRpcResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "JSON-RPC error for internal failures.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonRpcResponse"
+                }
               }
             }
           }
@@ -591,7 +767,8 @@
         "tags": [
           "client-api-mcp"
         ],
-        "summary": "Hosted Mcp Session Delete",
+        "summary": "Close hosted MCP session",
+        "description": "Closes the current MCP session (best-effort).",
         "operationId": "hosted_mcp_session_delete_mcp_delete",
         "responses": {
           "200": {
@@ -599,6 +776,39 @@
             "content": {
               "application/json": {
                 "schema": {}
+              }
+            }
+          },
+          "204": {
+            "description": "Session closed."
+          },
+          "401": {
+            "description": "Authentication required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiErrorEnvelope"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiErrorEnvelope"
+                }
               }
             }
           }
@@ -610,14 +820,50 @@
         "tags": [
           "client-api-mcp"
         ],
-        "summary": "Hosted Mcp Sse Compat",
+        "summary": "Hosted MCP SSE compatibility endpoint",
+        "description": "Compatibility endpoint for MCP clients expecting an SSE transport discovery flow. The primary hosted MCP endpoint is `POST /mcp`.",
         "operationId": "hosted_mcp_sse_compat_sse_get",
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "SSE stream advertising the primary MCP endpoint.",
             "content": {
               "application/json": {
                 "schema": {}
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiErrorEnvelope"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiErrorEnvelope"
+                }
               }
             }
           }
@@ -1716,6 +1962,79 @@
           "results"
         ],
         "title": "FredSeriesSearchResponse"
+      },
+      "JsonRpcErrorDetail": {
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "Code"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "data": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "JsonRpcErrorDetail"
+      },
+      "JsonRpcResponse": {
+        "properties": {
+          "jsonrpc": {
+            "type": "string",
+            "const": "2.0",
+            "title": "Jsonrpc",
+            "default": "2.0"
+          },
+          "id": {
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Result"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/JsonRpcErrorDetail"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "title": "JsonRpcResponse"
       },
       "ListDevicesResponse": {
         "properties": {
