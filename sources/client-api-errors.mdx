@@ -160,6 +160,8 @@ Hosted MCP errors are JSON-RPC compliant and additionally carry `omni_code` in `
 
 ### Example hosted MCP error
 
+Hosted MCP errors echo `X-Request-Id` as an HTTP response header for correlation.
+
 ```json
 {
   "jsonrpc": "2.0",
@@ -168,8 +170,7 @@ Hosted MCP errors are JSON-RPC compliant and additionally carry `omni_code` in `
     "code": -32001,
     "message": "Unauthorized",
     "data": {
-      "omni_code": "invalid_api_key",
-      "request_id": "req_123"
+      "omni_code": "invalid_api_key"
     }
   }
 }
@@ -182,3 +183,17 @@ When an idempotent request is replayed:
 - Response is returned from cache.
 - `Idempotency-Replayed: true` is added.
 - Replays are not double-billed.
+
+## Error handling patterns (recommended)
+
+### REST (`/v1/*`)
+
+1. Log `error.request_id` and your own inbound `X-Request-Id` (if you set one).
+2. Branch program logic on `error.type` and `error.code` only.
+3. Never parse `error.message`.
+
+### Hosted MCP (`/mcp`)
+
+1. Log the response header `X-Request-Id` for correlation.
+2. Branch on JSON-RPC `error.code`, and also on `error.data.omni_code` when present.
+3. For retries of `tools/call`, reuse the same `Idempotency-Key`.

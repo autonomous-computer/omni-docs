@@ -21,6 +21,10 @@ Recommendations:
 
 For retry behavior, see `/sources/client-api-retries`.
 
+If you want a runnable, end-to-end "first call" flow, start with:
+
+- `/getting-started/client-api-sdk-quickstart`
+
 ## Where to get builds
 
 SDK artifacts are published as assets on tagged GitHub Releases in `autonomous-computer/omni-system`.
@@ -30,6 +34,12 @@ Look for tags with the prefix:
 ```text
 mcp-sdks-v*
 ```
+
+## Versioning and compatibility (internal beta)
+
+- Adapter versions follow semver.
+- A given adapter version may support multiple MCP protocol versions; see `/sources/client-api-mcp-compatibility`.
+- During internal beta, we may publish quickly; you should pin the adapter version in production-like integrations.
 
 ## Hosted MCP SDKs
 
@@ -70,7 +80,7 @@ console.log(result.structuredContent);
 Notes:
 
 - `tools/call` requires `Idempotency-Key` for safe retries; pass it as the third argument to `callTool`.
-- Errors currently throw plain `Error` with the server-provided message.
+- Errors currently throw plain `Error` with the server-provided message. Always log `X-Request-Id` from the response when debugging.
 
 #### Quickstart: robust invocation wrapper (TypeScript)
 

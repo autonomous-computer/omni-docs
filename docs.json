@@ -30,6 +30,7 @@
           "getting-started/quickstart",
           "getting-started/installation",
           "getting-started/client-api-quickstart",
+          "getting-started/client-api-sdk-quickstart",
           "getting-started/client-api-versioning",
           "getting-started/platform-scope"
         ]
@@ -62,6 +63,7 @@
           "sources/client-api-webhooks",
           "sources/client-api-webhooks-ops",
           "sources/client-api-changelog",
+          "sources/client-api-migrations",
           "sources/client-api-v1-5-roadmap",
           "sources/client-api-internal-beta-policy",
           "sources/apis",

@@ -44,9 +44,6 @@ Authorization: Bearer omni_live_...
 - Scopes: scoped keys are strongly recommended. If a key is missing scopes, OMNI responds with `403` and `error.code=insufficient_scope` and may include `Omni-Required-Scopes` for fast diagnosis.
 - Billing: successful calls (`2xx/3xx`) are billable. Failures (`4xx/5xx`) are not billable. Idempotent replays are not double-billed. Read-only retries can be billed more than once if multiple attempts succeed. See `/sources/client-api-usage-billing` and `/sources/client-api-retries`.
 
-- `Omni-Version` (optional request pin, echoed in responses)
-- `X-Request-Id` (optional inbound trace id, echoed in responses)
-
 ## Endpoint catalog
 
 | Endpoint | Method | Scopes | Idempotency-Key | Purpose |
@@ -61,11 +58,6 @@ Authorization: Bearer omni_live_...
 | `/mcp` | GET | (auth only) | No | Hosted MCP stream transport channel (internal beta; not required by most clients). |
 | `/mcp` | DELETE | (auth only) | No | Hosted MCP session close. |
 | `/sse` | GET | (auth only) | No | SSE compatibility transport endpoint. |
-
-For schema-level request/response definitions, see:
-
-- `/sources/client-api-openapi`
-- `Client API (Generated)` in the left navigation
 
 ## `GET /v1/openapi.json`
 
