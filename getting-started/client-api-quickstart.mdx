@@ -40,7 +40,95 @@ Response includes the key once:
 curl "https://api.omnibrief.app/v1/fred/search?q=unemployment&limit=5" \
   -H "Authorization: Bearer omni_live_..." \
   -H "X-Request-Id: req_demo_001" \
-  -H "Omni-Version: 2026-02-17"
+  -H "Omni-Version: 2026-02-18"
+```
+
+### Node.js (TypeScript) example
+
+```ts
+const url = new URL("https://api.omnibrief.app/v1/fred/search");
+url.searchParams.set("q", "unemployment");
+url.searchParams.set("limit", "5");
+
+const res = await fetch(url, {
+  headers: {
+    Authorization: `Bearer ${process.env.OMNI_API_KEY}`,
+    "X-Request-Id": "req_demo_001",
+    "Omni-Version": "2026-02-18",
+  },
+});
+
+if (!res.ok) {
+  const err = await res.json().catch(() => ({}));
+  throw new Error(`omni error: ${res.status} ${JSON.stringify(err)}`);
+}
+
+const body = await res.json();
+console.log(body);
+```
+
+### Python example
+
+```python
+import os
+import requests
+
+res = requests.get(
+    "https://api.omnibrief.app/v1/fred/search",
+    params={"q": "unemployment", "limit": 5},
+    headers={
+        "Authorization": f"Bearer {os.environ['OMNI_API_KEY']}",
+        "X-Request-Id": "req_demo_001",
+        "Omni-Version": "2026-02-18",
+    },
+    timeout=20,
+)
+
+if res.status_code >= 400:
+    raise RuntimeError(f"omni error: {res.status_code} {res.text}")
+
+print(res.json())
+```
+
+### Go example
+
+```go
+package main
+
+import (
+  "fmt"
+  "io"
+  "net/http"
+  "net/url"
+  "os"
+  "time"
+)
+
+func main() {
+  u, _ := url.Parse("https://api.omnibrief.app/v1/fred/search")
+  q := u.Query()
+  q.Set("q", "unemployment")
+  q.Set("limit", "5")
+  u.RawQuery = q.Encode()
+
+  req, _ := http.NewRequest("GET", u.String(), nil)
+  req.Header.Set("Authorization", "Bearer "+os.Getenv("OMNI_API_KEY"))
+  req.Header.Set("X-Request-Id", "req_demo_001")
+  req.Header.Set("Omni-Version", "2026-02-18")
+
+  client := &http.Client{Timeout: 20 * time.Second}
+  resp, err := client.Do(req)
+  if err != nil {
+    panic(err)
+  }
+  defer resp.Body.Close()
+
+  b, _ := io.ReadAll(resp.Body)
+  if resp.StatusCode >= 400 {
+    panic(fmt.Sprintf("omni error: %d %s", resp.StatusCode, string(b)))
+  }
+  fmt.Println(string(b))
+}
 ```
 
 ## 3. MCP tool catalog
@@ -65,15 +153,44 @@ curl -X POST "https://api.omnibrief.app/v1/mcp/invoke" \
 
 ## 5. Hosted MCP protocol (`/mcp`)
 
+### Initialize + list + call
+
 ```bash
+# 1) initialize
 curl -X POST "https://api.omnibrief.app/mcp" \
   -H "Authorization: Bearer omni_live_..." \
   -H "Content-Type: application/json" \
   -d '{
     "jsonrpc": "2.0",
     "id": 1,
+    "method": "initialize",
+    "params": { "protocolVersion": "2025-11-05" }
+  }'
+
+# 2) tools/list
+curl -X POST "https://api.omnibrief.app/mcp" \
+  -H "Authorization: Bearer omni_live_..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 2,
     "method": "tools/list",
     "params": {}
+  }'
+
+# 3) tools/call (Idempotency-Key required)
+curl -X POST "https://api.omnibrief.app/mcp" \
+  -H "Authorization: Bearer omni_live_..." \
+  -H "Idempotency-Key: idem_mcp_call_001" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 3,
+    "method": "tools/call",
+    "params": {
+      "name": "fred.search",
+      "arguments": { "q": "cpi", "limit": 3 }
+    }
   }'
 ```
 

@@ -32,7 +32,21 @@ If a scoped key is missing permissions, OMNI returns:
 - HTTP `403`
 - `error.type = permission_error`
 - `error.code = insufficient_scope`
-- `Omni-Required-Scopes` header may be present to help you debug
+- `Omni-Required-Scopes` header (space-delimited scopes) to help you debug
+
+See `/sources/client-api-keys` for key creation and scope updates.
+
+### Scope catalog (v1)
+
+| Scope | What it allows | Required for |
+| --- | --- | --- |
+| `fred.read` | Read access to FRED REST endpoints and FRED tools. | `GET /v1/fred/*`, `fred.*` tool calls |
+| `mcp.tools.read` | Read the tool catalog. | `GET /v1/mcp/tools`, hosted `tools/list` |
+| `mcp.invoke` | Invoke tools. | `POST /v1/mcp/invoke`, hosted `tools/call` |
+
+Notes:
+
+- `GET /v1/openapi.json` requires authentication, but does not require any specific scope.
 
 ## Request tracing
 

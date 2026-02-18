@@ -1,0 +1,131 @@
+---
+title: Client API Keys
+description: Create, rotate, revoke, and scope OMNI Client API keys (internal beta).
+---
+
+# Client API Keys
+
+OMNI Client API keys (`omni_live_*`, `omni_test_*`) authenticate requests to:
+
+- REST Client API: `https://api.omnibrief.app/v1/...`
+- Hosted MCP transport: `https://api.omnibrief.app/mcp`
+
+This page documents key lifecycle and scope design for internal beta.
+
+## Key types
+
+- Live keys: `omni_live_...`
+  - Billable when billing is enabled for your account.
+- Test keys: `omni_test_...`
+  - Reserved for test-mode billing flows; availability may vary during internal beta.
+
+Keys are server-side secrets. Do not embed them in frontend code or ship them in mobile/desktop apps.
+
+## Create a key (internal beta)
+
+During internal beta, keys are created through the OMNI control plane (requires an **OMNI user** session token, not an OMNI Client API key):
+
+```text
+POST https://omni-mcp.fly.dev/api/client/keys
+```
+
+Example:
+
+```bash
+curl -X POST "https://omni-mcp.fly.dev/api/client/keys" \
+  -H "Authorization: Bearer <omni_user_jwt>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "internal-beta-main",
+    "mode": "live",
+    "scopes": ["fred.read", "mcp.tools.read", "mcp.invoke"]
+  }'
+```
+
+The response includes the secret **once**:
+
+```json
+{
+  "data": {
+    "id": "key_...",
+    "apiKey": "omni_live_...",
+    "mode": "live",
+    "scopes": ["fred.read", "mcp.tools.read", "mcp.invoke"],
+    "createdAt": "2026-02-18T07:03:36.288Z"
+  }
+}
+```
+
+## List keys
+
+```text
+GET https://omni-mcp.fly.dev/api/client/keys
+```
+
+List responses include metadata only (no secret material).
+
+## Rotate a key
+
+Rotation creates a new active key and revokes the old key.
+
+```text
+POST https://omni-mcp.fly.dev/api/client/keys/:id/rotate
+```
+
+## Revoke a key
+
+```text
+POST https://omni-mcp.fly.dev/api/client/keys/:id/revoke
+```
+
+Revocation takes effect immediately for requests to `https://api.omnibrief.app`.
+
+## Update key scopes
+
+```text
+POST https://omni-mcp.fly.dev/api/client/keys/:id/scopes
+```
+
+Body:
+
+```json
+{ "scopes": ["fred.read", "mcp.tools.read"] }
+```
+
+Notes:
+
+- Scope arrays must be non-empty.
+- Keys created with **no scopes** are treated as unrestricted (compatibility posture during internal beta). Prefer scoped keys so you catch authorization gaps early.
+
+## Scope catalog
+
+| Scope | What it allows | Used by |
+| --- | --- | --- |
+| `fred.read` | Read access to FRED REST endpoints and FRED MCP tools. | `GET /v1/fred/*`, `tools/call` for `fred.*`, `POST /v1/mcp/invoke` with `fred.*` tool ids |
+| `mcp.tools.read` | Read the tool catalog. | `GET /v1/mcp/tools`, hosted `tools/list` over `POST /mcp` |
+| `mcp.invoke` | Invoke tools. | `POST /v1/mcp/invoke`, hosted `tools/call` over `POST /mcp` |
+
+## Recommended scope bundles
+
+These bundles are good defaults:
+
+- FRED-only (REST):
+  - `["fred.read"]`
+- Hosted MCP for FRED:
+  - `["mcp.tools.read", "mcp.invoke", "fred.read"]`
+- Legacy MCP compatibility (not recommended for new integrations):
+  - `["mcp.tools.read", "mcp.invoke", "fred.read"]`
+
+## Troubleshooting
+
+If you receive:
+
+- HTTP `403`
+- `error.type = permission_error`
+- `error.code = insufficient_scope`
+
+Check:
+
+- your key’s scopes
+- the `Omni-Required-Scopes` response header (when present)
+

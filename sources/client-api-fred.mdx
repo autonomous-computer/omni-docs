@@ -1,0 +1,122 @@
+---
+title: FRED via OMNI Client API
+description: Deep guide to searching and fetching FRED series using REST or hosted MCP tools.
+---
+
+# FRED via OMNI Client API
+
+OMNI exposes a small, opinionated FRED surface that is stable enough to build on:
+
+- REST endpoints under `/v1/fred/*`
+- Equivalent tool access via hosted MCP (`fred.search`, `fred.series`)
+
+## REST vs hosted MCP: which should you use?
+
+Use **REST** if you:
+
+- want simple HTTP calls with predictable request/response envelopes
+- are not using MCP tooling
+
+Use **hosted MCP** if you:
+
+- are integrating OMNI into an MCP toolchain
+- want tool schemas and JSON-RPC interoperability
+
+The underlying semantics are intentionally the same.
+
+## Required scope
+
+All FRED access requires:
+
+```text
+fred.read
+```
+
+## Search for a series
+
+### REST: `GET /v1/fred/search`
+
+Query params:
+
+- `q` (required): keyword query
+- `limit` (optional): `1-50` (default `10`)
+
+```bash
+curl "https://api.omnibrief.app/v1/fred/search?q=inflation&limit=5" \
+  -H "Authorization: Bearer omni_live_..."
+```
+
+Common errors:
+
+- `missing_q` (400): you omitted `q`
+- `insufficient_scope` (403): your key is missing `fred.read`
+
+### Hosted MCP: `tools/call` with `fred.search`
+
+```bash
+curl -X POST "https://api.omnibrief.app/mcp" \
+  -H "Authorization: Bearer omni_live_..." \
+  -H "Idempotency-Key: idem_fred_search_001" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "tools/call",
+    "params": {
+      "name": "fred.search",
+      "arguments": { "q": "inflation", "limit": 5 }
+    }
+  }'
+```
+
+## Fetch series observations
+
+### REST: `GET /v1/fred/series/{series_id}`
+
+Path:
+
+- `series_id` (required): example `CPIAUCSL`
+
+Query params:
+
+- `observation_start` (optional): `YYYY-MM-DD`
+- `observation_end` (optional): `YYYY-MM-DD`
+- `limit` (optional): max number of observations (default `1000`)
+
+```bash
+curl "https://api.omnibrief.app/v1/fred/series/CPIAUCSL?limit=24" \
+  -H "Authorization: Bearer omni_live_..."
+```
+
+### Hosted MCP: `tools/call` with `fred.series`
+
+```bash
+curl -X POST "https://api.omnibrief.app/mcp" \
+  -H "Authorization: Bearer omni_live_..." \
+  -H "Idempotency-Key: idem_fred_series_001" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 2,
+    "method": "tools/call",
+    "params": {
+      "name": "fred.series",
+      "arguments": {
+        "series_id": "CPIAUCSL",
+        "limit": 24
+      }
+    }
+  }'
+```
+
+## Stability and compatibility notes
+
+- Tool identifiers (`fred.search`, `fred.series`) are treated as stable.
+- Adding optional fields is considered non-breaking.
+- Any breaking change will ship as a new identifier (example: `fred.series.v2`) with a sunset window for the old tool.
+
+For full schema-level request/response definitions, use:
+
+- the generated reference (`Client API (Generated)`), and
+- `GET /v1/openapi.json`
+
