@@ -11,14 +11,69 @@
         "tags": [
           "client-api"
         ],
-        "summary": "Client Api Openapi",
+        "summary": "OpenAPI (v1 subset)",
+        "description": "Returns the OpenAPI contract filtered to `/v1/*` routes for the OMNI Client API facade.",
         "operationId": "client_api_openapi_v1_openapi_json_get",
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Client Api Openapi V1 Openapi Json Get"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiErrorEnvelope"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiErrorEnvelope"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiErrorEnvelope"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiErrorEnvelope"
+                }
               }
             }
           }
@@ -30,14 +85,57 @@
         "tags": [
           "client-api"
         ],
-        "summary": "Client Api Health",
+        "summary": "Health check",
+        "description": "Authenticates the API key and returns a minimal health payload.",
         "operationId": "client_api_health_v1_health_get",
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiHealthResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiErrorEnvelope"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiErrorEnvelope"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiErrorEnvelope"
+                }
               }
             }
           }
@@ -49,7 +147,8 @@
         "tags": [
           "client-api"
         ],
-        "summary": "Client Api Fred Search",
+        "summary": "Search FRED series",
+        "description": "Search Federal Reserve Economic Data (FRED) time series by keyword.",
         "operationId": "client_api_fred_search_v1_fred_search_get",
         "parameters": [
           {
@@ -77,9 +176,71 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiFredSearchResponse"
+                }
               }
             }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiErrorEnvelope"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiErrorEnvelope"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiErrorEnvelope"
+                }
+              }
+            },
+            "description": "Bad Gateway"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
           },
           "422": {
             "description": "Validation Error",
@@ -99,7 +260,8 @@
         "tags": [
           "client-api"
         ],
-        "summary": "Client Api Fred Series",
+        "summary": "Fetch FRED series observations",
+        "description": "Fetch observations for a specific FRED series id, optionally constrained by date range.",
         "operationId": "client_api_fred_series_v1_fred_series__series_id__get",
         "parameters": [
           {
@@ -159,9 +321,71 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiFredSeriesResponse"
+                }
               }
             }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiErrorEnvelope"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiErrorEnvelope"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiErrorEnvelope"
+                }
+              }
+            },
+            "description": "Bad Gateway"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
           },
           "422": {
             "description": "Validation Error",
@@ -181,18 +405,62 @@
         "tags": [
           "client-api"
         ],
-        "summary": "Client Api Mcp Tools",
+        "summary": "List tools (legacy MCP-compatible surface)",
+        "description": "Legacy MCP-compatible tool catalog. Prefer the hosted MCP transport at `/mcp` for new integrations.",
         "operationId": "client_api_mcp_tools_v1_mcp_tools_get",
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiToolListResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiErrorEnvelope"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiErrorEnvelope"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiErrorEnvelope"
+                }
               }
             }
           }
-        }
+        },
+        "deprecated": true
       }
     },
     "/v1/mcp/invoke": {
@@ -200,14 +468,104 @@
         "tags": [
           "client-api"
         ],
-        "summary": "Client Api Mcp Invoke",
+        "summary": "Invoke tool (legacy MCP-compatible surface)",
+        "description": "Legacy tool invocation endpoint. Prefer the hosted MCP transport at `/mcp` for new integrations.",
         "operationId": "client_api_mcp_invoke_v1_mcp_invoke_post",
+        "deprecated": true,
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiMcpInvokeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiErrorEnvelope"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiErrorEnvelope"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientApiErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Required for safe retries of tool invocations."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "tool": {
+                    "title": "Tool",
+                    "type": "string"
+                  },
+                  "arguments": {
+                    "additionalProperties": true,
+                    "title": "Arguments",
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "tool"
+                ],
+                "title": "MCPInvokeRequest",
+                "type": "object"
               }
             }
           }
@@ -763,6 +1121,199 @@
         ],
         "title": "CheckFrequency",
         "description": "Predefined check frequencies for tracking.\n\nThe web tracking schedule runs daily at 9 AM Eastern.\nDaily trackings are checked every run; weekly trackings\nare checked once per week (on Saturdays)."
+      },
+      "ClientApiErrorDetail": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "invalid_request",
+              "auth_error",
+              "permission_error",
+              "rate_limit_error",
+              "api_error"
+            ],
+            "title": "Type"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "request_id": {
+            "type": "string",
+            "title": "Request Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "code",
+          "message",
+          "request_id"
+        ],
+        "title": "ClientApiErrorDetail"
+      },
+      "ClientApiErrorEnvelope": {
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/ClientApiErrorDetail"
+          }
+        },
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "title": "ClientApiErrorEnvelope"
+      },
+      "ClientApiFredSearchResponse": {
+        "properties": {
+          "object": {
+            "type": "string",
+            "const": "fred.search_result",
+            "title": "Object"
+          },
+          "data": {
+            "$ref": "#/components/schemas/FredSeriesSearchResponse"
+          }
+        },
+        "type": "object",
+        "required": [
+          "object",
+          "data"
+        ],
+        "title": "ClientApiFredSearchResponse"
+      },
+      "ClientApiFredSeriesResponse": {
+        "properties": {
+          "object": {
+            "type": "string",
+            "const": "fred.series_result",
+            "title": "Object"
+          },
+          "data": {
+            "$ref": "#/components/schemas/FredSeriesResponse"
+          }
+        },
+        "type": "object",
+        "required": [
+          "object",
+          "data"
+        ],
+        "title": "ClientApiFredSeriesResponse"
+      },
+      "ClientApiHealthResponse": {
+        "properties": {
+          "object": {
+            "type": "string",
+            "const": "health",
+            "title": "Object"
+          },
+          "status": {
+            "type": "string",
+            "const": "ok",
+            "title": "Status"
+          },
+          "request_id": {
+            "type": "string",
+            "title": "Request Id"
+          },
+          "mode": {
+            "type": "string",
+            "title": "Mode"
+          }
+        },
+        "type": "object",
+        "required": [
+          "object",
+          "status",
+          "request_id",
+          "mode"
+        ],
+        "title": "ClientApiHealthResponse"
+      },
+      "ClientApiMcpInvokeResponse": {
+        "properties": {
+          "object": {
+            "type": "string",
+            "const": "mcp.tool_result",
+            "title": "Object"
+          },
+          "tool": {
+            "type": "string",
+            "title": "Tool"
+          },
+          "data": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Data"
+          }
+        },
+        "type": "object",
+        "required": [
+          "object",
+          "tool",
+          "data"
+        ],
+        "title": "ClientApiMcpInvokeResponse"
+      },
+      "ClientApiTool": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "method": {
+            "type": "string",
+            "title": "Method"
+          },
+          "path": {
+            "type": "string",
+            "title": "Path"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "method",
+          "path",
+          "description"
+        ],
+        "title": "ClientApiTool"
+      },
+      "ClientApiToolListResponse": {
+        "properties": {
+          "object": {
+            "type": "string",
+            "const": "list",
+            "title": "Object"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/ClientApiTool"
+            },
+            "type": "array",
+            "title": "Data"
+          }
+        },
+        "type": "object",
+        "required": [
+          "object",
+          "data"
+        ],
+        "title": "ClientApiToolListResponse"
       },
       "CreateSearchRequest": {
         "properties": {
