@@ -11,10 +11,11 @@ This page documents the contract and operational guidance so you can build and t
 
 ## Summary: what you must do
 
-1. Verify signatures using the raw request body.
+1. Verify signatures using the raw request body (when `Omni-Signature` is present).
 2. Enforce a replay window using the included timestamp.
 3. Dedupe using `event.id` (safe even if retries are added later).
 4. Return `2xx` quickly and process asynchronously.
+5. If `Omni-Signature` is absent, treat the delivery as **unsigned** and follow the guidance below.
 
 ## Event families
 
@@ -60,6 +61,16 @@ Webhook requests include:
 If signing is enabled, requests also include:
 
 - `Omni-Signature`
+
+### If `Omni-Signature` is absent
+
+In the current internal beta, OMNI may deliver webhook events without a signature if signing is not enabled for your environment.
+
+Recommended receiver behavior:
+
+- Do **not** attempt signature verification if `Omni-Signature` is missing.
+- Keep your webhook URL unguessable (random path) and treat the endpoint as a secret.
+- Log and alert on unsigned deliveries so you can tighten posture when signing is enabled.
 
 ### Signing payload
 
