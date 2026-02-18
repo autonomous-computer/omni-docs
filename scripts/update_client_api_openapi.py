@@ -101,6 +101,15 @@ def _strip_fastapi_validation_errors(spec: Dict[str, Any]) -> None:
             if _is_fastapi_validation_422(responses.get("422")):
                 responses.pop("422", None)
 
+    # These schemas are FastAPI framework noise and become orphaned once the
+    # default 422 responses are removed.
+    components = spec.get("components")
+    if isinstance(components, dict):
+        schemas = components.get("schemas")
+        if isinstance(schemas, dict):
+            schemas.pop("HTTPValidationError", None)
+            schemas.pop("ValidationError", None)
+
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Update OMNI Client API OpenAPI snapshot for docs.")
