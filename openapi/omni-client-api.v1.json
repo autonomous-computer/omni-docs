@@ -1,0 +1,2550 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "OMNI Client API",
+    "version": "0.1.0",
+    "description": "OMNI Client API and hosted MCP transport."
+  },
+  "paths": {
+    "/v1/openapi.json": {
+      "get": {
+        "tags": [
+          "client-api"
+        ],
+        "summary": "Client Api Openapi",
+        "operationId": "client_api_openapi_v1_openapi_json_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/health": {
+      "get": {
+        "tags": [
+          "client-api"
+        ],
+        "summary": "Client Api Health",
+        "operationId": "client_api_health_v1_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/fred/search": {
+      "get": {
+        "tags": [
+          "client-api"
+        ],
+        "summary": "Client Api Fred Search",
+        "operationId": "client_api_fred_search_v1_fred_search_get",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Q"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/fred/series/{series_id}": {
+      "get": {
+        "tags": [
+          "client-api"
+        ],
+        "summary": "Client Api Fred Series",
+        "operationId": "client_api_fred_series_v1_fred_series__series_id__get",
+        "parameters": [
+          {
+            "name": "series_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Series Id"
+            }
+          },
+          {
+            "name": "observation_start",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Observation Start"
+            }
+          },
+          {
+            "name": "observation_end",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Observation End"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1000,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/mcp/tools": {
+      "get": {
+        "tags": [
+          "client-api"
+        ],
+        "summary": "Client Api Mcp Tools",
+        "operationId": "client_api_mcp_tools_v1_mcp_tools_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/mcp/invoke": {
+      "post": {
+        "tags": [
+          "client-api"
+        ],
+        "summary": "Client Api Mcp Invoke",
+        "operationId": "client_api_mcp_invoke_v1_mcp_invoke_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mcp": {
+      "get": {
+        "tags": [
+          "client-api-mcp"
+        ],
+        "summary": "Hosted Mcp Stream",
+        "operationId": "hosted_mcp_stream_mcp_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "client-api-mcp"
+        ],
+        "summary": "Hosted Mcp Invoke",
+        "operationId": "hosted_mcp_invoke_mcp_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "client-api-mcp"
+        ],
+        "summary": "Hosted Mcp Session Delete",
+        "operationId": "hosted_mcp_session_delete_mcp_delete",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sse": {
+      "get": {
+        "tags": [
+          "client-api-mcp"
+        ],
+        "summary": "Hosted Mcp Sse Compat",
+        "operationId": "hosted_mcp_sse_compat_sse_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AlertUpdateRequest": {
+        "properties": {
+          "is_read": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Read",
+            "description": "Mark as read/unread"
+          },
+          "is_saved": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Saved",
+            "description": "Mark as saved/unsaved"
+          }
+        },
+        "type": "object",
+        "title": "AlertUpdateRequest",
+        "description": "Request to update alert state"
+      },
+      "AvatarDeleteResponse": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "Success",
+            "description": "Whether the deletion was successful"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "Status message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "success",
+          "message"
+        ],
+        "title": "AvatarDeleteResponse",
+        "description": "Response after deleting an avatar."
+      },
+      "AvatarUploadRequest": {
+        "properties": {
+          "image_data": {
+            "type": "string",
+            "title": "Image Data",
+            "description": "Base64-encoded image data (with or without data URI prefix)"
+          },
+          "content_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content Type",
+            "description": "MIME type of the image (e.g., image/png, image/jpeg)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "image_data"
+        ],
+        "title": "AvatarUploadRequest",
+        "description": "Request to upload a user avatar."
+      },
+      "AvatarUploadResponse": {
+        "properties": {
+          "avatar_url": {
+            "type": "string",
+            "title": "Avatar Url",
+            "description": "Public URL to the uploaded avatar"
+          }
+        },
+        "type": "object",
+        "required": [
+          "avatar_url"
+        ],
+        "title": "AvatarUploadResponse",
+        "description": "Response after uploading an avatar."
+      },
+      "BulkAlertAction": {
+        "type": "string",
+        "enum": [
+          "mark_all_read",
+          "delete_all",
+          "delete_all_read"
+        ],
+        "title": "BulkAlertAction",
+        "description": "Bulk actions for alerts"
+      },
+      "BulkAlertRequest": {
+        "properties": {
+          "action": {
+            "$ref": "#/components/schemas/BulkAlertAction",
+            "description": "Bulk action to perform"
+          }
+        },
+        "type": "object",
+        "required": [
+          "action"
+        ],
+        "title": "BulkAlertRequest",
+        "description": "Request for bulk alert operations"
+      },
+      "ChatFileCompleteRequest": {
+        "properties": {
+          "file_id": {
+            "type": "string",
+            "title": "File Id",
+            "description": "Unique file identifier"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file_id"
+        ],
+        "title": "ChatFileCompleteRequest",
+        "description": "Request to finalize file upload and trigger extraction."
+      },
+      "ChatFileCompleteResponse": {
+        "properties": {
+          "file": {
+            "$ref": "#/components/schemas/ChatFileInfo",
+            "description": "File metadata"
+          },
+          "extracted_text_preview": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Extracted Text Preview",
+            "description": "Short preview of extracted text"
+          },
+          "table_preview": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ChatTablePreview"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Structured table preview for tabular files"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "ChatFileCompleteResponse",
+        "description": "Response after file ingestion completes."
+      },
+      "ChatFileDownloadResponse": {
+        "properties": {
+          "file_id": {
+            "type": "string",
+            "title": "File Id",
+            "description": "Unique file identifier"
+          },
+          "download_url": {
+            "type": "string",
+            "title": "Download Url",
+            "description": "Pre-signed URL for file download"
+          },
+          "expires_at": {
+            "type": "string",
+            "title": "Expires At",
+            "description": "ISO timestamp for URL expiration"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file_id",
+          "download_url",
+          "expires_at"
+        ],
+        "title": "ChatFileDownloadResponse",
+        "description": "Response with a pre-signed download URL for a chat file."
+      },
+      "ChatFileExtractedImage": {
+        "properties": {
+          "image_id": {
+            "type": "string",
+            "title": "Image Id",
+            "description": "Stable image identifier within the extracted file"
+          },
+          "content_type": {
+            "type": "string",
+            "title": "Content Type",
+            "description": "MIME type of the extracted image"
+          },
+          "filename": {
+            "type": "string",
+            "title": "Filename",
+            "description": "Filename of the extracted image artifact"
+          },
+          "download_url": {
+            "type": "string",
+            "title": "Download Url",
+            "description": "Pre-signed download URL for the extracted image"
+          }
+        },
+        "type": "object",
+        "required": [
+          "image_id",
+          "content_type",
+          "filename",
+          "download_url"
+        ],
+        "title": "ChatFileExtractedImage",
+        "description": "Extracted image artifact metadata for a chat file."
+      },
+      "ChatFileInfo": {
+        "properties": {
+          "file_id": {
+            "type": "string",
+            "title": "File Id",
+            "description": "Unique file identifier"
+          },
+          "filename": {
+            "type": "string",
+            "title": "Filename",
+            "description": "Original filename"
+          },
+          "content_type": {
+            "type": "string",
+            "title": "Content Type",
+            "description": "MIME type of the file"
+          },
+          "size": {
+            "type": "integer",
+            "title": "Size",
+            "description": "File size in bytes"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ChatFileStatus",
+            "description": "Ingestion status"
+          },
+          "uploaded_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Uploaded At",
+            "description": "ISO timestamp for upload"
+          },
+          "extracted_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Extracted At",
+            "description": "ISO timestamp for extraction"
+          },
+          "source_key": {
+            "type": "string",
+            "title": "Source Key",
+            "description": "S3 key for the original file"
+          },
+          "extracted_text_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Extracted Text Key",
+            "description": "S3 key for extracted text (if available)"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error",
+            "description": "Extraction error details (if any)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file_id",
+          "filename",
+          "content_type",
+          "size",
+          "status",
+          "source_key"
+        ],
+        "title": "ChatFileInfo",
+        "description": "Metadata for an uploaded chat file."
+      },
+      "ChatFileInitRequest": {
+        "properties": {
+          "filename": {
+            "type": "string",
+            "title": "Filename",
+            "description": "Original filename"
+          },
+          "content_type": {
+            "type": "string",
+            "title": "Content Type",
+            "description": "MIME type of the file"
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Size",
+            "description": "File size in bytes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "filename",
+          "content_type",
+          "size"
+        ],
+        "title": "ChatFileInitRequest",
+        "description": "Request to initialize a file upload."
+      },
+      "ChatFileInitResponse": {
+        "properties": {
+          "file_id": {
+            "type": "string",
+            "title": "File Id",
+            "description": "Unique file identifier"
+          },
+          "upload_url": {
+            "type": "string",
+            "title": "Upload Url",
+            "description": "Pre-signed URL for direct upload"
+          },
+          "upload_headers": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Upload Headers",
+            "description": "Headers required for upload (e.g., Content-Type)"
+          },
+          "expires_at": {
+            "type": "string",
+            "title": "Expires At",
+            "description": "ISO timestamp for URL expiration"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file_id",
+          "upload_url",
+          "upload_headers",
+          "expires_at"
+        ],
+        "title": "ChatFileInitResponse",
+        "description": "Response with pre-signed upload URL."
+      },
+      "ChatFileStatus": {
+        "type": "string",
+        "enum": [
+          "initiated",
+          "uploaded",
+          "extracted",
+          "failed"
+        ],
+        "title": "ChatFileStatus",
+        "description": "Status for chat file ingestion."
+      },
+      "ChatFileTextResponse": {
+        "properties": {
+          "file_id": {
+            "type": "string",
+            "title": "File Id",
+            "description": "Unique file identifier"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text",
+            "description": "Extracted text (possibly truncated)"
+          },
+          "truncated": {
+            "type": "boolean",
+            "title": "Truncated",
+            "description": "Whether the returned text was truncated"
+          },
+          "images": {
+            "items": {
+              "$ref": "#/components/schemas/ChatFileExtractedImage"
+            },
+            "type": "array",
+            "title": "Images",
+            "description": "Extracted image artifacts for image-capable files (for example DOCX)."
+          }
+        },
+        "type": "object",
+        "required": [
+          "file_id",
+          "text",
+          "truncated"
+        ],
+        "title": "ChatFileTextResponse",
+        "description": "Response for fetching extracted file text."
+      },
+      "ChatTablePreview": {
+        "properties": {
+          "columns": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Columns",
+            "description": "Column names in order"
+          },
+          "rows": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Rows",
+            "description": "Preview rows as list of objects"
+          },
+          "row_count": {
+            "type": "integer",
+            "title": "Row Count",
+            "description": "Total row count in the source file"
+          }
+        },
+        "type": "object",
+        "required": [
+          "columns",
+          "rows",
+          "row_count"
+        ],
+        "title": "ChatTablePreview",
+        "description": "Tabular preview for CSV/XLSX uploads."
+      },
+      "CheckFrequency": {
+        "type": "string",
+        "enum": [
+          "daily",
+          "weekly",
+          "hourly",
+          "every_6_hours"
+        ],
+        "title": "CheckFrequency",
+        "description": "Predefined check frequencies for tracking.\n\nThe web tracking schedule runs daily at 9 AM Eastern.\nDaily trackings are checked every run; weekly trackings\nare checked once per week (on Saturdays)."
+      },
+      "CreateSearchRequest": {
+        "properties": {
+          "query": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Query"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "frequency": {
+            "$ref": "#/components/schemas/CheckFrequency",
+            "default": "daily"
+          }
+        },
+        "type": "object",
+        "required": [
+          "query"
+        ],
+        "title": "CreateSearchRequest",
+        "description": "Request to create a search tracking."
+      },
+      "CreateTrackingResponse": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "Success"
+          },
+          "tracking": {
+            "$ref": "#/components/schemas/TrackingItem"
+          }
+        },
+        "type": "object",
+        "required": [
+          "success",
+          "tracking"
+        ],
+        "title": "CreateTrackingResponse",
+        "description": "Response after creating a tracking."
+      },
+      "CreateWebpageRequest": {
+        "properties": {
+          "url": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Url"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "frequency": {
+            "$ref": "#/components/schemas/CheckFrequency",
+            "default": "daily"
+          }
+        },
+        "type": "object",
+        "required": [
+          "url"
+        ],
+        "title": "CreateWebpageRequest",
+        "description": "Request to create a webpage tracking."
+      },
+      "DeleteTrackingResponse": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "Success"
+          },
+          "tracking_id": {
+            "type": "string",
+            "title": "Tracking Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "success",
+          "tracking_id"
+        ],
+        "title": "DeleteTrackingResponse",
+        "description": "Response after deleting a tracking."
+      },
+      "DeviceLocation": {
+        "properties": {
+          "city": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "City"
+          },
+          "region": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Region"
+          },
+          "country": {
+            "type": "string",
+            "title": "Country"
+          },
+          "countryCode": {
+            "type": "string",
+            "title": "Countrycode"
+          }
+        },
+        "type": "object",
+        "required": [
+          "country",
+          "countryCode"
+        ],
+        "title": "DeviceLocation",
+        "description": "Location derived from IP geolocation."
+      },
+      "DeviceRecord": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "browser": {
+            "type": "string",
+            "title": "Browser"
+          },
+          "browserVersion": {
+            "type": "string",
+            "title": "Browserversion"
+          },
+          "os": {
+            "type": "string",
+            "title": "Os"
+          },
+          "osVersion": {
+            "type": "string",
+            "title": "Osversion"
+          },
+          "deviceType": {
+            "type": "string",
+            "title": "Devicetype"
+          },
+          "screenResolution": {
+            "type": "string",
+            "title": "Screenresolution"
+          },
+          "timezone": {
+            "type": "string",
+            "title": "Timezone"
+          },
+          "language": {
+            "type": "string",
+            "title": "Language"
+          },
+          "ipAddress": {
+            "type": "string",
+            "title": "Ipaddress"
+          },
+          "location": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DeviceLocation"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "title": "Createdat"
+          },
+          "lastActiveAt": {
+            "type": "string",
+            "title": "Lastactiveat"
+          },
+          "userAgent": {
+            "type": "string",
+            "title": "Useragent"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "browser",
+          "browserVersion",
+          "os",
+          "osVersion",
+          "deviceType",
+          "screenResolution",
+          "timezone",
+          "language",
+          "ipAddress",
+          "createdAt",
+          "lastActiveAt",
+          "userAgent"
+        ],
+        "title": "DeviceRecord",
+        "description": "Device record stored in Auth0 user_metadata."
+      },
+      "FredObservation": {
+        "properties": {
+          "date": {
+            "type": "string",
+            "title": "Date",
+            "description": "YYYY-MM-DD"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value",
+            "description": "Numeric value, or null for missing '.'"
+          }
+        },
+        "type": "object",
+        "required": [
+          "date"
+        ],
+        "title": "FredObservation"
+      },
+      "FredSeriesResponse": {
+        "properties": {
+          "series_id": {
+            "type": "string",
+            "title": "Series Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "frequency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Frequency"
+          },
+          "units": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Units"
+          },
+          "seasonal_adjustment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seasonal Adjustment"
+          },
+          "last_updated": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Updated"
+          },
+          "observations": {
+            "items": {
+              "$ref": "#/components/schemas/FredObservation"
+            },
+            "type": "array",
+            "title": "Observations"
+          }
+        },
+        "type": "object",
+        "required": [
+          "series_id",
+          "title",
+          "observations"
+        ],
+        "title": "FredSeriesResponse"
+      },
+      "FredSeriesSearchItem": {
+        "properties": {
+          "series_id": {
+            "type": "string",
+            "title": "Series Id",
+            "description": "FRED series id, e.g. CPIAUCSL"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "Human title"
+          },
+          "frequency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Frequency",
+            "description": "Frequency, e.g. Monthly"
+          },
+          "units": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Units",
+            "description": "Units, e.g. Index 1982-1984=100"
+          },
+          "seasonal_adjustment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seasonal Adjustment",
+            "description": "Seasonal adjustment short label"
+          },
+          "last_updated": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Updated",
+            "description": "ISO timestamp if provided by FRED"
+          }
+        },
+        "type": "object",
+        "required": [
+          "series_id",
+          "title"
+        ],
+        "title": "FredSeriesSearchItem",
+        "description": "A single series result from /fred/series/search."
+      },
+      "FredSeriesSearchResponse": {
+        "properties": {
+          "query": {
+            "type": "string",
+            "title": "Query"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/FredSeriesSearchItem"
+            },
+            "type": "array",
+            "title": "Results"
+          }
+        },
+        "type": "object",
+        "required": [
+          "query",
+          "count",
+          "results"
+        ],
+        "title": "FredSeriesSearchResponse"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "ListDevicesResponse": {
+        "properties": {
+          "devices": {
+            "items": {
+              "$ref": "#/components/schemas/DeviceRecord"
+            },
+            "type": "array",
+            "title": "Devices"
+          },
+          "currentDeviceId": {
+            "type": "string",
+            "title": "Currentdeviceid"
+          },
+          "maxDevices": {
+            "type": "integer",
+            "title": "Maxdevices",
+            "default": 10
+          }
+        },
+        "type": "object",
+        "required": [
+          "devices",
+          "currentDeviceId"
+        ],
+        "title": "ListDevicesResponse",
+        "description": "Response from list devices endpoint."
+      },
+      "PerigonProxyRequest": {
+        "properties": {
+          "path": {
+            "type": "string",
+            "title": "Path",
+            "description": "Perigon API path beginning with /v2/, e.g. /v2/answers"
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "GET",
+              "POST"
+            ],
+            "title": "Method",
+            "description": "HTTP method for the upstream Perigon request",
+            "default": "GET"
+          },
+          "query": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Query",
+            "description": "Query parameters forwarded to Perigon"
+          },
+          "body": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Body",
+            "description": "JSON body (for POST requests)"
+          },
+          "timeout_ms": {
+            "type": "integer",
+            "maximum": 60000.0,
+            "minimum": 1000.0,
+            "title": "Timeout Ms",
+            "description": "Upstream timeout in milliseconds (max 60000)",
+            "default": 20000
+          }
+        },
+        "type": "object",
+        "required": [
+          "path"
+        ],
+        "title": "PerigonProxyRequest"
+      },
+      "PerigonProxyResponse": {
+        "properties": {
+          "provider": {
+            "type": "string",
+            "title": "Provider",
+            "default": "perigon"
+          },
+          "path": {
+            "type": "string",
+            "title": "Path"
+          },
+          "method": {
+            "type": "string",
+            "title": "Method"
+          },
+          "status": {
+            "type": "integer",
+            "title": "Status"
+          },
+          "data": {
+            "title": "Data"
+          }
+        },
+        "type": "object",
+        "required": [
+          "path",
+          "method",
+          "status",
+          "data"
+        ],
+        "title": "PerigonProxyResponse"
+      },
+      "PreferencesResponse": {
+        "properties": {
+          "theme": {
+            "type": "string",
+            "title": "Theme",
+            "description": "UI theme: system, light, dark, or omni-blue",
+            "default": "system"
+          },
+          "font_size": {
+            "type": "string",
+            "title": "Font Size",
+            "description": "Font size: smaller, small, default, large, or larger",
+            "default": "default"
+          },
+          "use_pointer_cursor": {
+            "type": "boolean",
+            "title": "Use Pointer Cursor",
+            "description": "Whether to use pointer cursor style",
+            "default": true
+          },
+          "terminal_model_id": {
+            "type": "string",
+            "title": "Terminal Model Id",
+            "description": "Default model ID for OMNI Terminal",
+            "default": "claude-sonnet-4-20250514"
+          },
+          "audio_playback_speed": {
+            "type": "number",
+            "title": "Audio Playback Speed",
+            "description": "Audio player playback speed (0.5 to 2.0)",
+            "default": 1.25
+          },
+          "live_market_alerts_enabled": {
+            "type": "boolean",
+            "title": "Live Market Alerts Enabled",
+            "description": "Enable market open/close announcements on the Live page",
+            "default": true
+          },
+          "live_vix_alerts_enabled": {
+            "type": "boolean",
+            "title": "Live Vix Alerts Enabled",
+            "description": "Enable VIX movement alerts on the Live page",
+            "default": true
+          },
+          "live_vix_threshold": {
+            "type": "integer",
+            "title": "Live Vix Threshold",
+            "description": "Minimum VIX % change to trigger alert (10, 15, 20, 25, 35, or 50)",
+            "default": 10
+          },
+          "magnetic_cursor_enabled": {
+            "type": "boolean",
+            "title": "Magnetic Cursor Enabled",
+            "description": "Enable magnetic cursor effects on interactive elements",
+            "default": true
+          },
+          "magnetic_cursor_strength": {
+            "type": "number",
+            "title": "Magnetic Cursor Strength",
+            "description": "Magnetic cursor strength: 0.05 (Light), 0.1 (Medium), 0.15 (Strong)",
+            "default": 0.05
+          },
+          "animate_cursor": {
+            "type": "boolean",
+            "title": "Animate Cursor",
+            "description": "Replace OS cursor with animated cursor",
+            "default": false
+          },
+          "command_menu_expanded": {
+            "type": "boolean",
+            "title": "Command Menu Expanded",
+            "description": "Whether command menu shows preview panel on desktop",
+            "default": true
+          },
+          "alert_email_notifications_enabled": {
+            "type": "boolean",
+            "title": "Alert Email Notifications Enabled",
+            "description": "Send email digest when new web tracking alerts arrive",
+            "default": false
+          },
+          "alert_cadence": {
+            "type": "string",
+            "title": "Alert Cadence",
+            "description": "Alert digest frequency: daily, weekly, or monthly",
+            "default": "weekly"
+          },
+          "subscribe_13f_reports": {
+            "type": "boolean",
+            "title": "Subscribe 13F Reports",
+            "description": "Subscribe to 13F filing alerts",
+            "default": true
+          },
+          "subscribe_etf_holdings": {
+            "type": "boolean",
+            "title": "Subscribe Etf Holdings",
+            "description": "Subscribe to ETF holdings change alerts",
+            "default": true
+          },
+          "subscribe_portfolio_alerts": {
+            "type": "boolean",
+            "title": "Subscribe Portfolio Alerts",
+            "description": "Subscribe to portfolio alerts",
+            "default": true
+          },
+          "subscribe_search_alerts": {
+            "type": "boolean",
+            "title": "Subscribe Search Alerts",
+            "description": "Subscribe to web search/webpage monitoring alerts",
+            "default": true
+          },
+          "subscribe_sec_filings": {
+            "type": "boolean",
+            "title": "Subscribe Sec Filings",
+            "description": "Subscribe to SEC filing alerts",
+            "default": true
+          },
+          "portfolio_visible_columns": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Portfolio Visible Columns",
+            "description": "Visible column IDs in portfolio table (None = use defaults)"
+          },
+          "portfolio_group_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Portfolio Group By",
+            "description": "Portfolio table grouping: exchange, sector, market_cap, or null"
+          },
+          "portfolio_last_period_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Portfolio Last Period Date",
+            "description": "Last date the user viewed portfolio (for period reset logic)"
+          },
+          "recent_symbols": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recent Symbols",
+            "description": "Recently visited symbols [{symbol, name, exchange, visited_at}]"
+          },
+          "favorites": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Favorites",
+            "description": "User-favorited terminal pages [{path, label, position}]"
+          }
+        },
+        "type": "object",
+        "title": "PreferencesResponse",
+        "description": "User preferences for the OMNI app."
+      },
+      "PreferencesUpdateRequest": {
+        "properties": {
+          "theme": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Theme",
+            "description": "UI theme: system, light, dark, or omni-blue"
+          },
+          "font_size": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Font Size",
+            "description": "Font size: smaller, small, default, large, or larger"
+          },
+          "use_pointer_cursor": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Use Pointer Cursor",
+            "description": "Whether to use pointer cursor style"
+          },
+          "terminal_model_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Terminal Model Id",
+            "description": "Default model ID for OMNI Terminal"
+          },
+          "audio_playback_speed": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audio Playback Speed",
+            "description": "Audio player playback speed (0.5 to 2.0)"
+          },
+          "live_market_alerts_enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Live Market Alerts Enabled",
+            "description": "Enable market open/close announcements on the Live page"
+          },
+          "live_vix_alerts_enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Live Vix Alerts Enabled",
+            "description": "Enable VIX movement alerts on the Live page"
+          },
+          "live_vix_threshold": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Live Vix Threshold",
+            "description": "Minimum VIX % change to trigger alert (10, 15, 20, 25, 35, or 50)"
+          },
+          "magnetic_cursor_enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Magnetic Cursor Enabled",
+            "description": "Enable magnetic cursor effects on interactive elements"
+          },
+          "magnetic_cursor_strength": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Magnetic Cursor Strength",
+            "description": "Magnetic cursor strength: 0.05 (Light), 0.1 (Medium), 0.15 (Strong)"
+          },
+          "animate_cursor": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Animate Cursor",
+            "description": "Replace OS cursor with animated cursor"
+          },
+          "command_menu_expanded": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Command Menu Expanded",
+            "description": "Whether command menu shows preview panel on desktop"
+          },
+          "alert_email_notifications_enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alert Email Notifications Enabled",
+            "description": "Send email digest when new web tracking alerts arrive"
+          },
+          "alert_cadence": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alert Cadence",
+            "description": "Alert digest frequency: daily, weekly, or monthly"
+          },
+          "subscribe_13f_reports": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subscribe 13F Reports",
+            "description": "Subscribe to 13F filing alerts"
+          },
+          "subscribe_etf_holdings": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subscribe Etf Holdings",
+            "description": "Subscribe to ETF holdings change alerts"
+          },
+          "subscribe_portfolio_alerts": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subscribe Portfolio Alerts",
+            "description": "Subscribe to portfolio alerts"
+          },
+          "subscribe_search_alerts": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subscribe Search Alerts",
+            "description": "Subscribe to web search/webpage monitoring alerts"
+          },
+          "subscribe_sec_filings": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subscribe Sec Filings",
+            "description": "Subscribe to SEC filing alerts"
+          },
+          "portfolio_visible_columns": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Portfolio Visible Columns",
+            "description": "Visible column IDs in portfolio table"
+          },
+          "portfolio_group_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Portfolio Group By",
+            "description": "Portfolio table grouping: exchange, sector, market_cap, or null"
+          },
+          "portfolio_last_period_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Portfolio Last Period Date",
+            "description": "Last date the user viewed portfolio (for period reset logic)"
+          },
+          "recent_symbols": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recent Symbols",
+            "description": "Recently visited symbols [{symbol, name, exchange, visited_at}]"
+          },
+          "favorites": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Favorites",
+            "description": "User-favorited terminal pages [{path, label, position}]"
+          }
+        },
+        "type": "object",
+        "title": "PreferencesUpdateRequest",
+        "description": "Request to partially update user preferences."
+      },
+      "ProfileResponse": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id",
+            "description": "Auth0 user ID (sub claim)"
+          },
+          "full_name": {
+            "type": "string",
+            "title": "Full Name",
+            "description": "User's full name"
+          },
+          "username": {
+            "type": "string",
+            "title": "Username",
+            "description": "User's username (display name)"
+          },
+          "avatar_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Url",
+            "description": "URL to user's avatar image"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email",
+            "description": "User's email address"
+          },
+          "preferences": {
+            "$ref": "#/components/schemas/PreferencesResponse",
+            "description": "User preferences"
+          },
+          "podcast_feed_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Podcast Feed Url",
+            "description": "User's personal podcast RSS feed URL for podcast apps"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At",
+            "description": "ISO datetime when profile was created"
+          },
+          "updated_at": {
+            "type": "string",
+            "title": "Updated At",
+            "description": "ISO datetime when profile was last updated"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "full_name",
+          "username",
+          "email",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ProfileResponse",
+        "description": "User profile with preferences."
+      },
+      "ProfileUpdateRequest": {
+        "properties": {
+          "full_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Full Name",
+            "description": "User's full name"
+          },
+          "username": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Username",
+            "description": "User's username (display name)"
+          },
+          "avatar_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Url",
+            "description": "URL to user's avatar image"
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email",
+            "description": "User's email address"
+          },
+          "preferences": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PreferencesUpdateRequest"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Partial preferences update"
+          }
+        },
+        "type": "object",
+        "title": "ProfileUpdateRequest",
+        "description": "Request to partially update user profile."
+      },
+      "PythonRunnerArtifact": {
+        "properties": {
+          "filename": {
+            "type": "string",
+            "title": "Filename",
+            "description": "Artifact filename"
+          },
+          "mimeType": {
+            "type": "string",
+            "title": "Mimetype",
+            "description": "Artifact MIME type"
+          },
+          "contentBase64": {
+            "type": "string",
+            "title": "Contentbase64",
+            "description": "Artifact bytes encoded as base64"
+          }
+        },
+        "type": "object",
+        "required": [
+          "filename",
+          "mimeType",
+          "contentBase64"
+        ],
+        "title": "PythonRunnerArtifact"
+      },
+      "PythonRunnerExecuteRequest": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code",
+            "description": "Python code to execute"
+          },
+          "stdin": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stdin",
+            "description": "Optional stdin payload",
+            "default": ""
+          },
+          "timeoutMs": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timeoutms",
+            "description": "Execution timeout in milliseconds",
+            "default": 30000
+          }
+        },
+        "type": "object",
+        "required": [
+          "code"
+        ],
+        "title": "PythonRunnerExecuteRequest"
+      },
+      "PythonRunnerExecuteResponse": {
+        "properties": {
+          "stdout": {
+            "type": "string",
+            "title": "Stdout",
+            "description": "Captured stdout",
+            "default": ""
+          },
+          "stderr": {
+            "type": "string",
+            "title": "Stderr",
+            "description": "Captured stderr",
+            "default": ""
+          },
+          "timedOut": {
+            "type": "boolean",
+            "title": "Timedout",
+            "description": "Whether execution timed out",
+            "default": false
+          },
+          "truncated": {
+            "type": "boolean",
+            "title": "Truncated",
+            "description": "Whether stdout/stderr were truncated",
+            "default": false
+          },
+          "exitCode": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exitcode",
+            "description": "Process exit code"
+          },
+          "signal": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Signal",
+            "description": "Termination signal if any"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error",
+            "description": "Execution/system error"
+          },
+          "artifacts": {
+            "items": {
+              "$ref": "#/components/schemas/PythonRunnerArtifact"
+            },
+            "type": "array",
+            "title": "Artifacts"
+          }
+        },
+        "type": "object",
+        "title": "PythonRunnerExecuteResponse"
+      },
+      "RefreshTokenRequest": {
+        "properties": {
+          "refresh_token": {
+            "type": "string",
+            "title": "Refresh Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "refresh_token"
+        ],
+        "title": "RefreshTokenRequest"
+      },
+      "RefreshTokenResponse": {
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "title": "Access Token"
+          },
+          "expires_in": {
+            "type": "integer",
+            "title": "Expires In"
+          },
+          "refresh_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Refresh Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "access_token",
+          "expires_in"
+        ],
+        "title": "RefreshTokenResponse"
+      },
+      "RegisterDeviceRequest": {
+        "properties": {
+          "deviceId": {
+            "type": "string",
+            "title": "Deviceid"
+          },
+          "deviceName": {
+            "type": "string",
+            "title": "Devicename"
+          },
+          "browser": {
+            "type": "string",
+            "title": "Browser"
+          },
+          "browserVersion": {
+            "type": "string",
+            "title": "Browserversion"
+          },
+          "os": {
+            "type": "string",
+            "title": "Os"
+          },
+          "osVersion": {
+            "type": "string",
+            "title": "Osversion"
+          },
+          "deviceType": {
+            "type": "string",
+            "title": "Devicetype"
+          },
+          "screenResolution": {
+            "type": "string",
+            "title": "Screenresolution"
+          },
+          "timezone": {
+            "type": "string",
+            "title": "Timezone"
+          },
+          "language": {
+            "type": "string",
+            "title": "Language"
+          }
+        },
+        "type": "object",
+        "required": [
+          "deviceId",
+          "deviceName",
+          "browser",
+          "browserVersion",
+          "os",
+          "osVersion",
+          "deviceType",
+          "screenResolution",
+          "timezone",
+          "language"
+        ],
+        "title": "RegisterDeviceRequest",
+        "description": "Request to register or update a device."
+      },
+      "RevokeDeviceResponse": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "Success"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "remainingDevices": {
+            "type": "integer",
+            "title": "Remainingdevices"
+          }
+        },
+        "type": "object",
+        "required": [
+          "success",
+          "message",
+          "remainingDevices"
+        ],
+        "title": "RevokeDeviceResponse",
+        "description": "Response when a device is revoked."
+      },
+      "RevokeOthersRequest": {
+        "properties": {
+          "currentDeviceId": {
+            "type": "string",
+            "title": "Currentdeviceid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "currentDeviceId"
+        ],
+        "title": "RevokeOthersRequest",
+        "description": "Request to revoke all other devices."
+      },
+      "TrackingItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "search",
+              "webpage"
+            ],
+            "title": "Type"
+          },
+          "query": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Query"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "frequency": {
+            "type": "string",
+            "title": "Frequency"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "last_checked_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Checked At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "frequency",
+          "enabled",
+          "created_at"
+        ],
+        "title": "TrackingItem",
+        "description": "A tracked search or webpage."
+      },
+      "TrackingsResponse": {
+        "properties": {
+          "searches": {
+            "items": {
+              "$ref": "#/components/schemas/TrackingItem"
+            },
+            "type": "array",
+            "title": "Searches"
+          },
+          "webpages": {
+            "items": {
+              "$ref": "#/components/schemas/TrackingItem"
+            },
+            "type": "array",
+            "title": "Webpages"
+          },
+          "search_count": {
+            "type": "integer",
+            "title": "Search Count"
+          },
+          "webpage_count": {
+            "type": "integer",
+            "title": "Webpage Count"
+          },
+          "max_searches": {
+            "type": "integer",
+            "title": "Max Searches"
+          },
+          "max_webpages": {
+            "type": "integer",
+            "title": "Max Webpages"
+          }
+        },
+        "type": "object",
+        "required": [
+          "searches",
+          "webpages",
+          "search_count",
+          "webpage_count",
+          "max_searches",
+          "max_webpages"
+        ],
+        "title": "TrackingsResponse",
+        "description": "Response containing user's trackings."
+      },
+      "UpdateTrackingRequest": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enabled"
+          }
+        },
+        "type": "object",
+        "title": "UpdateTrackingRequest",
+        "description": "Request to update a tracking."
+      },
+      "UpdateTrackingResponse": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "Success"
+          },
+          "tracking": {
+            "$ref": "#/components/schemas/TrackingItem"
+          }
+        },
+        "type": "object",
+        "required": [
+          "success",
+          "tracking"
+        ],
+        "title": "UpdateTrackingResponse",
+        "description": "Response after updating a tracking."
+      },
+      "UserInfo": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "picture": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Picture"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "email",
+          "name",
+          "picture"
+        ],
+        "title": "UserInfo"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "WatchlistCreateRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "tickers": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tickers"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "tickers"
+        ],
+        "title": "WatchlistCreateRequest"
+      },
+      "WatchlistUpdateRequest": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "tickers": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tickers"
+          }
+        },
+        "type": "object",
+        "title": "WatchlistUpdateRequest"
+      }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.omnibrief.app",
+      "description": "Production"
+    }
+  ]
+}
