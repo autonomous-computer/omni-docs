@@ -1,66 +1,65 @@
 ---
 title: Client API Endpoints (Deep Guide)
-description: Deep, endpoint-by-endpoint integration playbooks for OMNI Client API v1 and hosted MCP transport.
+description: Endpoint-by-endpoint implementation playbooks, success/failure contracts, and production integration patterns.
 ---
 
 # Client API Endpoints (Deep Guide)
 
-This page is the endpoint-level implementation guide.
-Use it with:
+This page is the operational companion to generated schema docs.
 
-- `Client API (Generated)` in the left nav for schema-level fields/examples
+Use with:
+
+- `Client API (Generated)` for schema field detail
 - `/sources/client-api-reference` for compact endpoint catalog
+- `/sources/client-api-errors` for machine-code handling
 
-## Global rules for every endpoint
+## Global integration contract
 
-### Authentication
-
-All endpoints require:
+### Required auth
 
 ```http
 Authorization: Bearer omni_live_...
 ```
 
-### Request correlation
+### Recommended global headers
 
-Send `X-Request-Id` on every request and log OMNI's echoed value.
+```http
+Omni-Version: 2026-02-18
+X-Request-Id: req_...
+```
 
-For failures:
+### Write-safety
 
-- REST: `error.request_id`
-- Hosted MCP: `error.data.request_id`
-
-### Idempotency
-
-Required for write-like operations:
+`Idempotency-Key` is required for:
 
 - `POST /v1/mcp/invoke`
-- hosted MCP `tools/call` via `POST /mcp`
-
-If you retry, reuse the same `Idempotency-Key`.
+- `POST /mcp` with `method=tools/call`
 
 ### Billing
 
-- `2xx/3xx` billable
-- `4xx/5xx` non-billable
-- idempotency replays are not double-billed
-
-## Endpoint playbooks
+- success (`2xx/3xx`) billable
+- failed calls (`4xx/5xx`) non-billable
+- replayed idempotent responses non-billable
 
 ## `GET /v1/health`
 
-Use when:
+Purpose:
 
-- validating key + allowlist access
-- validating basic request/response and request-id plumbing
+- key/auth sanity check
+- request-id plumbing verification
 
-Expected success shape:
+Success example:
 
-- `object = health`
-- `status = ok`
-- `mode = live|test`
+```json
+{
+  "object": "health",
+  "status": "ok",
+  "request_id": "req_...",
+  "mode": "live"
+}
+```
 
-Common failures:
+High-signal failures:
 
 - `missing_api_key`
 - `invalid_api_key`
@@ -68,79 +67,104 @@ Common failures:
 
 ## `GET /v1/openapi.json`
 
-Use when:
+Purpose:
 
-- generating clients
-- diffing contracts in CI
-- powering API explorer workflows
+- canonical contract source for SDK generation and CI drift checks
 
-Integration note:
+Production pattern:
 
-- pin and diff this schema in CI before upgrading pinned `Omni-Version`
+1. fetch schema with pinned `Omni-Version`
+2. diff against approved baseline
+3. block promotion on breaking diff
 
 ## `GET /v1/fred/search`
 
-Use when:
+Request:
 
-- searching for relevant economic time-series metadata
+```http
+GET /v1/fred/search?q=inflation&limit=5
+```
 
-Inputs:
+Parameters:
 
-- `q` required
-- `limit` optional, bounded
+- `q` required string
+- `limit` optional integer `1-50` (default `10`)
 
-Production patterns:
+Success shape:
 
-- cache short-lived search results by normalized `(q, limit)`
-- enforce local query length/range validation to reduce `400` churn
+```json
+{
+  "object": "fred.search_result",
+  "data": {
+    "count": 5,
+    "items": []
+  }
+}
+```
 
 Common failures:
 
 - `missing_q`
-- `insufficient_scope` (missing `fred.read`)
-- `fred_invalid_request` / `fred_upstream_error`
+- `invalid_parameter`
+- `fred_invalid_request`
+- `fred_upstream_error`
 
 ## `GET /v1/fred/series/{series_id}`
 
-Use when:
+Request:
 
-- fetching observations for charting/analysis
+```http
+GET /v1/fred/series/CPIAUCSL?observation_start=2024-01-01&limit=24
+```
 
-Inputs:
+Parameters:
 
-- `series_id` required
-- optional date bounds and limit
+- `series_id` required path value
+- `observation_start`/`observation_end` optional `YYYY-MM-DD`
+- `limit` optional integer `1-1000`
 
-Production patterns:
+Success shape:
 
-- cache by `(series_id, observation_start, observation_end, limit)`
-- protect downstream chart jobs from sparse/empty result sets
+```json
+{
+  "object": "fred.series_result",
+  "data": {
+    "series_id": "CPIAUCSL",
+    "observations": []
+  }
+}
+```
 
 Common failures:
 
 - `missing_series_id`
-- `insufficient_scope`
-- `fred_invalid_request` / `fred_upstream_error`
+- `invalid_parameter`
+- `fred_invalid_request`
+- `fred_upstream_error`
 
-## `GET /v1/mcp/tools` (legacy compatibility)
+## Legacy MCP compatibility routes
 
-Use when:
+## `GET /v1/mcp/tools`
 
-- maintaining legacy clients during migration
+Purpose:
+
+- legacy compatibility for non-JSON-RPC clients
 
 Required scope:
 
 - `mcp.tools.read`
 
-Migration recommendation:
+Returns deprecation headers:
 
-- move to hosted MCP `tools/list` as canonical path
+- `Deprecation: true`
+- `Sunset: 2026-08-31T00:00:00Z`
+- `Link: </sources/client-api-mcp-hosted>; rel="successor-version"`
 
-## `POST /v1/mcp/invoke` (legacy compatibility)
+## `POST /v1/mcp/invoke`
 
-Use when:
+Purpose:
 
-- maintaining legacy clients that are not JSON-RPC aware
+- legacy compatibility invocation route
 
 Required headers:
 
@@ -150,7 +174,16 @@ Idempotency-Key: idem_...
 Content-Type: application/json
 ```
 
-Common failures:
+Request body:
+
+```json
+{
+  "tool": "fred.search",
+  "arguments": { "q": "inflation", "limit": 3 }
+}
+```
+
+High-signal failures:
 
 - `missing_idempotency_key`
 - `invalid_json`
@@ -159,72 +192,110 @@ Common failures:
 - `idempotency_conflict`
 - `mcp_invocation_failed`
 
-Migration recommendation:
+## Hosted MCP transport
 
-- move to hosted MCP `tools/call`
+## `POST /mcp` (canonical)
 
-## Hosted MCP transport (`/mcp` and `/sse`)
-
-Hosted MCP is canonical for MCP clients.
-
-If you are not building around MCP tooling, prefer REST endpoints.
-
-### `POST /mcp`
-
-Core methods:
+Supported methods:
 
 - `initialize`
 - `notifications/initialized`
+- `ping`
 - `tools/list`
 - `tools/call`
-- `ping`
 
-Required scopes by method:
+Method-level requirements:
 
-- `tools/list`: `mcp.tools.read`
-- `tools/call`: `mcp.invoke` + tool scope
+| Method | Required scopes | Billable |
+| --- | --- | --- |
+| `initialize` | auth only | No |
+| `notifications/initialized` | auth only | No |
+| `ping` | auth only | No |
+| `tools/list` | `mcp.tools.read` | Yes (1 unit on success) |
+| `tools/call` | `mcp.invoke` + tool scopes | Yes (1 unit on first success) |
 
-Idempotency:
+Canonical sequence:
 
-- required for `tools/call`
-- optional/unused for read-only methods
+1. `initialize`
+2. `notifications/initialized`
+3. `tools/list`
+4. `tools/call`
 
-### `GET /mcp`
+`tools/call` example:
 
-Use only when the client expects a stream transport channel.
-Most integrations can use `POST /mcp` only.
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 3,
+  "method": "tools/call",
+  "params": {
+    "name": "fred.search",
+    "arguments": { "q": "inflation", "limit": 2 }
+  }
+}
+```
 
-### `DELETE /mcp`
+Required header for `tools/call`:
 
-Close an active hosted session context.
-Use explicitly in long-lived client processes during shutdown.
+```http
+Idempotency-Key: idem_...
+```
 
-### `GET /sse`
+Replay behavior:
 
-Compatibility transport for clients expecting SSE bootstrap.
-Prefer `/mcp` for net-new integrations.
+- replayed response includes `Idempotency-Replayed: true`
+- replay remains non-billable
+
+## `GET /mcp`
+
+Purpose:
+
+- streamable transport metadata (`text/event-stream`)
+
+Billing:
+
+- zero-unit transport call
+
+## `DELETE /mcp`
+
+Purpose:
+
+- explicit session close
+
+Expected response:
+
+- `204 No Content`
+
+Billing:
+
+- zero-unit transport call
+
+## `GET /sse`
+
+Purpose:
+
+- SSE compatibility bootstrap for older MCP clients
+
+Recommendation:
+
+- use `/mcp` for net-new integrations
+
+Billing:
+
+- zero-unit transport call
 
 ## Endpoint readiness checklist
 
-- [ ] Explicit scope map per endpoint/method
-- [ ] Request ID propagation + logging verified
-- [ ] Idempotency implemented where required
-- [ ] Retry/backoff policy aligned with `/sources/client-api-retries`
-- [ ] Error handling based on machine fields only (`error.type`, `error.code`, JSON-RPC codes)
-- [ ] Billing behavior validated for success/failure/replay
-
-## Failure triage order
-
-1. Confirm auth key validity (`401` vs `403`).
-2. Confirm required scopes (`Omni-Required-Scopes` when present).
-3. Confirm payload shape and idempotency.
-4. Confirm upstream/transient behavior and retry posture.
-5. Escalate with `request_id` and endpoint/method context.
+- [ ] key scopes validated per endpoint/method
+- [ ] request-id propagation verified
+- [ ] idempotency enforced for write-like calls
+- [ ] retry policy aligned to `/sources/client-api-retries`
+- [ ] alerting keyed on machine fields, not message text
+- [ ] billing behavior validated for success/failure/replay
 
 ## Related docs
 
 - `/sources/client-api-reference`
-- `/sources/client-api-openapi`
 - `/sources/client-api-errors`
-- `/sources/client-api-retries`
 - `/sources/client-api-migrations`
+- `/sources/client-api-openapi`

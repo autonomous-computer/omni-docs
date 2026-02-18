@@ -1,64 +1,65 @@
 ---
 title: Webhook Operations Handbook
-description: Stripe-grade operational guidance for running OMNI Client API webhooks in production.
+description: Production operations runbook for OMNI webhook receivers: security, retries, observability, incident response, and replay.
 ---
 
 # Webhook Operations Handbook
 
-This page is the operations companion to `/sources/client-api-webhooks` (contract/spec).
+This page is the operations counterpart to `/sources/client-api-webhooks`.
 
-If you run webhooks in production, this page defines the minimum reliability and security posture.
+Use it to run webhook ingestion with Stripe-grade operational discipline.
 
-## Operating model
+## Minimum production posture
 
 Your receiver must be:
 
-- secure: verify signature (when enabled) and enforce replay window
-- idempotent: dedupe by `event.id`
+- secure: signature + replay-window checks when signing is enabled
 - durable: enqueue before ACK
-- observable: emit request/event-level telemetry
-- recoverable: support replay and DLQ handling
+- idempotent: dedupe on `event.id`
+- observable: track ingest, processing, and retry outcomes
+- recoverable: DLQ + replay tooling
 
 ## Reference architecture
 
-1. Ingress handler receives raw body + headers.
-2. Signature/timestamp checks run before JSON parse.
-3. Payload is persisted to queue/storage.
-4. Handler returns `2xx` immediately.
-5. Worker processes idempotently and records outcome.
+1. ingress endpoint receives raw body + headers
+2. signature/timestamp checks run before parse
+3. payload is durably enqueued
+4. endpoint ACKs immediately (`2xx`)
+5. worker processes idempotently
+6. failures route to retry or DLQ
 
-## Webhook payload and correlation fields
-
-Minimum fields your pipeline should persist:
+## Required persisted fields
 
 - `event.id`
 - `event.type`
 - `event.created`
-- `event.requestId` (originating OMNI API request)
+- `event.requestId`
 - ingress `X-Request-Id`
-- signature verification result
-- enqueue and processing timestamps
+- signature verification result and reason
+- attempt number and retry-exhausted state
+- enqueue timestamp and completion timestamp
 
-## HTTP response policy
+## Signature verification contract
 
-- return `2xx` only after durable enqueue
-- return `4xx` only for permanent validation failures
-- return `5xx` for transient infrastructure failures
+Signing payload:
 
-## Signature verification baseline
+```text
+{Omni-Timestamp}.{raw_body_bytes}
+```
 
-When signing is enabled, verify against raw bytes:
+Algorithm:
 
-`HMAC_SHA256(secret, "{Omni-Timestamp}.{raw_body}")`
+- HMAC-SHA256
+- lowercase hex digest
 
 Required controls:
 
-- enforce replay tolerance (default 300s)
-- constant-time signature comparison
-- strict raw-body verification (never parsed JSON)
-- dual-secret verification during rotation window
+- reject outside replay tolerance (default `300s`)
+- strict raw-body verification
+- constant-time compare
+- dual-secret validation during secret rotation
 
-### TypeScript (Node) verification snippet
+### TypeScript snippet
 
 ```ts
 import crypto from "node:crypto";
@@ -74,49 +75,51 @@ export function verifyOmniSignature(opts: {
   const ts = Number(opts.timestamp);
   if (!Number.isFinite(ts)) throw new Error("invalid Omni-Timestamp");
 
-  const age = Math.abs(Date.now() / 1000 - ts);
-  if (age > tolerance) throw new Error("event outside replay window");
+  const skew = Math.abs(Date.now() / 1000 - ts);
+  if (skew > tolerance) throw new Error("event outside replay window");
 
   const payload = Buffer.concat([Buffer.from(`${opts.timestamp}.`), opts.rawBody]);
-  const expectedHex = crypto.createHmac("sha256", opts.secret).update(payload).digest("hex");
-  const expected = Buffer.from(expectedHex, "hex");
-  const provided = Buffer.from(opts.signature, "hex");
-  if (expected.length !== provided.length) throw new Error("invalid signature");
-  if (!crypto.timingSafeEqual(expected, provided)) throw new Error("invalid signature");
+  const expected = crypto.createHmac("sha256", opts.secret).update(payload).digest("hex");
+  const expectedBuf = Buffer.from(expected, "hex");
+  const providedBuf = Buffer.from(opts.signature, "hex");
+  if (expectedBuf.length !== providedBuf.length) throw new Error("invalid signature");
+  if (!crypto.timingSafeEqual(expectedBuf, providedBuf)) throw new Error("invalid signature");
 }
 ```
 
-### Python verification snippet
+## Unsigned delivery handling (current beta reality)
 
-```python
-import hashlib
-import hmac
-import time
+If `Omni-Signature` is absent:
 
+1. treat delivery as unsigned, not malformed
+2. require unguessable endpoint path
+3. restrict source ingress with network controls where possible
+4. emit security alert on unsigned delivery
+5. continue durable enqueue + idempotent processing
 
-def verify_omni_signature(*, secret: str, timestamp: str, signature: str, raw_body: bytes, tolerance_seconds: int = 300) -> None:
-    ts = int(timestamp)
-    if abs(int(time.time()) - ts) > tolerance_seconds:
-        raise ValueError("event outside replay window")
+## Retry policy
 
-    payload = (timestamp + ".").encode("utf-8") + raw_body
-    expected = hmac.new(secret.encode("utf-8"), payload, hashlib.sha256).hexdigest()
-    if not hmac.compare_digest(expected, signature):
-        raise ValueError("invalid signature")
-```
+### Current internal-beta behavior (live)
 
-## Dedupe and idempotency contract
+Retryable classes:
 
-- dedupe key: `event.id`
-- retention window: minimum 7 days (recommended 30 days)
-- reject duplicates before worker business logic
-- enforce downstream idempotency by unique keys on business side effects
+- network failure (`status=0`)
+- `408`, `429`, `5xx`
 
-## Retry + DLQ policy (public-beta-ready target)
+Defaults:
 
-Recommended retry schedule for transient failures:
+- `maxAttempts=3`
+- `baseDelayMs=500`
+- exponential backoff + jitter
 
-| Attempt | Delay |
+Delivery diagnostics fields:
+
+- `attempts`
+- `retryExhausted`
+
+### Public-beta-ready target policy
+
+| Attempt | Delay target |
 | --- | --- |
 | 1 | immediate |
 | 2 | 1 minute |
@@ -125,72 +128,52 @@ Recommended retry schedule for transient failures:
 | 5 | 2 hours |
 | 6 | 12 hours |
 
-After terminal retry failure:
+After exhaustion:
 
-- route to DLQ with full metadata
-- require explicit operator replay decision
+- route to DLQ with full context
+- require explicit replay decision
 
-## Current internal-beta retry behavior (live)
+## SLOs and alerting
 
-For configured webhook endpoints, OMNI currently retries transient delivery failures with bounded attempts.
-
-- retryable classes: network failure (`status=0`), `408`, `429`, `5xx`
-- default max attempts: `3`
-- default base delay: `500ms`
-- backoff: exponential with jitter
-
-Delivery diagnostics expose:
-
-- `attempts`
-- `retryExhausted`
-
-Use these fields to separate transient failures from exhausted retries in incident triage.
-
-DLQ record minimum fields:
-
-- `event.id`, `event.type`
-- failure class (`signature`, `validation`, `dependency`, `timeout`, `unknown`)
-- last error payload/stack
-- first seen / last attempted timestamps
-- replay count
-
-## SLO targets (recommended)
+Recommended SLOs:
 
 - ingress ACK p95 `< 500ms`
-- successful processing rate `>= 99.9%`
-- replay success rate `>= 99%`
+- successful processing ratio `>= 99.9%`
+- replay success `>= 99%`
 - sustained DLQ growth `= 0`
+
+Recommended alerts:
+
+- signature failures > `0.5%` over 5m
+- enqueue failures > `0` over 5m
+- retry-exhausted deliveries > `0` over 15m
+- DLQ backlog growth over 30m
 
 ## Incident response matrix
 
-| Symptom | Likely cause | Immediate action | Hardening follow-up |
+| Symptom | Likely cause | Immediate action | Follow-up |
 | --- | --- | --- | --- |
-| Signature failures spike | wrong secret, raw-body mutation, clock skew | fail closed, validate NTP + secret, roll back receiver changes | add dual-secret rollout and fixture tests |
-| Duplicate side effects | dedupe gap or non-idempotent worker | pause processing, enforce event-id lock | add DB uniqueness and idempotent writes |
-| ACK timeout spike | blocking work in ingress path | move to queue-first ACK | add timeout budgets and ingress SLO alerts |
-| Rising DLQ volume | poison-pill events or dependency outage | isolate failing class, replay after fix | typed validators + automated classifier |
+| Signature failures spike | secret mismatch, raw-body mutation, clock skew | fail closed for signed events; verify secret + clock | add dual-secret rollout tests |
+| Duplicate business side effects | weak dedupe or non-idempotent consumer | pause processors; enforce `event.id` lock | add unique constraints and side-effect idempotency keys |
+| High ACK latency | heavy logic in ingress path | shift work to queue-first pattern | enforce handler timeout budgets |
+| Rising `retryExhausted` | persistent downstream dependency failure | isolate failing dependency and throttle replay | add dependency health checks and circuit breaker |
 
 ## Replay runbook
 
-1. Identify failed `event.id` and root-cause class.
-2. Patch code/config.
-3. Replay via replay tooling with original `event.id` context.
-4. Verify no duplicate side effects.
-5. Close incident with preventive action and monitor window.
+1. identify target `event.id` and failure class
+2. patch the root cause
+3. replay event with original correlation metadata
+4. verify no duplicate side effects
+5. close with preventive action and monitor window
 
-## Beta caveat
+## Gameday checklist
 
-In internal beta, signing and retry posture may vary by account/environment configuration. Build receiver behavior as if full signing and at-least-once retries are always active.
-
-## Production readiness checklist
-
-- [ ] raw-body signature verification tests pass
-- [ ] replay-window checks enabled
-- [ ] dedupe store in persistent DB/redis
-- [ ] queue-first ingress and thin handler
-- [ ] DLQ + replay tooling implemented
-- [ ] alerts on signature failures, enqueue failures, DLQ growth
-- [ ] runbook includes `event.id` + `request_id` correlation steps
+- [ ] signature failure simulation
+- [ ] clock-skew simulation
+- [ ] queue outage simulation
+- [ ] downstream timeout simulation
+- [ ] replay exercise from DLQ
+- [ ] postmortem template completion
 
 ## Related docs
 

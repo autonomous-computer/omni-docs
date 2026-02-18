@@ -1,20 +1,20 @@
 ---
 title: Client API Errors
-description: Error taxonomy, authoritative code registry, retry posture, and hosted MCP JSON-RPC mappings.
+description: Source-accurate error taxonomy, exhaustive code registry, JSON-RPC mappings, and retry posture for OMNI Client API.
 ---
 
 # Client API Errors
 
-OMNI Client API uses a stable, machine-readable error contract across REST (`/v1/...`) and hosted MCP (`/mcp`).
+OMNI Client API guarantees machine-readable failures across REST (`/v1/*`) and hosted MCP (`/mcp`).
 
-This page is the authoritative **v1 error-code registry** for integrations.
+This page is the authoritative v1.5 error contract.
 
-## Stability guarantees
+## Contract guarantees
 
-- `error.type` and `error.code` are stable and safe for programmatic branching.
-- `error.message` is human-readable and may change; never parse it.
-- `error.request_id` (or JSON-RPC `error.data.request_id`) is the support/debug join key.
-- During internal beta, new codes may be added. Existing codes are not silently repurposed.
+1. `error.type` and `error.code` are stable for programmatic branching.
+2. `error.message` is human-readable and can change; never parse it.
+3. `error.request_id` (REST) and `error.data.request_id` (MCP JSON-RPC) are required support correlation keys.
+4. New error codes can be added during beta; existing codes are not silently repurposed.
 
 ## REST error envelope
 
@@ -24,67 +24,69 @@ This page is the authoritative **v1 error-code registry** for integrations.
     "type": "invalid_request | auth_error | permission_error | rate_limit_error | api_error",
     "code": "machine_readable_code",
     "message": "Human-readable message",
-    "request_id": "req_xxx"
+    "request_id": "req_..."
   }
 }
 ```
 
-## Diagnostic headers to always log
+## Diagnostic headers to log on every failure
 
-- `X-Request-Id`: request correlation key
-- `Omni-Required-Scopes`: present on some `403 insufficient_scope`
-- `Idempotency-Replayed: true`: served from idempotency replay cache
-- `Retry-After`: present on `429` responses
+- `X-Request-Id`
+- `Omni-Required-Scopes` (on `403 insufficient_scope`)
+- `Retry-After` (on `429 rate_limit_exceeded`)
+- `Idempotency-Replayed: true` (idempotent replay responses)
 
-## HTTP category mapping
+## HTTP class mapping
 
-| `error.type` | Typical HTTP status |
+| `error.type` | Typical HTTP |
 | --- | --- |
 | `invalid_request` | 400, 409 |
 | `auth_error` | 401, 403 |
 | `permission_error` | 403 |
 | `rate_limit_error` | 429 |
-| `api_error` | 5xx |
+| `api_error` | 500, 502, 503, 504 |
 
-## Authoritative v1 REST code registry
+## Exhaustive v1.5 REST code registry
 
-Derived from OMNI source handlers in `webapp/client_api.py` and the hosted gateway adapter.
+Derived from live handlers in `webapp/client_api.py`.
 
 | `error.type` | `error.code` | HTTP | Retry? | Trigger |
 | --- | --- | --- | --- | --- |
-| `auth_error` | `missing_api_key` | 401 | No | Missing/malformed bearer header |
-| `auth_error` | `invalid_api_key` | 401 | No | Invalid key format, revoked key, or unauthorized resolver response |
-| `auth_error` | `auth_rejected` | 403 | No | Control-plane authentication denied |
+| `auth_error` | `missing_api_key` | 401 | No | Missing/malformed bearer token |
+| `auth_error` | `invalid_api_key` | 401 | No | Invalid format, revoked key, or unauthorized key resolution |
+| `auth_error` | `auth_rejected` | 403 | No | Key rejected by control plane |
 | `permission_error` | `insufficient_scope` | 403 | No | Required scope missing |
-| `rate_limit_error` | `rate_limit_exceeded` | 429 | Yes | Burst/sustained key rate limits exceeded |
-| `invalid_request` | `invalid_parameter` | 400 | No | Integer/parameter parsing failed |
-| `invalid_request` | `missing_q` | 400 | No | Missing `q` for `fred.search` |
-| `invalid_request` | `missing_series_id` | 400 | No | Missing `series_id` for `fred.series` |
-| `invalid_request` | `unknown_tool` | 400 | No | Unknown tool id |
-| `invalid_request` | `missing_idempotency_key` | 400 | No | Mutating request missing idempotency key |
-| `invalid_request` | `invalid_json` | 400 | No | Body is not valid JSON |
-| `invalid_request` | `invalid_payload` | 400 | No | Body schema invalid |
-| `invalid_request` | `idempotency_conflict` | 409 | Yes | Same idempotency key in-flight |
-| `api_error` | `service_disabled` | 503 | Yes | API kill switch enabled |
-| `api_error` | `auth_backend_unavailable` | 503 | Yes | Auth/control-plane backend unavailable |
-| `api_error` | `invalid_control_plane_response` | 503 | Yes | Control-plane payload missing required fields |
-| `api_error` | `mcp_invocation_failed` | 4xx/5xx | 5xx only | Tool execution path failed with surfaced HTTP error |
-| `api_error` | `mcp_internal_error` | 500 | Yes | Unhandled internal MCP gateway failure |
+| `rate_limit_error` | `rate_limit_exceeded` | 429 | Yes | Burst or sustained per-key limit exceeded |
+| `invalid_request` | `invalid_parameter` | 400 | No | Invalid integer/parameter coercion |
+| `invalid_request` | `missing_q` | 400 | No | `fred.search` missing `q` |
+| `invalid_request` | `missing_series_id` | 400 | No | `fred.series` missing `series_id` |
+| `invalid_request` | `unknown_tool` | 400 | No | Unknown tool ID |
+| `invalid_request` | `missing_idempotency_key` | 400 | No | Missing header for mutating invoke/call |
+| `invalid_request` | `invalid_json` | 400 | No | Body not valid JSON |
+| `invalid_request` | `invalid_payload` | 400 | No | Request schema invalid |
+| `invalid_request` | `idempotency_conflict` | 409 | Yes | Same idempotency key currently in-flight |
+| `api_error` | `service_disabled` | 503 | Yes | Kill switch enabled |
+| `api_error` | `auth_backend_unavailable` | 503 | Yes | Control plane unavailable |
+| `api_error` | `invalid_control_plane_response` | 503 | Yes | Control plane payload invalid/incomplete |
+| `invalid_request` | `fred_invalid_request` | 4xx passthrough | No | Upstream FRED rejected request |
+| `api_error` | `fred_upstream_error` | 5xx passthrough | Yes | Upstream FRED transient/server failure |
+| `invalid_request` or `api_error` | `mcp_invocation_failed` | passthrough | 5xx only | MCP invoke path failed; type depends on surfaced status |
 
-## Endpoint coverage matrix (REST)
+## Endpoint-to-code coverage matrix (REST)
 
 | Endpoint | Declared code set |
 | --- | --- |
-| `GET /v1/health` | auth codes + `rate_limit_exceeded` + `service_disabled` + backend availability codes |
-| `GET /v1/openapi.json` | auth codes + `rate_limit_exceeded` + `service_disabled` + backend availability codes |
-| `GET /v1/fred/search` | endpoint-specific: `missing_q`, `invalid_parameter`; plus auth/scope/rate-limit/system codes |
-| `GET /v1/fred/series/{series_id}` | endpoint-specific: `missing_series_id`, `invalid_parameter`; plus auth/scope/rate-limit/system codes |
-| `GET /v1/mcp/tools` | auth/scope/rate-limit/system codes |
-| `POST /v1/mcp/invoke` | `missing_idempotency_key`, `invalid_json`, `invalid_payload`, `unknown_tool`, `idempotency_conflict`, `mcp_invocation_failed`; plus auth/scope/rate-limit/system codes |
+| `GET /v1/health` | `missing_api_key`, `invalid_api_key`, `auth_rejected`, `rate_limit_exceeded`, `service_disabled`, `auth_backend_unavailable`, `invalid_control_plane_response`, `insufficient_scope` |
+| `GET /v1/openapi.json` | `missing_api_key`, `invalid_api_key`, `auth_rejected`, `rate_limit_exceeded`, `service_disabled`, `auth_backend_unavailable`, `invalid_control_plane_response`, `insufficient_scope` |
+| `GET /v1/fred/search` | `missing_q`, `invalid_parameter`, `fred_invalid_request`, `fred_upstream_error`, plus auth/scope/rate/system codes |
+| `GET /v1/fred/series/{series_id}` | `missing_series_id`, `invalid_parameter`, `fred_invalid_request`, `fred_upstream_error`, plus auth/scope/rate/system codes |
+| `GET /v1/mcp/tools` | auth/scope/rate/system codes |
+| `POST /v1/mcp/invoke` | `missing_idempotency_key`, `invalid_json`, `invalid_payload`, `unknown_tool`, `idempotency_conflict`, `mcp_invocation_failed`, plus auth/scope/rate/system codes |
+| `GET /mcp` | auth/scope/rate/system codes |
+| `DELETE /mcp` | auth/scope/rate/system codes |
+| `GET /sse` | auth/scope/rate/system codes |
 
-## Hosted MCP JSON-RPC errors
-
-Hosted MCP uses JSON-RPC 2.0 error shape:
+## Hosted MCP JSON-RPC error envelope
 
 ```json
 {
@@ -95,48 +97,56 @@ Hosted MCP uses JSON-RPC 2.0 error shape:
     "message": "Unauthorized",
     "data": {
       "omni_code": "invalid_api_key",
-      "request_id": "req_123"
+      "request_id": "req_..."
     }
   }
 }
 ```
 
-### JSON-RPC code mapping
+## JSON-RPC code mapping
 
-| JSON-RPC code | Meaning | Typical source |
+| JSON-RPC code | Category | Typical source |
 | --- | --- | --- |
-| `-32700` | Parse error | malformed JSON request body |
-| `-32600` | Invalid request | invalid JSON-RPC object (missing/invalid method) |
-| `-32601` | Method not found | unsupported MCP method |
-| `-32602` | Invalid params | missing tool name, missing idempotency key, invalid request params |
-| `-32001` | Auth/permission | mapped `auth_error` / `permission_error` |
-| `-32002` | Rate limit | mapped `rate_limit_error` |
-| `-32603` | Internal error | mapped `api_error` and unhandled internal failures |
+| `-32700` | Parse error | Invalid JSON body before routing |
+| `-32600` | Invalid request | Missing/invalid JSON-RPC envelope or `method` |
+| `-32601` | Method not found | Unsupported MCP method |
+| `-32602` | Invalid params | Missing tool name, missing idempotency key, invalid params |
+| `-32001` | Auth/permission | Mapped `auth_error` and `permission_error` |
+| `-32002` | Rate limiting | Mapped `rate_limit_error` |
+| `-32603` | Internal error | Mapped `api_error` and unhandled internal failures |
 
-### `omni_code` presence rules
+## `omni_code` to JSON-RPC mapping
 
-- When errors originate from the shared OMNI REST error system, `error.data.omni_code` is present.
-- Pure transport-level JSON-RPC validation errors (for example malformed method/payload before handler routing) may omit `omni_code`.
-- `error.data.request_id` is always present on hosted MCP errors.
+| `omni_code` | JSON-RPC code | Retry? |
+| --- | --- | --- |
+| `missing_api_key`, `invalid_api_key`, `auth_rejected`, `insufficient_scope` | `-32001` | No |
+| `rate_limit_exceeded` | `-32002` | Yes |
+| `missing_idempotency_key`, `invalid_payload`, `unknown_tool`, `idempotency_conflict`, `fred_invalid_request` | `-32602` | `idempotency_conflict` only |
+| `auth_backend_unavailable`, `invalid_control_plane_response`, `service_disabled`, `fred_upstream_error`, `mcp_internal_error` | `-32603` | Yes |
 
-## Retry policy
+Notes:
+
+- Transport-level parse/request failures (`-32700`, `-32600`, `-32601`) can omit `omni_code`.
+- `request_id` is always present in hosted MCP error payloads.
+
+## Retry policy (authoritative)
 
 | Condition | Retry? | Rule |
 | --- | --- | --- |
-| `429 rate_limit_exceeded` / JSON-RPC `-32002` | Yes | Honor `Retry-After`; otherwise bounded exponential backoff + jitter |
+| `429 rate_limit_exceeded` / `-32002` | Yes | Honor `Retry-After`; otherwise bounded exponential backoff + jitter |
 | `503 auth_backend_unavailable` / `503 invalid_control_plane_response` | Yes | Bounded backoff + jitter |
 | `409 idempotency_conflict` | Yes | Retry with same idempotency key |
-| `400 invalid_request*` / JSON-RPC `-32602` | No | Fix request first |
+| `fred_upstream_error` (`5xx`) | Yes | Retry idempotently with bounded backoff |
+| `400 invalid_request*` / `-32602` | No | Fix request first |
 | `401/403` auth/scope | No | Fix key/scopes first |
-| `500 mcp_internal_error` / JSON-RPC `-32603` | Yes | Retry idempotently and escalate if persistent |
 
-## Deterministic client handling algorithm
+## Deterministic handling algorithm
 
-1. Parse machine fields only.
-2. If HTTP is `429` or `5xx` (or JSON-RPC is retryable category), run bounded retry.
-3. For write-like calls, reuse the same idempotency key on retries.
-4. If non-retryable, bubble structured error with request ids.
-5. Log `request_id`, endpoint/method, and idempotency key together.
+1. Parse only machine fields (`error.type`, `error.code`, JSON-RPC `error.code`, `omni_code`).
+2. Retry only transient classes (`429`, `5xx`, retryable JSON-RPC classes).
+3. Reuse idempotency key on all retried write-like operations.
+4. Emit structured logs with endpoint/method, idempotency key, and request id.
+5. Escalate persistent failures with request IDs and retry history.
 
 ## Related docs
 
