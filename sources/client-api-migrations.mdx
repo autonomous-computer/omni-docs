@@ -7,112 +7,128 @@ description: Migration guides, lifecycle guarantees, and rollout playbooks for e
 
 This page defines the migration contract for OMNI Client API and hosted MCP.
 
-If you operate production integrations, treat this page as policy, not guidance.
+If you operate production integrations, treat this page as policy.
 
 ## Migration north stars
 
-1. Prefer additive changes (new fields, new endpoints, new tools).
-2. Never ship hidden breaking changes on a pinned version.
+1. Prefer additive changes (new fields/endpoints/tools).
+2. Never ship hidden breaking behavior on a pinned version.
 3. Keep retries safe with idempotency.
-4. Keep correlation intact with request IDs.
+4. Keep request correlation intact with request IDs.
 
 ## Lifecycle guarantees (v1.5 baseline)
 
-| Change type | Compatibility guarantee | Required communication | Minimum migration window |
+| Change type | Compatibility guarantee | Communication requirement | Minimum migration window |
 | --- | --- | --- | --- |
-| Additive | Backward compatible | Changelog entry | None |
-| Behavioral (non-breaking) | Existing fields/routes preserved | Changelog entry + rationale | 14 days recommended |
-| Deprecation | Route/tool still available during sunset | `Deprecation` + `Sunset` headers + changelog migration steps | 180 days target |
-| Breaking | New versioned surface required (`Omni-Version`, route, or protocol/version increment) | Changelog + migration guide + compatibility matrix update | 90 days target after replacement is available |
+| Additive | Backward compatible | Changelog entry | none |
+| Behavioral (non-breaking) | Existing shapes preserved | Changelog entry + rationale | 14 days recommended |
+| Deprecation | Old route/tool stays functional during sunset | `Deprecation` + `Sunset` headers + migration guide | 180 days target |
+| Breaking | New versioned surface required | Changelog + migration guide + compatibility matrix update | 90 days target after replacement launch |
+
+## Deprecation timeline template
+
+Use this timeline for any deprecated surface:
+
+- `T-90`: announce replacement and migration guide
+- `T-60`: begin warning alerts/metrics on legacy usage
+- `T-30`: enforce deprecation headers and customer outreach
+- `T-7`: freeze new dependencies on deprecated surface
+- `T-0`: execute sunset only after migration SLO gates pass
 
 ## Breaking-change release process
 
-1. Introduce replacement surface first (new endpoint/tool/protocol version).
-2. Publish migration guide with before/after examples.
-3. Dual-run old and new surfaces through at least one billing cycle.
-4. Add deprecation headers and concrete sunset date.
-5. After sunset, remove old surface only after verification gates pass.
+1. Introduce replacement first.
+2. Publish concrete before/after examples.
+3. Dual-run old and new paths through at least one billing cycle.
+4. Add deprecation headers with explicit sunset date.
+5. Sunset only after migration success and rollback confidence are documented.
 
-## Migrate legacy MCP routes to hosted MCP (`/v1/mcp/*` -> `/mcp`)
+## Migration guide: legacy MCP routes to hosted MCP
 
-### Why migrate
+Legacy routes:
 
-`/v1/mcp/tools` and `/v1/mcp/invoke` are compatibility paths.
-Hosted MCP (`/mcp`) is canonical for long-term integration.
+- `GET /v1/mcp/tools`
+- `POST /v1/mcp/invoke`
 
-### Mapping table
+Canonical target:
+
+- `POST /mcp` with JSON-RPC methods
+
+### Mapping
 
 | Legacy route | Hosted MCP equivalent |
 | --- | --- |
-| `GET /v1/mcp/tools` | `POST /mcp` with method `tools/list` |
-| `POST /v1/mcp/invoke` | `POST /mcp` with method `tools/call` |
+| `GET /v1/mcp/tools` | `POST /mcp` with `method=tools/list` |
+| `POST /v1/mcp/invoke` | `POST /mcp` with `method=tools/call` |
 
-### Migration checklist
+### Required sequence for hosted MCP
 
-1. Update transport to `https://api.omnibrief.app/mcp`.
-2. Implement `initialize` then `notifications/initialized`.
-3. Replace list call with `tools/list`.
-4. Replace invoke call with `tools/call`.
-5. Require `Idempotency-Key` for every `tools/call`.
-6. Ensure scopes:
-   - `mcp.tools.read`
-   - `mcp.invoke`
-   - tool scope(s), for example `fred.read`
+1. call `initialize`
+2. send `notifications/initialized`
+3. use `tools/list`
+4. use `tools/call`
 
-## Migrate unscoped keys to scoped keys
+### Non-negotiable migration checks
 
-Scoped keys should be treated as mandatory for production readiness.
+- `Idempotency-Key` on every `tools/call`
+- scoped key includes `mcp.tools.read`, `mcp.invoke`, and tool scopes (for example `fred.read`)
+- retry policy updated for JSON-RPC errors
+- request-id logging upgraded for JSON-RPC `error.data.request_id`
 
-Recommended minimum scope set for hosted MCP + FRED:
+## Migration guide: unscoped keys to scoped keys
+
+Recommended minimum scope set for MCP + FRED:
 
 ```json
 ["mcp.tools.read", "mcp.invoke", "fred.read"]
 ```
 
-If you hit `403 insufficient_scope`, inspect:
+If you hit `403 insufficient_scope`, debug in this order:
 
-1. Key scope assignment.
-2. `Omni-Required-Scopes` header (when present).
-3. Tool-specific scope requirements from `tools/list` metadata.
+1. key scope assignment
+2. `Omni-Required-Scopes` header
+3. method/tool scope contract
 
-## Version pin migrations (`Omni-Version`)
+## Migration guide: version pin upgrades (`Omni-Version`)
 
-Pinning limits behavioral drift during beta:
+Pinning example:
 
 ```http
 Omni-Version: 2026-02-18
 ```
 
-Version upgrade runbook:
+Upgrade runbook:
 
-1. Read `/sources/client-api-changelog` and this page.
-2. Validate integration tests against the new pinned version.
-3. Canary by API key/environment.
-4. Promote progressively.
-5. Keep rollback path to previous pinned version until stability window clears.
+1. review changelog and migration notes
+2. run integration tests against new pin
+3. canary by key/environment
+4. monitor error and billing drift
+5. promote gradually
+6. keep rollback to previous pin until stability clears
 
-## Operational migration checklist (copy/paste)
+## Rollback criteria (mandatory)
 
-- [ ] Endpoint/tool mapping validated
-- [ ] Scope set updated and tested
-- [ ] Idempotency behavior verified for mutating calls
-- [ ] Request ID logging verified (`X-Request-Id`, `error.request_id`)
-- [ ] Retry policy updated per `/sources/client-api-retries`
-- [ ] Billing behavior validated for success/failure/replay paths
-- [ ] Rollback switch documented
+Rollback immediately if any condition is sustained:
 
-## Rollback criteria
+1. auth/scope failure spike (`401`/`403`)
+2. idempotency conflict spike (`409`)
+3. invocation error spike (`mcp_invocation_failed`, `mcp_internal_error`)
+4. unexpected billing drift
 
-Rollback immediately if any of the following occurs after migration cutover:
+## Copy/paste production migration checklist
 
-1. sustained auth/scope failure spike (`401`/`403`)
-2. idempotency conflict spikes (`409`) not seen pre-cutover
-3. elevated tool invocation error rate (`mcp_invocation_failed`, `mcp_internal_error`)
-4. billing anomalies or reconciliation drift
+- [ ] endpoint/tool mapping verified
+- [ ] scope set updated and tested
+- [ ] idempotency behavior verified under retries
+- [ ] request-id logging verified end-to-end
+- [ ] retry policy aligned with `/sources/client-api-retries`
+- [ ] billing semantics validated for success/failure/replay
+- [ ] rollback switch and owner documented
 
 ## Related docs
 
+- `/sources/client-api-reference`
 - `/sources/client-api-changelog`
+- `/sources/client-api-errors`
 - `/sources/client-api-mcp-hosted`
 - `/sources/client-api-retries`
-- `/sources/client-api-errors`
