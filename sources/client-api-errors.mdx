@@ -13,6 +13,12 @@ Design your integration so it can:
 - Branch on `error.type` and `error.code` (stable programmatic values).
 - Retry only when the failure is transient (`rate_limit_error`, select `api_error`), and only with idempotency.
 
+## Stability guarantees (what you can depend on)
+
+- `error.type` and `error.code` are stable and safe to branch on.
+- `error.message` is human-readable only. It may change. Do not parse it.
+- HTTP status codes are stable at the category level (4xx vs 5xx), but the exact status may evolve as OMNI tightens semantics during beta.
+
 ## REST error envelope
 
 ```json
@@ -34,6 +40,15 @@ Design your integration so it can:
 | `error.code` | string | Specific cause. Stable. Use for programmatic handling and alerting. |
 | `error.message` | string | Human-readable explanation. Not stable across versions. Do not parse. |
 | `error.request_id` | string | Correlates with OMNI logs and support. Always include it when escalating. |
+
+### Diagnostic headers you should log
+
+OMNI may include additional headers that make failures self-diagnosing:
+
+- `X-Request-Id`: echoed request id (or generated if you did not send one)
+- `Omni-Required-Scopes`: present on some `403 insufficient_scope` responses
+- `Idempotency-Replayed: true`: present when a mutating request is served from idempotency replay cache
+- `Retry-After`: present on some `429` responses
 
 ### HTTP status mapping (REST)
 
@@ -71,6 +86,52 @@ If you encounter an uncatalogued code, treat it as `api_error` unless the HTTP s
 | `invalid_request` | `missing_series_id` | 400 | No | `fred.series` missing required `series_id`. | Provide a series ID (example: `CPIAUCSL`). |
 | `invalid_request` | `fred_invalid_request` | 4xx | No | FRED request invalid. | Validate series ID and query parameters. |
 | `api_error` | `fred_upstream_error` | 5xx | Yes | FRED upstream error. | Retry with backoff; treat as transient. |
+
+## Recommended error-handling pattern
+
+### TypeScript
+
+```ts
+type OmniError = {
+  error?: { type?: string; code?: string; message?: string; request_id?: string };
+};
+
+export async function omniJson<T>(res: Response): Promise<T> {
+  const text = await res.text();
+  const parsed = text ? (JSON.parse(text) as unknown) : {};
+
+  if (res.ok) return parsed as T;
+
+  const body = parsed as OmniError;
+  const t = body?.error?.type ?? "api_error";
+  const c = body?.error?.code ?? "unknown";
+  const rid = body?.error?.request_id ?? res.headers.get("x-request-id") ?? "unknown";
+
+  const err = new Error(`omni error: ${res.status} ${t}/${c} request_id=${rid}`);
+  (err as any).omni = { status: res.status, type: t, code: c, requestId: rid };
+  throw err;
+}
+```
+
+### Python
+
+```python
+import json
+
+
+def raise_for_omni(res):
+    if res.status_code < 400:
+        return
+    try:
+        body = res.json()
+    except Exception:
+        body = {}
+    err = body.get("error", {}) if isinstance(body, dict) else {}
+    t = err.get("type", "api_error")
+    c = err.get("code", "unknown")
+    rid = err.get("request_id") or res.headers.get("x-request-id") or "unknown"
+    raise RuntimeError(f"omni error: {res.status_code} {t}/{c} request_id={rid}")
+```
 
 ## Retry guidance
 

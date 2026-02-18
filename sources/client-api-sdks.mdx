@@ -12,6 +12,15 @@ These SDKs are intentionally thin wrappers over the hosted MCP endpoint (`/mcp`)
 - auth, rate limits, usage metering, and error semantics match the raw HTTP contract
 - you can always drop down to raw HTTP without changing your integration model
 
+## SDK-first posture (how to build with OMNI like you would with Stripe)
+
+Recommendations:
+
+- Treat the SDK as a convenience layer, not a separate product.
+- Model your integration around: key scopes, request IDs (`X-Request-Id`), idempotency for side-effecting operations (`tools/call`), and explicit timeouts + retries.
+
+For retry behavior, see `/sources/client-api-retries`.
+
 ## Where to get builds
 
 SDK artifacts are published as assets on tagged GitHub Releases in `autonomous-computer/omni-system`.
@@ -63,6 +72,23 @@ Notes:
 - `tools/call` requires `Idempotency-Key` for safe retries; pass it as the third argument to `callTool`.
 - Errors currently throw plain `Error` with the server-provided message.
 
+#### Quickstart: robust invocation wrapper (TypeScript)
+
+```ts
+import crypto from "node:crypto";
+
+export async function callFredSearch(client: OmniMcpClient, q: string) {
+  const idem = `idem_${crypto.randomUUID()}`;
+  try {
+    return await client.callTool("fred.search", { q, limit: 5 }, idem);
+  } catch (err) {
+    // Surface idempotency key and request ids in your logs for supportability.
+    console.error("omni mcp call failed", { idem, err });
+    throw err;
+  }
+}
+```
+
 ### Python: `omni-mcp-py` (internal beta)
 
 Install from a GitHub Release wheel (`.whl`) or source distribution (`.tar.gz`):
@@ -102,4 +128,3 @@ Notes:
 - publish packages to npm / PyPI with stable versioning guarantees
 - typed error classes with `status`, `requestId`, and `omni_code`
 - first-party integration templates (Next.js, FastAPI, Rails)
-

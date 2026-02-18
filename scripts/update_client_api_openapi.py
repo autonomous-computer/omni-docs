@@ -62,6 +62,30 @@ def _filter_paths(paths: Dict[str, Any]) -> Dict[str, Any]:
     return keep
 
 
+def _strip_fastapi_validation_errors(spec: Dict[str, Any]) -> None:
+    """Remove FastAPI's default 422 Validation Error responses from the snapshot.
+
+    OMNI Client API standardizes on ClientApiErrorEnvelope for 4xx/5xx failures.
+    FastAPI automatically adds 422 responses for request validation, which leaks
+    framework-specific schema into the public contract and confuses consumers.
+    """
+
+    paths = spec.get("paths")
+    if not isinstance(paths, dict):
+        return
+
+    http_methods = {"get", "post", "put", "patch", "delete", "head", "options"}
+    for _path, path_item in paths.items():
+        if not isinstance(path_item, dict):
+            continue
+        for method, op in path_item.items():
+            if method not in http_methods or not isinstance(op, dict):
+                continue
+            responses = op.get("responses")
+            if isinstance(responses, dict) and "422" in responses:
+                responses.pop("422", None)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Update OMNI Client API OpenAPI snapshot for docs.")
     parser.add_argument("--source-url", default=DEFAULT_SOURCE_URL)
@@ -92,6 +116,16 @@ def main() -> int:
     prod = {"url": args.base_url.rstrip("/"), "description": "Production"}
     raw["servers"] = [prod] + [s for s in servers if isinstance(s, dict) and s.get("url") != prod["url"]]
 
+    # Mark auth as required across the contract so generated reference pages
+    # (Mintlify OpenAPI) correctly show Authorization headers.
+    components = raw.get("components")
+    if isinstance(components, dict):
+        schemes = components.get("securitySchemes")
+        if isinstance(schemes, dict) and "HTTPBearer" in schemes:
+            raw["security"] = [{"HTTPBearer": []}]
+
+    _strip_fastapi_validation_errors(raw)
+
     out_path = Path(args.out)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with out_path.open("w", encoding="utf-8") as handle:
@@ -104,4 +138,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
