@@ -1,6 +1,6 @@
 ---
 title: Client API Webhooks
-description: Event model, signatures, retries, and operational guidance for OMNI Client API webhooks.
+description: Event model, signatures, and operational guidance for OMNI Client API webhooks.
 ---
 
 # Client API Webhooks
@@ -13,7 +13,7 @@ This page documents the contract and operational guidance so you can build and t
 
 1. Verify signatures using the raw request body.
 2. Enforce a replay window using the included timestamp.
-3. Treat delivery as at-least-once: dedupe using `event.id`.
+3. Dedupe using `event.id` (safe even if retries are added later).
 4. Return `2xx` quickly and process asynchronously.
 
 ## Event families
@@ -25,9 +25,16 @@ This page documents the contract and operational guidance so you can build and t
 
 ## Delivery model (operational contract)
 
-1. At-least-once delivery.
-2. Exponential retry with bounded maximum attempts.
-3. Idempotent consumer requirement on webhook receiver.
+### Current (internal beta)
+
+- Best-effort delivery.
+- No automatic retry loop yet.
+
+### Target (public-beta-ready)
+
+- At-least-once delivery.
+- Exponential retry with bounded maximum attempts.
+- Idempotent consumer requirement on the receiver.
 
 ## Event shape
 
@@ -37,37 +44,34 @@ Webhook POSTs carry a JSON payload with this high-level shape:
 {
   "id": "evt_...",
   "type": "invoice.finalized",
-  "created": 1739750400,
-  "livemode": true,
-  "data": {
-    "object": { }
-  },
-  "request": {
-    "id": "req_...",
-    "idempotency_key": "idem_..."
-  }
+  "created": "2026-02-18T05:22:55.984Z",
+  "requestId": "req_...",
+  "data": { }
 }
 ```
 
 ## Signature verification
 
-Every webhook request includes:
+Webhook requests include:
 
-- `OMNI-Signature`
-- `OMNI-Timestamp`
+- `Omni-Timestamp`
 - `X-Request-Id`
+
+If signing is enabled, requests also include:
+
+- `Omni-Signature`
 
 ### Signing payload
 
 Compute the signature over:
 
 ```text
-${OMNI-Timestamp}.${raw_request_body}
+${Omni-Timestamp}.${raw_request_body}
 ```
 
 Where:
 
-- `OMNI-Timestamp` is the exact header value (string).
+- `Omni-Timestamp` is the exact header value (string, unix seconds).
 - `raw_request_body` is the exact raw bytes received over HTTP (before JSON parsing).
 
 ### Algorithm
@@ -80,7 +84,7 @@ Where:
 
 1. Reject events older than your replay window.
 2. Recompute HMAC from timestamp + raw request body.
-3. Constant-time compare against `OMNI-Signature`.
+3. Constant-time compare against `Omni-Signature`.
 4. Persist event ID for deduplication.
 
 ### TypeScript (Node.js) example
@@ -105,7 +109,7 @@ export function verifyOmniWebhookSignature(opts: {
 }) {
   const toleranceSeconds = opts.toleranceSeconds ?? 5 * 60;
   const ts = Number(opts.timestamp);
-  if (!Number.isFinite(ts)) throw new Error("invalid OMNI-Timestamp");
+  if (!Number.isFinite(ts)) throw new Error("invalid Omni-Timestamp");
   const ageSeconds = Math.abs(Date.now() / 1000 - ts);
   if (ageSeconds > toleranceSeconds) throw new Error("event outside replay window");
 
@@ -130,7 +134,7 @@ def verify_omni_webhook_signature(*, secret: str, timestamp: str, signature: str
     try:
         ts = int(timestamp)
     except Exception as exc:
-        raise ValueError("invalid OMNI-Timestamp") from exc
+        raise ValueError("invalid Omni-Timestamp") from exc
 
     age = abs(int(time.time()) - ts)
     if age > tolerance_seconds:
@@ -163,16 +167,17 @@ if !hmac.Equal([]byte(expected), []byte(signature)) {
 
 ## Failure handling playbook
 
-1. `4xx` responses are treated as terminal (configuration/payload error).
-2. `5xx` responses are retried automatically.
-3. Repeated failures should trigger runbook escalation and delivery diagnostics.
+1. Return `2xx` once you have durably queued the work.
+2. Treat `event.id` as the dedupe key.
+3. If you return `4xx`, OMNI will treat that as a signal your receiver rejected the payload.
+4. If you return `5xx`, OMNI will treat that as a transient receiver failure.
 
 ## Recommended receiver behavior
 
 - Acknowledge fast: respond `2xx` quickly and queue work to background processing.
 - Dedupe: use `event.id` as your primary dedupe key.
 - Handle out-of-order: do not assume event ordering.
-- Use request IDs: log `X-Request-Id` and any `event.request.id` for correlation.
+- Use request IDs: log `X-Request-Id` and `event.requestId` for correlation.
 
 ## Beta status
 
