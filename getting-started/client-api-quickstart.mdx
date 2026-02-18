@@ -1,11 +1,11 @@
 ---
 title: Client API Quickstart
-description: Internal beta quickstart for generating API keys and calling OMNI Client API v1.
+description: Quickstart for generating API keys and calling OMNI Client API v1.
 ---
 
 # Client API Quickstart
 
-OMNI Client API v1 is currently in **internal beta** with allowlisted accounts.
+OMNI Client API v1 is currently in **private beta**. Access is granted by invitation.
 
 ## 1. Create an API key
 
@@ -17,7 +17,7 @@ curl -X POST https://agent-backend.omnibrief.app/api/client/keys \
   -H "Idempotency-Key: idem_create_key_001" \
   -H "Content-Type: application/json" \
   -d '{
-    "name": "internal-beta-main",
+    "name": "private-beta-main",
     "mode": "live",
     "scopes": ["fred.read", "mcp.tools.read"]
   }'
@@ -85,8 +85,8 @@ curl "https://api.omnibrief.app/v1/openapi.json" \
   -H "Authorization: Bearer omni_live_..."
 ```
 
-## Internal beta notes
+## Private beta notes
 
-- Access is allowlist-gated.
-- Billing infrastructure is active and usage is metered from successful calls.
-- Public beta infrastructure is deployed but remains gated off.
+- Some accounts may not have Client API access yet.
+- Usage is metered for successful calls.
+- During beta, new endpoints and tools may ship quickly; use the changelog and optional `OMNI-Version` pinning for stability.
