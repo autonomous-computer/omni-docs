@@ -1,140 +1,146 @@
 ---
 title: Client API Endpoints (Deep Guide)
-description: Deep, endpoint-by-endpoint integration guidance for OMNI Client API v1 and hosted MCP transport.
+description: Deep, endpoint-by-endpoint integration playbooks for OMNI Client API v1 and hosted MCP transport.
 ---
 
 # Client API Endpoints (Deep Guide)
 
-This page is the practical, endpoint-by-endpoint companion to:
+This page is the endpoint-level implementation guide.
+Use it with:
 
-- `Client API (Generated)` in the left nav (OpenAPI-derived schemas + interactive explorer)
-- `/sources/client-api-reference` (compact endpoint catalog)
+- `Client API (Generated)` in the left nav for schema-level fields/examples
+- `/sources/client-api-reference` for compact endpoint catalog
 
-If you are building a real integration, you should read this page end-to-end once, then live in the generated reference.
-
-## Global rules (apply to every endpoint)
+## Global rules for every endpoint
 
 ### Authentication
 
-All endpoints require an API key:
+All endpoints require:
 
 ```http
 Authorization: Bearer omni_live_...
 ```
 
-### Scopes
+### Request correlation
 
-Treat scopes as a first-class part of your integration design.
+Send `X-Request-Id` on every request and log OMNI's echoed value.
 
-If a request fails with:
+For failures:
 
-- HTTP `403`
-- `error.type = permission_error`
-- `error.code = insufficient_scope`
-
-Check the `Omni-Required-Scopes` response header (when present) and rotate/create a key with the required scopes.
-
-### Request IDs
-
-Send `X-Request-Id` on every request and log the echoed response header.
-
-For errors:
-
-- REST includes `error.request_id`
-- Hosted MCP JSON-RPC includes `error.data.request_id`
+- REST: `error.request_id`
+- Hosted MCP: `error.data.request_id`
 
 ### Idempotency
 
-Idempotency is required for mutating, side-effecting operations.
+Required for write-like operations:
 
-Today that means:
+- `POST /v1/mcp/invoke`
+- hosted MCP `tools/call` via `POST /mcp`
 
-- `POST /v1/mcp/invoke` (legacy)
-- `tools/call` over hosted MCP (`POST /mcp`)
-
-Rule: if you retry an operation, retry with the **same** `Idempotency-Key`.
+If you retry, reuse the same `Idempotency-Key`.
 
 ### Billing
 
-Billing semantics are intentionally simple:
+- `2xx/3xx` billable
+- `4xx/5xx` non-billable
+- idempotency replays are not double-billed
 
-- `2xx/3xx` responses are billable API calls.
-- `4xx/5xx` responses are not billed.
-- Idempotency replays are not double-billed.
+## Endpoint playbooks
 
-See `/sources/client-api-usage-billing`.
+## `GET /v1/health`
 
-## REST endpoints (`/v1/*`)
+Use when:
 
-### `GET /v1/health`
+- validating key + allowlist access
+- validating basic request/response and request-id plumbing
 
-Purpose:
+Expected success shape:
 
-- validate that a key is valid, allowlisted, and correctly scoped for baseline access
-- validate request ID propagation and error envelope behavior quickly
-
-Common usage:
-
-```bash
-curl "https://api.omnibrief.app/v1/health" \
-  -H "Authorization: Bearer omni_live_..." \
-  -H "X-Request-Id: req_health_001"
-```
+- `object = health`
+- `status = ok`
+- `mode = live|test`
 
 Common failures:
 
-- `401 missing_api_key` / `401 invalid_api_key`
-- `403 auth_rejected` (control-plane deny or not allowlisted)
+- `missing_api_key`
+- `invalid_api_key`
+- `auth_rejected`
 
-### `GET /v1/openapi.json`
+## `GET /v1/openapi.json`
 
-Purpose:
+Use when:
 
-- machine-readable contract for the OMNI Client API v1 surface
-- used to generate interactive reference docs and typed client code
+- generating clients
+- diffing contracts in CI
+- powering API explorer workflows
 
-Notes:
+Integration note:
 
-- This endpoint is designed for automated tooling.
-- For how OMNI governs contract drift and compatibility, see `/sources/client-api-openapi`.
+- pin and diff this schema in CI before upgrading pinned `Omni-Version`
 
-```bash
-curl "https://api.omnibrief.app/v1/openapi.json" \
-  -H "Authorization: Bearer omni_live_..."
-```
+## `GET /v1/fred/search`
 
-### `GET /v1/fred/search` and `GET /v1/fred/series/{series_id}`
+Use when:
 
-These are the stable v1 REST surface for FRED access.
+- searching for relevant economic time-series metadata
 
-Use the deep guide for FRED semantics and examples:
+Inputs:
 
-- `/sources/client-api-fred`
+- `q` required
+- `limit` optional, bounded
+
+Production patterns:
+
+- cache short-lived search results by normalized `(q, limit)`
+- enforce local query length/range validation to reduce `400` churn
 
 Common failures:
 
-- `403 insufficient_scope` (missing `fred.read`)
-- `400 missing_q` / `400 missing_series_id`
+- `missing_q`
+- `insufficient_scope` (missing `fred.read`)
+- `fred_invalid_request` / `fred_upstream_error`
 
-## Legacy MCP compatibility endpoints (`/v1/mcp/*`)
+## `GET /v1/fred/series/{series_id}`
 
-These routes exist for migration compatibility. New integrations should use hosted MCP (`/mcp`).
+Use when:
 
-### `GET /v1/mcp/tools`
+- fetching observations for charting/analysis
 
-Purpose:
+Inputs:
 
-- enumerate available tool names and their REST mappings
+- `series_id` required
+- optional date bounds and limit
 
-Typical scope requirement:
+Production patterns:
+
+- cache by `(series_id, observation_start, observation_end, limit)`
+- protect downstream chart jobs from sparse/empty result sets
+
+Common failures:
+
+- `missing_series_id`
+- `insufficient_scope`
+- `fred_invalid_request` / `fred_upstream_error`
+
+## `GET /v1/mcp/tools` (legacy compatibility)
+
+Use when:
+
+- maintaining legacy clients during migration
+
+Required scope:
 
 - `mcp.tools.read`
 
-### `POST /v1/mcp/invoke`
+Migration recommendation:
 
-Purpose:
+- move to hosted MCP `tools/list` as canonical path
 
-- invoke a tool via a simple REST envelope (compatibility)
+## `POST /v1/mcp/invoke` (legacy compatibility)
+
+Use when:
+
+- maintaining legacy clients that are not JSON-RPC aware
 
 Required headers:
 
@@ -144,30 +150,28 @@ Idempotency-Key: idem_...
 Content-Type: application/json
 ```
 
-Payload shape:
-
-```json
-{
-  "tool": "fred.search",
-  "arguments": { "q": "inflation", "limit": 5 }
-}
-```
-
 Common failures:
 
-- `400 missing_idempotency_key`
-- `400 unknown_tool`
-- `403 insufficient_scope`
+- `missing_idempotency_key`
+- `invalid_json`
+- `invalid_payload`
+- `unknown_tool`
+- `idempotency_conflict`
+- `mcp_invocation_failed`
 
-## Hosted MCP transport (`/mcp` + `/sse`)
+Migration recommendation:
 
-Hosted MCP is the canonical transport for toolchains and agents.
+- move to hosted MCP `tools/call`
 
-If you are not integrating into an MCP client, prefer the REST endpoints for simplicity.
+## Hosted MCP transport (`/mcp` and `/sse`)
 
-### `POST /mcp` (JSON-RPC)
+Hosted MCP is canonical for MCP clients.
 
-`POST /mcp` implements MCP over JSON-RPC. The core method set is small:
+If you are not building around MCP tooling, prefer REST endpoints.
+
+### `POST /mcp`
+
+Core methods:
 
 - `initialize`
 - `notifications/initialized`
@@ -175,50 +179,52 @@ If you are not integrating into an MCP client, prefer the REST endpoints for sim
 - `tools/call`
 - `ping`
 
-Required headers:
+Required scopes by method:
 
-```http
-Authorization: Bearer omni_live_...
-Content-Type: application/json
-```
+- `tools/list`: `mcp.tools.read`
+- `tools/call`: `mcp.invoke` + tool scope
 
 Idempotency:
 
-- `tools/call` requires `Idempotency-Key`
-- `tools/list` and `initialize` are read-only and do not require it
+- required for `tools/call`
+- optional/unused for read-only methods
 
-Deep semantics and examples:
+### `GET /mcp`
 
-- `/sources/client-api-mcp-hosted`
+Use only when the client expects a stream transport channel.
+Most integrations can use `POST /mcp` only.
 
-### `GET /mcp` (stream transport)
+### `DELETE /mcp`
 
-`GET /mcp` is available for clients that need a long-lived transport channel.
+Close an active hosted session context.
+Use explicitly in long-lived client processes during shutdown.
 
-Most integrations can ignore this endpoint and use `POST /mcp` only.
+### `GET /sse`
 
-### `DELETE /mcp` (close session)
+Compatibility transport for clients expecting SSE bootstrap.
+Prefer `/mcp` for net-new integrations.
 
-Close an active hosted MCP session context.
+## Endpoint readiness checklist
 
-### `GET /sse` (compatibility transport)
+- [ ] Explicit scope map per endpoint/method
+- [ ] Request ID propagation + logging verified
+- [ ] Idempotency implemented where required
+- [ ] Retry/backoff policy aligned with `/sources/client-api-retries`
+- [ ] Error handling based on machine fields only (`error.type`, `error.code`, JSON-RPC codes)
+- [ ] Billing behavior validated for success/failure/replay
 
-SSE is provided for compatibility with clients that expect SSE bootstrap behavior.
+## Failure triage order
 
-Unless you are migrating a client that requires SSE, prefer `/mcp`.
+1. Confirm auth key validity (`401` vs `403`).
+2. Confirm required scopes (`Omni-Required-Scopes` when present).
+3. Confirm payload shape and idempotency.
+4. Confirm upstream/transient behavior and retry posture.
+5. Escalate with `request_id` and endpoint/method context.
 
-## Where to look when something fails
+## Related docs
 
-1. Check `X-Request-Id` (header) and the error body request id (`error.request_id` or `error.data.request_id`).
-2. Check `error.type` + `error.code` (REST) or JSON-RPC code + `error.data.omni_code` (hosted MCP).
-3. Confirm scopes and check `Omni-Required-Scopes` when present.
-4. Confirm idempotency behavior:
-   - if you retried a write-like call, reuse the same `Idempotency-Key`
-   - check for `Idempotency-Replayed: true`
-
-Then reference:
-
+- `/sources/client-api-reference`
+- `/sources/client-api-openapi`
 - `/sources/client-api-errors`
 - `/sources/client-api-retries`
-- `/sources/client-api-usage-billing`
-
+- `/sources/client-api-migrations`
