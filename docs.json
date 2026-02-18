@@ -62,6 +62,25 @@
         ]
       },
       {
+        "group": "Client API (Generated)",
+        "openapi": {
+          "source": "openapi/omni-client-api.v1.json",
+          "directory": "client-api"
+        },
+        "pages": [
+          "GET /v1/health",
+          "GET /v1/fred/search",
+          "GET /v1/fred/series/{series_id}",
+          "GET /v1/mcp/tools",
+          "POST /v1/mcp/invoke",
+          "GET /v1/openapi.json",
+          "POST /mcp",
+          "GET /mcp",
+          "DELETE /mcp",
+          "GET /sse"
+        ]
+      },
+      {
         "group": "Skills & Superpowers",
         "pages": [
           "skills/overview",
