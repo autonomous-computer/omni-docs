@@ -1,32 +1,29 @@
 ---
 title: Client API SDK Quickstart
-description: SDK-first quickstart for OMNI hosted MCP (internal beta) with production-grade retry + idempotency posture.
+description: SDK-first quickstart for OMNI hosted MCP with production-grade retry, idempotency, and release integrity checks.
 ---
 
 # Client API SDK Quickstart
 
-This page is the **SDK-first** companion to `/getting-started/client-api-quickstart`.
+This page is the SDK-first companion to `/getting-started/client-api-quickstart`.
 
-Internal beta note: official SDKs are distributed as **GitHub Release artifacts** (not npm / PyPI yet).
+Internal beta distribution model: SDKs are shipped as GitHub Release artifacts (not npm/PyPI yet).
 
 ## 1. Prerequisites
 
-- An OMNI Client API key: `omni_live_*`
-- Scopes (recommended for MCP): `mcp.tools.read`, `mcp.invoke`, and the tool scopes you intend to use (example: `fred.read`)
+- OMNI Client API key (`omni_live_*`)
+- Recommended scopes: `mcp.tools.read`, `mcp.invoke`, plus tool scopes (example: `fred.read`)
+- GitHub CLI authenticated for artifact download
 
-## 2. Install the SDK artifacts
+## 2. Install SDK artifacts
 
-SDK artifacts are published as assets on tagged GitHub Releases in `autonomous-computer/omni-system`.
-
-Tag prefix:
+Artifacts are published in `autonomous-computer/omni-system` release tags:
 
 ```text
 mcp-sdks-v*
 ```
 
 ### JavaScript (pnpm)
-
-Download a `.tgz` asset and install from disk:
 
 ```bash
 gh release download mcp-sdks-v0.1.4-internal-beta \
@@ -38,8 +35,6 @@ pnpm add ./*.tgz
 
 ### Python (pip)
 
-Download a `.whl` asset and install from disk:
-
 ```bash
 gh release download mcp-sdks-v0.1.4-internal-beta \
   --repo autonomous-computer/omni-system \
@@ -48,7 +43,7 @@ gh release download mcp-sdks-v0.1.4-internal-beta \
 pip install ./*.whl
 ```
 
-Optional integrity + contract artifacts:
+### Integrity + compatibility artifacts (required for production)
 
 ```bash
 gh release download mcp-sdks-v0.1.4-internal-beta \
@@ -61,7 +56,7 @@ shasum -a 256 -c SHA256SUMS
 
 ## 3. Initialize + list tools + call a tool
 
-### JavaScript example
+### JavaScript
 
 ```ts
 import crypto from "node:crypto";
@@ -73,20 +68,17 @@ const client = new OmniMcpClient({
   // timeoutMs: 20_000,
 });
 
-// 1) initialize (handshake)
 await client.initialize();
 
-// 2) tools/list (read-only, safe to retry but each success can be billable)
 const tools = await client.listTools();
 console.log(tools.tools.map((t) => t.name));
 
-// 3) tools/call (requires idempotency)
-const idempotencyKey = `idem_${crypto.randomUUID()}`;
-const result = await client.callTool("fred.search", { q: "inflation", limit: 5 }, idempotencyKey);
+const idem = `idem_${crypto.randomUUID()}`;
+const result = await client.callTool("fred.search", { q: "inflation", limit: 5 }, idem);
 console.log(result.structuredContent);
 ```
 
-### Python example
+### Python
 
 ```python
 import os
@@ -96,14 +88,11 @@ from omni_mcp_py import OmniMCPClient
 
 client = OmniMCPClient(api_key=os.environ["OMNI_API_KEY"])
 
-# 1) initialize
 client.initialize()
 
-# 2) tools/list
 tools = client.list_tools()
 print([t["name"] for t in tools.get("tools", [])])
 
-# 3) tools/call (idempotency)
 result = client.call_tool(
     name="fred.search",
     arguments={"q": "inflation", "limit": 5},
@@ -112,11 +101,78 @@ result = client.call_tool(
 print(result.get("structuredContent"))
 ```
 
-## 4. Production integration rules (non-optional)
+## 4. Production wrapper patterns
 
-1. Set timeouts on every request.
-2. Use exponential backoff with jitter for retries.
-3. Only retry write-like calls (`tools/call`, `POST /v1/mcp/invoke`) with the **same** `Idempotency-Key`.
-4. Log `X-Request-Id` from every response.
+### JavaScript: bounded retry wrapper (write-safe)
 
-See `/sources/client-api-retries` and `/sources/client-api-errors`.
+```ts
+export async function callToolSafe(client: OmniMcpClient, name: string, arguments_: Record<string, unknown>) {
+  const idem = `idem_${crypto.randomUUID()}`;
+  const maxAttempts = 4;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    try {
+      return await client.callTool(name, arguments_, idem);
+    } catch (err: any) {
+      const status = err?.status ?? err?.statusCode;
+      const retryable = status === 429 || (typeof status === "number" && status >= 500);
+      if (!retryable || attempt === maxAttempts) throw err;
+      const delayMs = Math.min(250 * 2 ** (attempt - 1), 4000) + Math.floor(Math.random() * 250);
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+    }
+  }
+
+  throw new Error("unreachable");
+}
+```
+
+### Python: bounded retry wrapper (write-safe)
+
+```python
+import random
+import time
+import uuid
+
+
+def call_tool_safe(client, name: str, arguments: dict):
+    idem = f"idem_{uuid.uuid4()}"
+    max_attempts = 4
+
+    for attempt in range(1, max_attempts + 1):
+        try:
+            return client.call_tool(name=name, arguments=arguments, idempotency_key=idem)
+        except Exception as exc:
+            status = getattr(exc, "status_code", None)
+            retryable = status == 429 or (isinstance(status, int) and status >= 500)
+            if not retryable or attempt == max_attempts:
+                raise
+            delay = min(0.25 * (2 ** (attempt - 1)), 4.0) + random.uniform(0, 0.25)
+            time.sleep(delay)
+
+    raise RuntimeError("unreachable")
+```
+
+## 5. Non-optional production rules
+
+1. Set request timeouts globally.
+2. Retry only transient failures (`429`, `5xx`).
+3. Reuse the same idempotency key when retrying write-like calls.
+4. Log request IDs and structured SDK error metadata.
+5. Verify artifact checksums before promotion.
+6. Track SDK and compatibility-policy versions together in deployment metadata.
+
+## 6. Release promotion checklist
+
+- [ ] Download artifacts from approved tag
+- [ ] Verify `SHA256SUMS`
+- [ ] Confirm `MCP_COMPATIBILITY_POLICY.md` matches target environment
+- [ ] Run smoke flow (`initialize` -> `tools/list` -> `tools/call`) against target
+- [ ] Confirm error handling captures request IDs
+- [ ] Confirm billing semantics in staging/prod canary
+
+## Related docs
+
+- `/sources/client-api-sdks`
+- `/sources/client-api-mcp-compatibility`
+- `/sources/client-api-errors`
+- `/sources/client-api-retries`
