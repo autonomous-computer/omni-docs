@@ -43,7 +43,7 @@ Response includes the key once:
 ## 2. Call Client API v1
 
 ```bash
-curl "https://api.omnibrief.app/v1/fred/search?q=unemployment&limit=5" \
+curl "https://api.turos.app/v1/fred/search?q=unemployment&limit=5" \
   -H "Authorization: Bearer omni_live_..." \
   -H "X-Request-Id: req_demo_001" \
   -H "Omni-Version: 2026-02-18"
@@ -52,7 +52,7 @@ curl "https://api.omnibrief.app/v1/fred/search?q=unemployment&limit=5" \
 ### Node.js (TypeScript) example
 
 ```ts
-const url = new URL("https://api.omnibrief.app/v1/fred/search");
+const url = new URL("https://api.turos.app/v1/fred/search");
 url.searchParams.set("q", "unemployment");
 url.searchParams.set("limit", "5");
 
@@ -80,7 +80,7 @@ import os
 import requests
 
 res = requests.get(
-    "https://api.omnibrief.app/v1/fred/search",
+    "https://api.turos.app/v1/fred/search",
     params={"q": "unemployment", "limit": 5},
     headers={
         "Authorization": f"Bearer {os.environ['OMNI_API_KEY']}",
@@ -111,7 +111,7 @@ import (
 )
 
 func main() {
-  u, _ := url.Parse("https://api.omnibrief.app/v1/fred/search")
+  u, _ := url.Parse("https://api.turos.app/v1/fred/search")
   q := u.Query()
   q.Set("q", "unemployment")
   q.Set("limit", "5")
@@ -140,14 +140,14 @@ func main() {
 ## 3. MCP tool catalog
 
 ```bash
-curl "https://api.omnibrief.app/v1/mcp/tools" \
+curl "https://api.turos.app/v1/mcp/tools" \
   -H "Authorization: Bearer omni_live_..."
 ```
 
 ## 4. Idempotent POST tool invoke
 
 ```bash
-curl -X POST "https://api.omnibrief.app/v1/mcp/invoke" \
+curl -X POST "https://api.turos.app/v1/mcp/invoke" \
   -H "Authorization: Bearer omni_live_..." \
   -H "Idempotency-Key: idem_001" \
   -H "Content-Type: application/json" \
@@ -163,7 +163,7 @@ curl -X POST "https://api.omnibrief.app/v1/mcp/invoke" \
 
 ```bash
 # 1) initialize
-curl -X POST "https://api.omnibrief.app/mcp" \
+curl -X POST "https://api.turos.app/mcp" \
   -H "Authorization: Bearer omni_live_..." \
   -H "Content-Type: application/json" \
   -d '{
@@ -174,7 +174,7 @@ curl -X POST "https://api.omnibrief.app/mcp" \
   }'
 
 # 2) notifications/initialized (JSON-RPC notification, no id)
-curl -X POST "https://api.omnibrief.app/mcp" \
+curl -X POST "https://api.turos.app/mcp" \
   -H "Authorization: Bearer omni_live_..." \
   -H "Content-Type: application/json" \
   -d '{
@@ -184,7 +184,7 @@ curl -X POST "https://api.omnibrief.app/mcp" \
   }'
 
 # 3) tools/list
-curl -X POST "https://api.omnibrief.app/mcp" \
+curl -X POST "https://api.turos.app/mcp" \
   -H "Authorization: Bearer omni_live_..." \
   -H "Content-Type: application/json" \
   -d '{
@@ -195,7 +195,7 @@ curl -X POST "https://api.omnibrief.app/mcp" \
   }'
 
 # 4) tools/call (Idempotency-Key required)
-curl -X POST "https://api.omnibrief.app/mcp" \
+curl -X POST "https://api.turos.app/mcp" \
   -H "Authorization: Bearer omni_live_..." \
   -H "Idempotency-Key: idem_mcp_call_001" \
   -H "Content-Type: application/json" \
@@ -213,7 +213,7 @@ curl -X POST "https://api.omnibrief.app/mcp" \
 ## 6. OpenAPI schema
 
 ```bash
-curl "https://api.omnibrief.app/v1/openapi.json" \
+curl "https://api.turos.app/v1/openapi.json" \
   -H "Authorization: Bearer omni_live_..."
 ```
 

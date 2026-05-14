@@ -42,7 +42,7 @@ Query params:
 - `limit` (optional): `1-50` (default `10`)
 
 ```bash
-curl "https://api.omnibrief.app/v1/fred/search?q=inflation&limit=5" \
+curl "https://api.turos.app/v1/fred/search?q=inflation&limit=5" \
   -H "Authorization: Bearer omni_live_..."
 ```
 
@@ -54,7 +54,7 @@ Common errors:
 ### Hosted MCP: `tools/call` with `fred.search`
 
 ```bash
-curl -X POST "https://api.omnibrief.app/mcp" \
+curl -X POST "https://api.turos.app/mcp" \
   -H "Authorization: Bearer omni_live_..." \
   -H "Idempotency-Key: idem_fred_search_001" \
   -H "Content-Type: application/json" \
@@ -84,14 +84,14 @@ Query params:
 - `limit` (optional): max number of observations (default `1000`)
 
 ```bash
-curl "https://api.omnibrief.app/v1/fred/series/CPIAUCSL?limit=24" \
+curl "https://api.turos.app/v1/fred/series/CPIAUCSL?limit=24" \
   -H "Authorization: Bearer omni_live_..."
 ```
 
 ### Hosted MCP: `tools/call` with `fred.series`
 
 ```bash
-curl -X POST "https://api.omnibrief.app/mcp" \
+curl -X POST "https://api.turos.app/mcp" \
   -H "Authorization: Bearer omni_live_..." \
   -H "Idempotency-Key: idem_fred_series_001" \
   -H "Content-Type: application/json" \

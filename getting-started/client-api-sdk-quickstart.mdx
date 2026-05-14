@@ -64,7 +64,7 @@ import { OmniMcpClient } from "@omni/omni-mcp-js";
 
 const client = new OmniMcpClient({
   apiKey: process.env.OMNI_API_KEY!,
-  // baseUrl: "https://api.omnibrief.app",
+  // baseUrl: "https://api.turos.app",
   // timeoutMs: 20_000,
 });
 
@@ -122,7 +122,7 @@ func main() {
   }
   body, _ := json.Marshal(payload)
 
-  req, _ := http.NewRequest("POST", "https://api.omnibrief.app/mcp", bytes.NewReader(body))
+  req, _ := http.NewRequest("POST", "https://api.turos.app/mcp", bytes.NewReader(body))
   req.Header.Set("Authorization", "Bearer "+os.Getenv("OMNI_API_KEY"))
   req.Header.Set("Content-Type", "application/json")
 
@@ -195,7 +195,7 @@ For release tags, OMNI runs live conformance against hosted MCP. You should run 
 ### JS conformance
 
 ```bash
-OMNI_CLIENT_API_BASE_URL=https://api.omnibrief.app \
+OMNI_CLIENT_API_BASE_URL=https://api.turos.app \
 OMNI_CLIENT_API_KEY=omni_live_... \
 node sdk/omni-mcp-js/scripts/conformance.mjs
 ```
@@ -203,7 +203,7 @@ node sdk/omni-mcp-js/scripts/conformance.mjs
 ### Python conformance
 
 ```bash
-OMNI_CLIENT_API_BASE_URL=https://api.omnibrief.app \
+OMNI_CLIENT_API_BASE_URL=https://api.turos.app \
 OMNI_CLIENT_API_KEY=omni_live_... \
 python sdk/omni-mcp-py/scripts/conformance.py
 ```
