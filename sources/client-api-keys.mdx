@@ -7,8 +7,8 @@ description: Create, rotate, revoke, and scope OMNI Client API keys (internal be
 
 OMNI Client API keys (`omni_live_*`, `omni_test_*`) authenticate requests to:
 
-- REST Client API: `https://api.omnibrief.app/v1/...`
-- Hosted MCP transport: `https://api.omnibrief.app/mcp`
+- REST Client API: `https://api.turos.app/v1/...`
+- Hosted MCP transport: `https://api.turos.app/mcp`
 
 This page documents key lifecycle and scope design for internal beta.
 
@@ -78,7 +78,7 @@ POST https://omni-mcp.fly.dev/api/client/keys/:id/rotate
 POST https://omni-mcp.fly.dev/api/client/keys/:id/revoke
 ```
 
-Revocation takes effect immediately for requests to `https://api.omnibrief.app`.
+Revocation takes effect immediately for requests to `https://api.turos.app`.
 
 ## Update key scopes
 

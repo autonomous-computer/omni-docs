@@ -23,8 +23,8 @@ from pathlib import Path
 from typing import Any, Dict
 
 
-DEFAULT_SOURCE_URL = "https://api.omnibrief.app/openapi.json"
-DEFAULT_BASE_URL = "https://api.omnibrief.app"
+DEFAULT_SOURCE_URL = "https://api.turos.app/openapi.json"
+DEFAULT_BASE_URL = "https://api.turos.app"
 DEFAULT_OUT_PATH = Path("openapi/omni-client-api.v1.json")
 
 

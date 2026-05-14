@@ -14,12 +14,12 @@
   "topbarLinks": [
     {
       "name": "App",
-      "url": "https://app.omnibrief.app"
+      "url": "https://app.turos.app"
     }
   ],
   "topbarCtaButton": {
     "name": "Launch OMNI",
-    "url": "https://app.omnibrief.app"
+    "url": "https://app.turos.app"
   },
   "navigation": {
     "groups": [
@@ -164,6 +164,6 @@
     ]
   },
   "footerSocials": {
-    "website": "https://omnibrief.app"
+    "website": "https://turos.app"
   }
 }

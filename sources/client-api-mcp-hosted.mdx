@@ -8,13 +8,13 @@ description: Official OMNI hosted MCP endpoint, transport modes, and method sema
 OMNI’s official hosted MCP endpoint is:
 
 ```text
-https://api.omnibrief.app/mcp
+https://api.turos.app/mcp
 ```
 
 Compatibility endpoint:
 
 ```text
-https://api.omnibrief.app/sse
+https://api.turos.app/sse
 ```
 
 If you want a compact endpoint catalog, see:
@@ -89,7 +89,7 @@ OMNI always includes an HTTP `X-Request-Id` header on responses, and hosted MCP 
 Minimal example:
 
 ```bash
-curl -X POST "https://api.omnibrief.app/mcp" \
+curl -X POST "https://api.turos.app/mcp" \
   -H "Authorization: Bearer omni_live_..." \
   -H "Content-Type: application/json" \
   -H "X-Request-Id: req_mcp_init_001" \
@@ -113,7 +113,7 @@ Notes:
 ## `tools/list`
 
 ```bash
-curl -X POST "https://api.omnibrief.app/mcp" \
+curl -X POST "https://api.turos.app/mcp" \
   -H "Authorization: Bearer omni_live_..." \
   -H "Content-Type: application/json" \
   -H "X-Request-Id: req_mcp_tools_001" \
@@ -136,7 +136,7 @@ mcp.tools.read
 `tools/call` is side-effecting in the general case and requires idempotency.
 
 ```bash
-curl -X POST "https://api.omnibrief.app/mcp" \
+curl -X POST "https://api.turos.app/mcp" \
   -H "Authorization: Bearer omni_live_..." \
   -H "Content-Type: application/json" \
   -H "Idempotency-Key: idem_mcp_call_001" \
@@ -207,7 +207,7 @@ See `/sources/client-api-mcp-compatibility` for protocol and tool compatibility 
 
 During internal beta, OMNI provides first-party adapters to make MCP integration straightforward.
 
-These adapters are not published to npm/PyPI yet. For internal beta they are distributed as GitHub Release artifacts from the `omni-system` repo, gated by live conformance against `https://api.omnibrief.app/mcp`.
+These adapters are not published to npm/PyPI yet. For internal beta they are distributed as GitHub Release artifacts from the `omni-system` repo, gated by live conformance against `https://api.turos.app/mcp`.
 
 ### JavaScript (`@omni/omni-mcp-js`)
 
@@ -229,7 +229,7 @@ import { OmniMcpClient } from "@omni/omni-mcp-js";
 
 const client = new OmniMcpClient({
   apiKey: process.env.OMNI_API_KEY!,
-  // baseUrl: "https://api.omnibrief.app",
+  // baseUrl: "https://api.turos.app",
 });
 
 await client.initialize();
