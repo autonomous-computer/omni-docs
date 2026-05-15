@@ -165,5 +165,10 @@
   },
   "footerSocials": {
     "website": "https://turos.app"
+  },
+  "integrations": {
+    "ga4": {
+      "measurementId": "G-19FQSFSMKJ"
+    }
   }
 }
