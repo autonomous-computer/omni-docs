@@ -1,0 +1,39 @@
+---
+title: "Configure and test"
+description: "Create webhook destinations in the TUROS dashboard, verify signatures over the raw body, and prove the receiver with test events before relying on it."
+---
+
+An event destination is an HTTPS endpoint your organization owns. TUROS submits signed events to it; your receiver verifies the signature, records the event durably, and returns quickly. Configure destinations in the dashboard, then test before you depend on delivery.
+
+## Create a destination
+
+1. Go to the TUROS dashboard and open the webhooks area.
+2. Click to create an endpoint and enter the receiver URL.
+3. Choose the event types the endpoint subscribes to - `monitor.match`, `intelligence.query.completed`, `export.completed`, and the rest of the [catalog](/intelligence/event-types).
+4. Save the signing secret. It is shown once.
+
+The endpoint is now active for the subscribed event types.
+
+Destination creation, subscription changes, secret rotation, tests, and replay are organization control-plane actions. They require a signed-in dashboard session. API keys are machine credentials - they read data, they don't grant control-plane authority, and you shouldn't delegate these actions to an autonomous agent.
+
+## Verify the signature
+
+Every delivery carries `x-secapi-signature`: an HMAC-SHA256 over `${timestamp}.${rawBody}` using your endpoint's signing secret. Verify it before trusting the payload:
+
+1. Read the exact raw request body. Don't verify against re-serialized or parsed JSON.
+2. Recompute the HMAC over `${timestamp}.${rawBody}` with the signing secret.
+3. Compare signatures in constant time.
+4. Reject timestamps outside a bounded clock-skew window.
+
+Never log the signing secret, and never treat an unsigned body as a trusted event. If the secret may have leaked, rotate it from the dashboard - rotation works without downtime, and the new secret is shown once. Update your verification logic before the next delivery arrives.
+
+## Build the receiver contract
+
+1. Verify the signature, then parse.
+2. Store the event or delivery ID in a durable idempotency table - delivery is at-least-once, so a retry can repeat a valid event.
+3. Queue the work and return a fast `2xx`. Slow filing retrieval belongs outside the request handler.
+4. For an unknown event type, verify the signature, record it, and return success if appropriate - add support deliberately rather than failing every future delivery.
+
+## Test before relying on it
+
+Send a test event from the dashboard and confirm your receiver verifies, records, and returns `2xx`. Then trigger a real event - for a monitor, that means a matching filing during the hourly sweep - and confirm the same path. When a delivery fails, work from the delivery audit trail in [Deliveries and retries](/events/deliveries) rather than guessing.

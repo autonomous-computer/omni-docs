@@ -1,0 +1,51 @@
+---
+title: "Billing and pricing"
+description: "Choose a TUROS plan, enable Pay As You Go, and monitor usage from the dashboard."
+---
+
+TUROS bills for successful work. Every organization starts with a free allowance of 100 included calls each month, which renews automatically. When you're ready to go beyond it, choose a plan in the billing section of the [TUROS dashboard](https://turos.app).
+
+## Choose a plan
+
+| Plan | Use it for | Pricing |
+| --- | --- | --- |
+| Free allowance | A bounded evaluation before paid usage. | 100 included calls each month. |
+| Pay As You Go | Early, uneven, or low-volume internal use. | Prepaid credits, metered per request. |
+| Pro | Sustained work by one analyst or developer. | $49/month with $10 included credits and 15% discounted overages. |
+| Team | Sustained shared internal work. | $199/month with $50 included credits and 25% discounted overages. 5 seats, 10 keys. |
+| Commercial | Customer-facing products. | From $18,000/year. 25 keys. |
+
+Self-serve plans cover evaluation and internal use only. Commercial terms are required before you redistribute, embed, white-label, or resell TUROS-derived output, and for Bulk Factor Export. A successful API request does not grant those rights.
+
+## Enable Pay As You Go
+
+Pay As You Go uses prepaid credits and has no fixed monthly fee.
+
+1. Sign in to the TUROS dashboard and open billing.
+2. Choose Pay As You Go.
+3. Save a card and make an initial credit top-up.
+4. Optionally, configure auto top-up so the wallet refills at a low-balance threshold.
+
+Once payment is confirmed, the organization moves to the `payg_active` state. Until then, a billable request can return `402 billing_required` with the account condition that needs attention.
+
+Enabling Pay As You Go is a dashboard action - it requires your signed-in session, not an API key.
+
+## The free-allowance boundary
+
+The starter allowance is hard-limited. An account without a payment method stops when the allowance is spent, and billable requests return `402 billing_required` until you add a card or buy credits. From 80% consumption onward, API responses carry advisory headers so an integration can act before requests start failing. Add a payment method before the boundary if you plan to keep going.
+
+## How usage is billed
+
+Requests are classified by meter family - for example `light_reads` for entity resolution, `standard_reads` for filings and search, `heavy_extracts` for section extraction, and `market_data_reads` for factor and macro reads. Entity resolution is $0.01 per call. Intelligence packs are $0.50 and intelligence reports are $1.50, billed once when the named job completes successfully - polls, failures, and cache hits aren't billed.
+
+Health checks, quotes, limits reads, catalog reads, and test-key traffic are never billed. Neither is a request rejected with a `4xx` before work starts.
+
+Review your current balance, plan, and usage in the billing section of the dashboard. Developers can read the same state programmatically - see the [Billing API reference](/api-reference/billing).
+
+## Budgets
+
+You can set organization-level spend caps so a runaway workload stops instead of drawing down the wallet. A budget stop returns `402 billing_required`; resolve it by raising the budget or waiting for the period to reset.
+
+<Warning>
+When an account is budget-paused or has no active card or prepaid balance, paid delivery work - webhooks, streams, and monitor emails - is blocked rather than silently retried.
+</Warning>

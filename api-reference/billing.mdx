@@ -1,0 +1,45 @@
+---
+title: "Billing"
+description: "Read your billing state, quota windows, and the public rate catalog; quote work before running it."
+---
+
+Billing routes let an integration read the account it's running against before doing paid work: the current billing snapshot, effective limits, the public rate catalog, and a quote for a specific workload. Read state with the same API key that will run the workload - a copied example doesn't describe your account.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/v1/billing` | Return the current organization's billing snapshot, including pricing posture, budget controls, and monthly quotas. |
+| `GET` | `/v1/limits` | Return the current organization's effective plan, billing state, and route quota windows. |
+| `GET` | `/v1/billing/rates` | Return the public pricing catalog, free-allowance metadata, plan metadata, and meter-family rates. No key required. |
+| `POST` | `/v1/billing/quote` | Quote a billable workflow or meter class against the current billing plan and budget gates. |
+| `PUT` | `/v1/billing/budget` | Update organization-level spend caps, soft caps, and approval thresholds. |
+| `GET` | `/v1/billing/credits` | Return the prepaid credit balance, auto-top-up settings, lifetime totals, and low-balance status. |
+| `GET` | `/v1/billing/credits/transactions` | List prepaid credit ledger entries - top-ups, debits, refunds, grants, adjustments - newest first. |
+| `POST` | `/v1/billing/payg/enable` | Enable Pay As You Go: save a card, make an initial top-up, optionally turn on auto-top-up. Requires a signed-in session, not an API key. |
+
+Read the account before a repeated workflow:
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  "https://api.secapi.ai/v1/billing"
+```
+
+## Quotes are not reservations
+
+`POST /v1/billing/quote` prices a request against the current plan and budget gates. It doesn't reserve usage - the billing decision happens when the actual request runs. Quote the actual path you'll call, since the meter class can vary by route and by expand.
+
+## Enabling Pay As You Go
+
+`POST /v1/billing/payg/enable` is a control-plane action and requires the authorized signed-in session - an API key can't enable it. Most users should enable Pay As You Go in the [TUROS dashboard](https://turos.app). Once payment is confirmed, the organization moves to `payg_active`.
+
+## Reading a `402`
+
+A `402 billing_required` names its cause in `details.reason` - for example `starter_grant_exhausted` - and carries resolution context such as `details.addPaymentMethodUrl` and `details.nextSteps`. Branch on `details.reason`, not on message text. Each `402` is a stop condition: resolve the stated account condition before retrying.
+
+## What's never billed
+
+Health checks, quotes, limits reads, catalog reads, test-key traffic, and requests rejected with a `4xx` before work starts are non-billable. Billable POSTs support `Idempotency-Key` - see [Idempotency](/api-reference#idempotency).
+
+Retain `SECAPI-Meter-Class` and `SECAPI-Estimated-Cost` when a response supplies them, and watch the `SECAPI-Grant-*` advisory headers on free-allowance accounts from 80% consumption onward.
+
+See the [Introduction](/api-reference) for authentication, pagination, and error behavior.

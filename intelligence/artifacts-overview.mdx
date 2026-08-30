@@ -1,0 +1,34 @@
+---
+title: "Overview"
+description: "Artifacts are persisted, filing-derived bundles with manifests, checksums, and stable export formats - inspect and retrieve them without touching object storage directly."
+---
+
+An artifact is a persisted, filing-derived bundle: a rendered section, an ownership comparison, or a compensation comparison, saved to your organization with a structured manifest. TUROS exposes the full artifact lifecycle through the API, so you never touch object storage directly.
+
+An artifact is a saved derived payload, not a replacement for its underlying filing. Every persisted artifact keeps its filing and section provenance attached; use it when the output is cited or reviewed.
+
+## The lifecycle
+
+1. **Create.** `POST /v1/artifacts` builds and persists a bundle for the selected issuer or comparison workflow. The route accepts asynchronously - see [Create artifacts](/intelligence/artifacts-create).
+2. **Track.** `GET /v1/artifacts` lists your inventory; `GET /v1/artifacts/summary` returns grouped counts by kind and status.
+3. **Retrieve.** `GET /v1/artifacts/{artifact_id}` returns the record, `/manifest` the deterministic inventory, `/download` the bytes, and `/export?format=json|markdown` a stable envelope - see [Retrieve artifacts](/intelligence/artifacts-retrieve).
+4. **Reconcile.** `POST /v1/artifacts/{artifact_id}/reconcile` promotes a metadata-only artifact into storage.
+
+## What a manifest carries
+
+Every persisted artifact has a structured manifest: byte length, line count, checksum, storage mode and object key, filing and section context, and supported export formats. Two fields matter operationally:
+
+- **`storageMode`:** distinguishes metadata-only artifacts from object-backed artifacts.
+- **`downloadUrl`:** present only when a bundle is ready to fetch.
+
+Artifact state is organization-scoped. Always inspect with the key for the correct organization.
+
+## Billing
+
+Artifact creation bills once, on successful completion, on the `artifact_jobs` meter. Failed, cancelled, and in-flight jobs are free, and test-key traffic never bills. `GET /v1/billing/rates` is the public catalog for the current rate. Send `Idempotency-Key` on the create call so a retry replays the first response instead of building a second bundle.
+
+## Read next
+
+- [Setup](/intelligence/artifacts-setup) - keys, headers, and test mode before your first bundle
+- [Create artifacts](/intelligence/artifacts-create) - the request body, kinds, and error contract
+- [Retrieve artifacts](/intelligence/artifacts-retrieve) - list, manifest, download, and export

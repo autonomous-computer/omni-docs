@@ -1,0 +1,57 @@
+---
+title: "API keys"
+description: "Create, store, rotate, and revoke TUROS API keys, and understand test and live key modes."
+---
+
+An API key is the credential for every TUROS machine request - REST, SDKs, the CLI, and server-to-server MCP. Keys are created in the TUROS dashboard, scoped to your organization, and sent in the `x-api-key` header.
+
+## Key modes
+
+The prefix is the mode:
+
+| Prefix | `livemode` | Behavior |
+| --- | --- | --- |
+| `secapi_test_…` | `false` | Free, fixture-only test traffic. See [Test mode](/test-mode). |
+| `secapi_live_…` | `true` | Production traffic. Bills successful work. |
+
+TUROS shows the full secret once, at creation. Afterward the dashboard and API display the `keyPrefix` - the first 20 characters - so you can identify a key without exposing it.
+
+## Create a key
+
+1. Go to the [TUROS dashboard](https://turos.app) and sign in.
+2. Go to **API keys**.
+3. Click **Create key**, name it for the workload that will use it, and choose test or live.
+4. Copy the secret into the secret store of the environment that will make requests.
+
+Key creation is a dashboard-session action - an API key can't create another key. Enterprise organizations can also manage org-scoped keys programmatically through `GET /v1/api_keys`, `POST /v1/api_keys`, and `DELETE /v1/api_keys/:keyId`, with scopes `read:sec`, `write:sec`, and `admin:operator`.
+
+## Store and send keys
+
+Set the key as an environment variable in the process that makes requests:
+
+```bash
+export SECAPI_API_KEY="secapi_..."
+
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  "https://api.secapi.ai/v1/limits"
+```
+
+Don't put a key in browser code, a URL, a request body, a repository, or a prompt transcript. We recommend one key per deployed workload, so a rotation or revocation affects only that workload.
+
+## Rotate a key
+
+Rotate without interrupting callers:
+
+1. Create a replacement key in the dashboard.
+2. Deploy the new secret where the application runs.
+3. Verify the replacement with `GET /v1/limits`.
+4. Revoke the old key after callers use the replacement.
+
+<Warning>
+For a suspected leak, revoke the exposed key first, then create and deploy its replacement. Revocation is immediate and can't be undone.
+</Warning>
+
+## Key limits
+
+Each plan has a key limit. The Team plan includes up to 10 keys, and the Commercial plan includes up to 25. If key creation fails at the limit, revoke an unused key or upgrade the plan - don't share one key across unrelated workloads to work around it.

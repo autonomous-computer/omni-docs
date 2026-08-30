@@ -1,0 +1,58 @@
+---
+title: "Troubleshooting"
+description: "Diagnose a failed filings request from its HTTP status, error code, and request ID"
+---
+
+Start with the response, not a retry. Record the HTTP status, the machine-readable error `code`, `Request-Id`, and `traceparent` when present. Together they separate a request problem from an account limit or a temporary service problem.
+
+Then make one safe reproduction with the same credential:
+
+```bash
+curl -i -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  "https://api.secapi.ai/v1/limits"
+```
+
+If this request doesn't succeed, resolve the credential or account condition before investigating a filing workflow. If it succeeds while your filing request fails, the problem is in the request or the route's coverage, not your key.
+
+## Choose the next action
+
+| Status | Code | What to do next |
+| --- | --- | --- |
+| `400` | `invalid_query_parameter`, `validation_error` | Compare the request with the endpoint reference and correct the named field. Don't retry unchanged input. |
+| `401` | `missing_api_key` | No key reached the API. Send `x-api-key` from the calling process - not `Authorization: Bearer`, not a URL parameter. |
+| `401` | `authentication_failed` | The key was rejected. Rotate or replace it in the TUROS dashboard. Don't switch to a bearer header to "fix" this. |
+| `402` | `billing_required` | The plan or billing state doesn't allow the request. Branch on `details.reason`, not the message text - `starter_grant_exhausted`, for example, includes `details.addPaymentMethodUrl` and `details.nextSteps`. |
+| `402` | `insufficient_credits` | Prepaid credits can't cover the request. Change the billing posture in the dashboard before retrying. |
+| `402` | `billing_budget_approval_required`, `billing_budget_hard_cap_exceeded` | A configured budget threshold or cap stopped the request. These are control signals, not transient failures - don't retry until the condition changes. |
+| `403` | `human_auth_required` | The route requires a signed-in browser session. Complete the action in the dashboard; an API key can't do it. |
+| `429` | `rate_limit_exceeded` | Honor `Retry-After` when present, reduce concurrency, and retry only after that interval. Don't fan out concurrent retries. |
+| `429` | `ai_query_quota_exceeded` | The AI-query allowance is exhausted. Wait for reset or resolve the account limit. |
+| `5xx` | - | Retry with bounded backoff. Keep the request ID if the failure repeats. |
+
+Watch `SECAPI-Grant-Status` and the related advisory headers on earlier responses - they warn from 80% grant consumption, before a `402` blocks requests.
+
+## Filing-specific outcomes
+
+- `404 filing_not_found` on an accession lookup means the accession couldn't be resolved under the supplied constraints. Verify the accession and hints; don't substitute the latest filing or a similar issuer.
+- `502 filing_search_failed` is a search-path failure, not an empty historical result. Retry with bounded backoff.
+- `502 section_lookup_failed` can reflect unavailable rendering or section coverage. Don't replace it with an invented excerpt.
+- An empty list page is a result once its filters are recorded. A missing filing is a retrieval outcome, not proof the issuer made no filing.
+
+A response can also succeed at the HTTP layer while carrying a route-specific limitation. Inspect returned capability, warning, provenance, and freshness fields, and surface the limitation downstream instead of silently substituting a different issuer, period, or filing.
+
+## Check billing and limits with the failing key
+
+A different key can have different plan, billing, or quota state - use the failing workload's key for both checks:
+
+```bash
+curl --fail-with-body -sS -H "x-api-key: $SECAPI_API_KEY" \
+  "https://api.secapi.ai/v1/billing"
+
+curl --fail-with-body -sS -H "x-api-key: $SECAPI_API_KEY" \
+  "https://api.secapi.ai/v1/limits"
+```
+
+## Escalate with a useful diagnostic
+
+Include the endpoint, a redacted request, UTC timestamp, HTTP status, error code, `Request-Id`, trace context, relevant response headers, and the outcome of `GET /v1/limits` with the same credential. For data results, include the returned filing identifiers. Exclude API keys, bearer tokens, cookies, and private payloads.

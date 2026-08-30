@@ -1,0 +1,64 @@
+---
+title: "Authentication"
+description: "Authenticate TUROS machine requests with the x-api-key header, pin an API version, and use dashboard sessions for account actions."
+---
+
+TUROS uses two credentials with different jobs: an API key for machine data requests, and a signed-in dashboard session for people-driven account actions. Every REST, SDK, CLI, and server-to-server MCP request authenticates with an API key in the `x-api-key` header.
+
+<Warning>
+An API key is not an `Authorization: Bearer` token. Don't send it as a bearer header, put it in a URL or request body, expose it in browser-delivered code, or commit it to source control.
+</Warning>
+
+## Send an authenticated request
+
+```bash
+export SECAPI_API_KEY="secapi_..."
+
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/limits"
+```
+
+Use `secapi-version` to pin a dated API version. When you omit it, TUROS resolves the current version and returns it in the `SECAPI-Version` response header. A pinned version can still receive additive fields, so parse the fields your application uses and tolerate extras.
+
+## Machine keys vs dashboard sessions
+
+| Action | Credential |
+| --- | --- |
+| Read SEC data from code, an SDK, the CLI, or an MCP client | API key in `x-api-key` |
+| Create, reveal, rotate, or revoke an API key | Signed-in dashboard session |
+| Change billing, payment methods, or budgets | Signed-in dashboard session |
+| Create and edit monitors, webhook endpoints, and signing secrets | Signed-in dashboard session |
+
+An API key can't create keys or change billing, and a dashboard session isn't a substitute for an API key on a data request. Dashboard sign-in runs through WorkOS, and refresh-backed sessions last 30 days, or 90 days with remember-me.
+
+## Authentication errors
+
+TUROS distinguishes the two ways a request can fail authentication:
+
+- `401 missing_api_key` - the request didn't include `x-api-key`. Check the header name and that the client actually sends it.
+- `401 authentication_failed` - the supplied key wasn't accepted. Check for a revoked, truncated, or wrong-environment key.
+
+Don't switch to a bearer header to fix either error. `403` means the credential is valid but isn't authorized for the resource - check the plan and entitlement rather than the key format.
+
+## SSO
+
+Enterprise plans can federate dashboard sign-in to a corporate identity provider through WorkOS, with SAML and OIDC support for Okta, Azure AD, Google Workspace, and other SAML 2.0 and OIDC providers. SSO covers human dashboard access - machine requests still authenticate with API keys.
+
+Enterprise key management also supports scoped keys: `read:sec`, `write:sec`, and `admin:operator`.
+
+## MCP OAuth discovery
+
+MCP clients that require protected-resource metadata can discover it at the standard well-known endpoints:
+
+```text
+https://api.secapi.ai/.well-known/oauth-protected-resource
+https://api.secapi.ai/.well-known/oauth-authorization-server
+```
+
+Server-to-server MCP calls still authenticate with `x-api-key`. See [Model Context Protocol (MCP)](/mcp) for setup.
+
+## Next steps
+
+Read [API keys](/coverage/api-keys) for key creation, rotation, and limits, or [Account setup](/account-setup) to send your first request.

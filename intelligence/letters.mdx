@@ -1,0 +1,41 @@
+---
+title: "Fund letters"
+description: "Search and retrieve investor letters from hedge funds, partnerships, and registered advisers, with page-anchored quotes."
+---
+
+Fund letters are one of the four TUROS stores. Use them when the question is what a manager wrote, not what a filing disclosed. Hits carry page-anchored quotes so you can show the passage, not just a summary.
+
+Letters can be gated. If a letters route returns `404`, check `availability` on [`/.well-known/api-catalog.json`](https://api.secapi.ai/.well-known/api-catalog.json) before you treat the store as missing from the product.
+
+## List and search
+
+| Research question | Call |
+| --- | --- |
+| Which letters exist for this manager or ticker? | `GET /v1/fund-letters` |
+| Where does this phrase appear in letter bodies? | `GET /v1/fund-letters/search` |
+| Which passages are nearest this meaning? | `GET /v1/fund-letters/semantic` |
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/fund-letters?ticker=BRK.A"
+```
+
+Keep the letter id, as-of date, and page-anchored quote with any claim you take from a hit. Don't paraphrase a letter as a filing fact.
+
+## Assemble a letter brief
+
+For a cited assembly rather than a raw letter list, submit the named job `letter_brief` with a ticker or manager ID. See [Intelligence overview](/intelligence/overview).
+
+```bash
+curl --fail-with-body -sS -X POST \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  -H "Idempotency-Key: letter-brief-brk-2026-08-30" \
+  -H "content-type: application/json" \
+  -d '{"job":"letter_brief","entities":["BRK.A"]}' \
+  "https://api.secapi.ai/v1/intelligence/query"
+```
+
+Use the **Fund letters** group in [API Reference](/api-reference) for parameters and response fields.

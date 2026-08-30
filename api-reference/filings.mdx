@@ -1,0 +1,32 @@
+---
+title: "Filings"
+description: "Search SEC filing records, then retrieve, extract, download, export, or render a selected filing."
+---
+
+Search SEC filing records, then move from a result into retrieval, section extraction, download, export, or a rendered view. Start with `GET /v1/filings` when you have an issuer, form, date, or query; use an accession-number lookup once you know the record.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/v1/filings` | Find SEC filing records by issuer, form, date, text, or accession number. |
+| `GET` | `/v1/filings/latest` | Get an issuer's newest filing, optionally for a specific SEC form. |
+| `GET` | `/v1/filings/latest/render` | Render an issuer's latest selected filing as readable text. |
+| `GET` | `/v1/filings/latest/sections/{section_key}` | Extract a named section from an issuer's latest selected filing. |
+| `GET` | `/v1/filings/latest/risk-categories` | Classify Item 1A risk categories in a selected issuer filing. |
+| `GET` | `/v1/filings/{accession_number}` | Get one SEC filing record by its accession number. |
+| `GET` | `/v1/filings/{accession_number}/sections/{section_key}` | Extract a named section from one accession-number filing. |
+| `GET` | `/v1/filings/{accession_number}/download` | Open a filing's source document by accession number. |
+| `GET` | `/v1/filings/{accession_number}/export` | Export one filing in JSON or document formats. |
+| `GET` | `/v1/filings/pension-benefit-schedule` | Extract disclosed pension and retiree benefit payments for a target year. |
+
+Retrieve the latest 10-K for an issuer:
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/filings/latest?ticker=AAPL&form=10-K&view=agent"
+```
+
+Latest-filing results are time-dependent - the accession number changes when a newer filing arrives. Preserve `accessionNumber`, `form`, `filingDate`, `filingUrl`, and `requestId` when the response includes them; they are the citation that identifies the source.
+
+Filing retrieval and search are metered as standard reads; section extraction, comparisons, and document retrieval are heavy extracts. Coverage is a nine-year searchable floor with completeness checks for required forms for the two most recently completed years, and the current year as filings arrive.

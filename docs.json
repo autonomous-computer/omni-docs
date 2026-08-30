@@ -1,6 +1,8 @@
 {
+  "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "OMNI Documentation",
+  "name": "TUROS",
+  "description": "SEC filing, company, ownership, market, and intelligence APIs for developers and agents.",
   "logo": {
     "dark": "/logo/dark.svg",
     "light": "/logo/light.svg"
@@ -11,160 +13,1370 @@
     "light": "#5AA9FF",
     "dark": "#2D8CFF"
   },
-  "topbarLinks": [
-    {
-      "name": "App",
-      "url": "https://app.turos.app"
+  "navbar": {
+    "links": [
+      {
+        "label": "App",
+        "href": "https://turos.app"
+      },
+      {
+        "label": "Status",
+        "href": "https://status.secapi.ai/"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Get API key",
+      "href": "https://turos.app"
     }
-  ],
-  "topbarCtaButton": {
-    "name": "Launch OMNI",
-    "url": "https://app.turos.app"
+  },
+  "api": {
+    "openapi": "openapi/sec-api-public.v1.json",
+    "playground": {
+      "display": "interactive",
+      "proxy": true
+    },
+    "url": "full",
+    "examples": {
+      "languages": [
+        "curl",
+        "python",
+        "javascript"
+      ],
+      "defaults": "required",
+      "prefill": true,
+      "autogenerate": true
+    }
+  },
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity"
+    ]
   },
   "navigation": {
-    "groups": [
+    "global": {
+      "anchors": [
+        {
+          "anchor": "Changelog",
+          "href": "/changelog",
+          "icon": "clock"
+        }
+      ]
+    },
+    "dropdowns": [
       {
-        "group": "Getting Started",
-        "pages": [
-          "index",
-          "getting-started/quickstart",
-          "getting-started/installation",
-          "getting-started/client-api-quickstart",
-          "getting-started/client-api-sdk-quickstart",
-          "getting-started/client-api-versioning",
-          "getting-started/platform-scope"
+        "dropdown": "Developer Docs",
+        "icon": "code",
+        "tabs": [
+          {
+            "tab": "Guides",
+            "icon": "book-open",
+            "groups": [
+              {
+                "group": "Developer Docs",
+                "pages": [
+                  "index",
+                  "test-mode",
+                  "account-setup"
+                ]
+              },
+              {
+                "group": "AI tools",
+                "pages": [
+                  "ai/build-with-ai",
+                  "ai/agent"
+                ]
+              },
+              {
+                "group": "Coverage & access",
+                "pages": [
+                  "coverage/coverage",
+                  "coverage/authentication",
+                  "coverage/api-keys",
+                  "coverage/identifiers"
+                ]
+              },
+              {
+                "group": "Filings & companies",
+                "pages": [
+                  "filings/overview",
+                  {
+                    "group": "Fetch filings",
+                    "pages": [
+                      "filings/fetch-overview",
+                      {
+                        "group": "Real-time retrieval",
+                        "pages": [
+                          "filings/api-submission",
+                          "filings/dashboard-search"
+                        ]
+                      },
+                      "filings/batch",
+                      "filings/accession-lookup",
+                      "filings/views",
+                      {
+                        "group": "Read filing data",
+                        "pages": [
+                          "filings/pdf",
+                          {
+                            "group": "API responses",
+                            "pages": [
+                              "filings/company",
+                              "filings/financials",
+                              "filings/ownership"
+                            ]
+                          }
+                        ]
+                      },
+                      "filings/sections",
+                      "filings/troubleshooting",
+                      "filings/form-types"
+                    ]
+                  },
+                  "filings/entity-resolution",
+                  {
+                    "group": "Special situations",
+                    "pages": [
+                      "situations/checks",
+                      "situations/interpret",
+                      "situations/troubleshooting"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Model Context Protocol (MCP)",
+                "pages": [
+                  "mcp"
+                ]
+              },
+              {
+                "group": "Intelligence & market data",
+                "pages": [
+                  "intelligence/overview",
+                  "intelligence/test-workflows",
+                  {
+                    "group": "Query intelligence",
+                    "pages": [
+                      "intelligence/company",
+                      "intelligence/letters",
+                      "intelligence/factors",
+                      "intelligence/macro",
+                      "intelligence/market"
+                    ]
+                  },
+                  {
+                    "group": "Artifacts",
+                    "pages": [
+                      "intelligence/artifacts-overview",
+                      "intelligence/artifacts-setup",
+                      "intelligence/artifacts-create",
+                      "intelligence/artifacts-retrieve"
+                    ]
+                  },
+                  "intelligence/status",
+                  "intelligence/views",
+                  "intelligence/event-types"
+                ]
+              },
+              {
+                "group": "Event destinations",
+                "pages": [
+                  "events/configure",
+                  "events/deliveries",
+                  "events/events"
+                ]
+              },
+              {
+                "group": "Organizations",
+                "pages": [
+                  "organizations/overview",
+                  "organizations/setup"
+                ]
+              },
+              {
+                "group": "Administrative",
+                "pages": [
+                  "admin/billing",
+                  "admin/notifications",
+                  "admin/trust-center",
+                  "admin/support"
+                ]
+              },
+              {
+                "group": "Libraries & SDKs",
+                "pages": [
+                  "sdks/javascript",
+                  "sdks/python",
+                  "sdks/go",
+                  "sdks/rust",
+                  "sdks/cli"
+                ]
+              }
+            ]
+          },
+          {
+                        "tab": "API Reference",
+                        "icon": "square-terminal",
+                        "openapi": {
+                          "source": "openapi/sec-api-public.v1.json",
+                          "directory": "api-reference"
+                        },
+                        "groups": [
+              {
+                "group": "Introduction",
+                "pages": [
+                  "api-reference/index"
+                ]
+              },
+              {
+                "group": "Entities",
+                "pages": [
+                  "api-reference/entities",
+                  "GET /v1/entities",
+                  "GET /v1/entities/edgar",
+                  "GET /v1/entities/resolve"
+                ]
+              },
+              {
+                "group": "Filings",
+                "pages": [
+                  "api-reference/filings",
+                  "GET /v1/filings",
+                  "GET /v1/filings/diff",
+                  "GET /v1/filings/events",
+                  "GET /v1/filings/guidance",
+                  "GET /v1/filings/latest",
+                  "GET /v1/filings/latest/render",
+                  "GET /v1/filings/latest/risk-categories",
+                  "GET /v1/filings/latest/sections/{section_key}",
+                  "GET /v1/filings/pension-benefit-schedule",
+                  "GET /v1/filings/transcripts",
+                  "GET /v1/filings/{accession_number}",
+                  "GET /v1/filings/{accession_number}/download",
+                  "GET /v1/filings/{accession_number}/export",
+                  "GET /v1/filings/{accession_number}/sections/{section_key}"
+                ]
+              },
+              {
+                "group": "Companies",
+                "pages": [
+                  "api-reference/companies",
+                  "GET /v1/companies/audit-fees",
+                  "GET /v1/companies/balance-sheets",
+                  "GET /v1/companies/cash-flow-statements",
+                  "GET /v1/companies/financials",
+                  "GET /v1/companies/income-statements",
+                  "GET /v1/companies/macro-exposure",
+                  "GET /v1/companies/overview",
+                  "GET /v1/companies/ratios",
+                  "GET /v1/companies/segments",
+                  "GET /v1/companies/subsidiaries"
+                ]
+              },
+              {
+                "group": "Owners",
+                "pages": [
+                  "GET /v1/owners/13d-13g",
+                  "GET /v1/owners/13f",
+                  "POST /v1/owners/13f/compare",
+                  "GET /v1/owners/13f/filings",
+                  "GET /v1/owners/institutional/extract",
+                  "GET /v1/owners/institutional/investor",
+                  "GET /v1/owners/institutional/ticker"
+                ]
+              },
+              {
+                "group": "Insiders",
+                "pages": [
+                  "GET /v1/insiders"
+                ]
+              },
+              {
+                "group": "Funds",
+                "pages": [
+                  "GET /v1/funds/nport/holdings"
+                ]
+              },
+              {
+                "group": "Statements",
+                "pages": [
+                  "GET /v1/statements",
+                  "GET /v1/statements/all",
+                  "GET /v1/statements/segmented-facts",
+                  "GET /v1/statements/segmented-revenues",
+                  "GET /v1/statements/share-float",
+                  "GET /v1/statements/{statement_key}"
+                ]
+              },
+              {
+                "group": "Facts",
+                "pages": [
+                  "GET /v1/facts"
+                ]
+              },
+              {
+                "group": "Forms",
+                "pages": [
+                  "GET /v1/forms/1-a",
+                  "GET /v1/forms/144",
+                  "GET /v1/forms/c",
+                  "GET /v1/forms/d",
+                  "GET /v1/forms/d/{accessionNumber}",
+                  "GET /v1/forms/ncen",
+                  "GET /v1/forms/npx"
+                ]
+              },
+              {
+                "group": "Sections",
+                "pages": [
+                  "GET /v1/sections/search"
+                ]
+              },
+              {
+                "group": "Annual reports",
+                "pages": [
+                  "GET /v1/annual-reports"
+                ]
+              },
+              {
+                "group": "Intelligence",
+                "pages": [
+                  "api-reference/intelligence",
+                  "GET /v1/intelligence/company",
+                  "POST /v1/intelligence/country-report",
+                  "GET /v1/intelligence/coverage",
+                  "GET /v1/intelligence/earnings-preview",
+                  "POST /v1/intelligence/footnotes/query",
+                  "POST /v1/intelligence/macro-exposure",
+                  "POST /v1/intelligence/portfolio",
+                  "POST /v1/intelligence/query",
+                  "GET /v1/intelligence/query/{jobId}",
+                  "GET /v1/intelligence/security",
+                  "POST /v1/intelligence/watchlist"
+                ]
+              },
+              {
+                "group": "Factors",
+                "pages": [
+                  "api-reference/factors",
+                  "GET /v1/factors/bulk-download",
+                  "GET /v1/factors/catalog",
+                  "GET /v1/factors/correlations",
+                  "POST /v1/factors/custom",
+                  "GET /v1/factors/dashboard",
+                  "GET /v1/factors/decomposition",
+                  "GET /v1/factors/exposures",
+                  "GET /v1/factors/extreme-moves",
+                  "GET /v1/factors/extreme-pairs",
+                  "GET /v1/factors/history/{factorKey}",
+                  "GET /v1/factors/macro-sensitivity",
+                  "GET /v1/factors/pair-history/{f1}/{f2}",
+                  "GET /v1/factors/pairs",
+                  "GET /v1/factors/regime-performance",
+                  "GET /v1/factors/related-stocks",
+                  "GET /v1/factors/returns",
+                  "GET /v1/factors/returns/intraday",
+                  "GET /v1/factors/similarity-pack",
+                  "GET /v1/factors/sparklines"
+                ]
+              },
+              {
+                "group": "Macro",
+                "pages": [
+                  "api-reference/macro",
+                  "GET /v1/macro/all",
+                  "GET /v1/macro/calendar",
+                  "GET /v1/macro/credit-ratings",
+                  "GET /v1/macro/credit-ratings/{country}",
+                  "GET /v1/macro/forecasts",
+                  "GET /v1/macro/high-signal-pack",
+                  "GET /v1/macro/indicators",
+                  "GET /v1/macro/overview",
+                  "GET /v1/macro/regimes",
+                  "GET /v1/macro/releases",
+                  "GET /v1/macro/search",
+                  "GET /v1/macro/status"
+                ]
+              },
+              {
+                "group": "Market",
+                "pages": [
+                  "api-reference/market",
+                  "GET /v1/market/bars",
+                  "GET /v1/market/calendar",
+                  "GET /v1/market/corporate-actions",
+                  "GET /v1/market/reference",
+                  "GET /v1/market/search",
+                  "GET /v1/market/snapshots"
+                ]
+              },
+              {
+                "group": "Situations",
+                "pages": [
+                  "api-reference/situations",
+                  "GET /v1/situations",
+                  "GET /v1/situations/by-form/{form}",
+                  "GET /v1/situations/calendar",
+                  "GET /v1/situations/export",
+                  "GET /v1/situations/feed",
+                  "GET /v1/situations/feed.rss",
+                  "GET /v1/situations/issues",
+                  "GET /v1/situations/issues/{issue}",
+                  "GET /v1/situations/performance",
+                  "GET /v1/situations/stats",
+                  "GET /v1/situations/watchlists",
+                  "POST /v1/situations/watchlists",
+                  "DELETE /v1/situations/watchlists/{monitor_id}",
+                  "GET /v1/situations/watchlists/{monitor_id}",
+                  "GET /v1/situations/{situation_id}",
+                  "GET /v1/situations/{situation_id}/export",
+                  "GET /v1/situations/{situation_id}/filings",
+                  "GET /v1/situations/{situation_id}/summary",
+                  "GET /v1/situations/{situation_id}/underwriting-pack"
+                ]
+              },
+              {
+                "group": "Fund letters",
+                "pages": [
+                  "GET /v1/fund-letters",
+                  "GET /v1/fund-letters/changes",
+                  "GET /v1/fund-letters/companies",
+                  "GET /v1/fund-letters/diff",
+                  "GET /v1/fund-letters/funds",
+                  "GET /v1/fund-letters/funds/{fund_id}",
+                  "GET /v1/fund-letters/managers",
+                  "GET /v1/fund-letters/managers/{manager_id}",
+                  "GET /v1/fund-letters/managers/{manager_id}/overview",
+                  "GET /v1/fund-letters/search",
+                  "GET /v1/fund-letters/semantic",
+                  "GET /v1/fund-letters/theses",
+                  "GET /v1/fund-letters/{letter_id}",
+                  "GET /v1/fund-letters/{letter_id}/document",
+                  "GET /v1/fund-letters/{letter_id}/topics"
+                ]
+              },
+              {
+                "group": "Dilution",
+                "pages": [
+                  "GET /v1/dilution/cash-position",
+                  "GET /v1/dilution/convertibles",
+                  "GET /v1/dilution/corporate-actions",
+                  "GET /v1/dilution/coverage",
+                  "GET /v1/dilution/events",
+                  "GET /v1/dilution/events/{event_id}",
+                  "GET /v1/dilution/lockups",
+                  "GET /v1/dilution/nasdaq-compliance",
+                  "GET /v1/dilution/ratings",
+                  "GET /v1/dilution/reverse-splits",
+                  "GET /v1/dilution/rofr",
+                  "GET /v1/dilution/score",
+                  "GET /v1/dilution/share-float-history",
+                  "GET /v1/dilution/warrants"
+                ]
+              },
+              {
+                "group": "Artifacts",
+                "pages": [
+                  "GET /v1/artifacts",
+                  "POST /v1/artifacts",
+                  "GET /v1/artifacts/summary",
+                  "GET /v1/artifacts/{artifact_id}",
+                  "GET /v1/artifacts/{artifact_id}/download",
+                  "GET /v1/artifacts/{artifact_id}/export",
+                  "GET /v1/artifacts/{artifact_id}/manifest",
+                  "POST /v1/artifacts/{artifact_id}/reconcile"
+                ]
+              },
+              {
+                "group": "Events",
+                "pages": [
+                  "GET /v1/events/auditor-changes",
+                  "GET /v1/events/enforcement",
+                  "GET /v1/events/ipo",
+                  "GET /v1/events/ma",
+                  "GET /v1/events/officer-changes",
+                  "GET /v1/events/restatements",
+                  "GET /v1/events/voting-results"
+                ]
+              },
+              {
+                "group": "Event types",
+                "pages": [
+                  "GET /v1/event_types"
+                ]
+              },
+              {
+                "group": "Delivery",
+                "pages": [
+                  "api-reference/delivery",
+                  "GET /v1/delivery/events",
+                  "GET /v1/delivery/events/export",
+                  "GET /v1/delivery/unsubscribe",
+                  "POST /v1/delivery/unsubscribe"
+                ]
+              },
+              {
+                "group": "Webhook endpoints",
+                "pages": [
+                  "GET /v1/webhook_endpoints",
+                  "POST /v1/webhook_endpoints",
+                  "DELETE /v1/webhook_endpoints/{webhook_id}",
+                  "PATCH /v1/webhook_endpoints/{webhook_id}",
+                  "GET /v1/webhook_endpoints/{webhook_id}/deliveries",
+                  "POST /v1/webhook_endpoints/{webhook_id}/deliveries/{delivery_id}/replay",
+                  "POST /v1/webhook_endpoints/{webhook_id}/disable",
+                  "POST /v1/webhook_endpoints/{webhook_id}/enable",
+                  "POST /v1/webhook_endpoints/{webhook_id}/rotate_secret",
+                  "POST /v1/webhook_endpoints/{webhook_id}/test"
+                ]
+              },
+              {
+                "group": "Stream",
+                "pages": [
+                  "POST /v1/stream/tickets",
+                  "GET /v1/stream/ws"
+                ]
+              },
+              {
+                "group": "Stream subscriptions",
+                "pages": [
+                  "GET /v1/stream_subscriptions",
+                  "POST /v1/stream_subscriptions",
+                  "DELETE /v1/stream_subscriptions/{stream_id}",
+                  "PATCH /v1/stream_subscriptions/{stream_id}",
+                  "POST /v1/stream_subscriptions/{stream_id}/disable",
+                  "POST /v1/stream_subscriptions/{stream_id}/enable",
+                  "GET /v1/stream_subscriptions/{stream_id}/events"
+                ]
+              },
+              {
+                "group": "Monitors",
+                "pages": [
+                  "GET /v1/monitors",
+                  "POST /v1/monitors",
+                  "POST /v1/monitors/compile",
+                  "DELETE /v1/monitors/{monitor_id}",
+                  "GET /v1/monitors/{monitor_id}",
+                  "POST /v1/monitors/{monitor_id}/delivery",
+                  "GET /v1/monitors/{monitor_id}/matches"
+                ]
+              },
+              {
+                "group": "Embed",
+                "pages": [
+                  "GET /v1/embed/feed",
+                  "GET /v1/embed/letters",
+                  "GET /v1/embed/letters/{slug}",
+                  "GET /v1/embed/macro/countries/{iso2}",
+                  "GET /v1/embed/macro/map",
+                  "GET /v1/embed/macro/series/{iso2}/{indicator}",
+                  "GET /v1/embed/situations",
+                  "GET /v1/embed/situations/feed",
+                  "GET /v1/embed/situations/feed.rss",
+                  "GET /v1/embed/situations/issues",
+                  "GET /v1/embed/situations/issues/{issue}",
+                  "GET /v1/embed/situations/stats",
+                  "GET /v1/embed/situations/{id}",
+                  "GET /v1/embed/situations/{situation_id}/export",
+                  "GET /v1/embed/widget.js"
+                ]
+              },
+              {
+                "group": "Portfolio",
+                "pages": [
+                  "POST /v1/portfolio/analyze",
+                  "POST /v1/portfolio/attribution",
+                  "POST /v1/portfolio/hedge",
+                  "POST /v1/portfolio/optimize",
+                  "POST /v1/portfolio/risk",
+                  "POST /v1/portfolio/stress-test",
+                  "GET /v1/portfolio/stress-test/scenarios"
+                ]
+              },
+              {
+                "group": "Workbooks",
+                "pages": [
+                  "POST /v1/workbook-installations",
+                  "POST /v1/workbook-installations/{workbook_installation_id}/apply-receipts",
+                  "POST /v1/workbook-installations/{workbook_installation_id}/fingerprints",
+                  "PUT /v1/workbook-installations/{workbook_installation_id}/mappings",
+                  "POST /v1/workbook-installations/{workbook_installation_id}/model-change-set-approvals",
+                  "POST /v1/workbook-installations/{workbook_installation_id}/model-context-snapshots",
+                  "GET /v1/workbook-installations/{workbook_installation_id}/provenance",
+                  "POST /v1/workbook-installations/{workbook_installation_id}/refresh-runs"
+                ]
+              },
+              {
+                "group": "Billing",
+                "pages": [
+                  "api-reference/billing",
+                  "GET /v1/billing",
+                  "PUT /v1/billing/budget",
+                  "POST /v1/billing/checkout",
+                  "GET /v1/billing/credits",
+                  "PUT /v1/billing/credits/auto-topup",
+                  "POST /v1/billing/credits/refund",
+                  "POST /v1/billing/credits/topup",
+                  "GET /v1/billing/credits/transactions",
+                  "POST /v1/billing/grant/reset",
+                  "POST /v1/billing/payg/enable",
+                  "GET /v1/billing/payment-methods",
+                  "POST /v1/billing/payment-methods/setup-intent",
+                  "DELETE /v1/billing/payment-methods/{id}",
+                  "PUT /v1/billing/payment-methods/{id}",
+                  "POST /v1/billing/portal",
+                  "POST /v1/billing/quote",
+                  "GET /v1/billing/rates",
+                  "GET /v1/billing/stripe-config",
+                  "POST /v1/billing/webhooks/stripe"
+                ]
+              },
+              {
+                "group": "Limits",
+                "pages": [
+                  "GET /v1/limits"
+                ]
+              },
+              {
+                "group": "API keys",
+                "pages": [
+                  "GET /v1/api_keys",
+                  "POST /v1/api_keys"
+                ]
+              },
+              {
+                "group": "Agent",
+                "pages": [
+                  "POST /v1/agent/bootstrap",
+                  "POST /v1/agent/bootstrap_tokens"
+                ]
+              },
+              {
+                "group": "MCP",
+                "pages": [
+                  "POST /mcp"
+                ]
+              },
+              {
+                "group": "Discovery",
+                "pages": [
+                  "GET /.well-known/oauth-authorization-server",
+                  "GET /.well-known/oauth-protected-resource"
+                ]
+              },
+              {
+                "group": "Advisers",
+                "pages": [
+                  "GET /v1/advisers"
+                ]
+              },
+              {
+                "group": "Alerts",
+                "pages": [
+                  "GET /v1/alerts/plan",
+                  "POST /v1/alerts/signup"
+                ]
+              },
+              {
+                "group": "Analytics",
+                "pages": [
+                  "POST /v1/analytics/query"
+                ]
+              },
+              {
+                "group": "Board",
+                "pages": [
+                  "GET /v1/board"
+                ]
+              },
+              {
+                "group": "Compensation",
+                "pages": [
+                  "GET /v1/compensation",
+                  "POST /v1/compensation/compare"
+                ]
+              },
+              {
+                "group": "Earnings",
+                "pages": [
+                  "GET /v1/earnings/transcripts"
+                ]
+              },
+              {
+                "group": "Exports",
+                "pages": [
+                  "GET /v1/exports/{job_id}"
+                ]
+              },
+              {
+                "group": "Me",
+                "pages": [
+                  "GET /v1/me"
+                ]
+              },
+              {
+                "group": "News",
+                "pages": [
+                  "GET /v1/news/search",
+                  "GET /v1/news/stories"
+                ]
+              },
+              {
+                "group": "Offerings",
+                "pages": [
+                  "GET /v1/offerings"
+                ]
+              },
+              {
+                "group": "Operations",
+                "pages": [
+                  "POST /v1/operations/execute",
+                  "POST /v1/operations/quote"
+                ]
+              },
+              {
+                "group": "Organization",
+                "pages": [
+                  "GET /v1/org"
+                ]
+              },
+              {
+                "group": "Search",
+                "pages": [
+                  "GET /v1/search/fulltext",
+                  "GET /v1/search/semantic"
+                ]
+              },
+              {
+                "group": "Signals",
+                "pages": [
+                  "GET /v1/signals/dilution",
+                  "GET /v1/signals/dilution/enhanced",
+                  "GET /v1/signals/volatility"
+                ]
+              },
+              {
+                "group": "Stocks",
+                "pages": [
+                  "GET /v1/stocks/{ticker}/loadings"
+                ]
+              },
+              {
+                "group": "Strategies",
+                "pages": [
+                  "POST /v1/strategies/factor-rotation"
+                ]
+              },
+              {
+                "group": "Traces",
+                "pages": [
+                  "GET /v1/traces",
+                  "GET /v1/traces/{trace_id}"
+                ]
+              }
+            ]
+          }
         ]
       },
       {
-        "group": "Core Concepts",
-        "pages": [
-          "core-concepts/conversations",
-          "core-concepts/working-directory",
-          "core-concepts/permissions"
-        ]
-      },
-      {
-        "group": "Sources",
-        "pages": [
-          "sources/overview",
-          "sources/mcp-servers",
-          "sources/client-api-endpoints",
-          "sources/client-api-reference",
-          "sources/client-api-openapi",
-          "sources/client-api-keys",
-          "sources/client-api-auth",
-          "sources/client-api-errors",
-          "sources/client-api-retries",
-          "sources/client-api-usage-billing",
-          "sources/client-api-mcp",
-          "sources/client-api-mcp-hosted",
-          "sources/client-api-mcp-compatibility",
-          "sources/client-api-sdks",
-          "sources/client-api-fred",
-          "sources/client-api-webhooks",
-          "sources/client-api-webhooks-ops",
-          "sources/client-api-changelog",
-          "sources/client-api-migrations",
-          "sources/client-api-v1-5-roadmap",
-          "sources/client-api-internal-beta-policy",
-          "sources/apis",
-          "sources/local-folders"
-        ]
-      },
-      {
-        "group": "Client API (Generated)",
-        "openapi": {
-          "source": "openapi/omni-client-api.v1.json",
-          "directory": "client-api"
-        },
-        "pages": [
-          "GET /v1/health",
-          "GET /v1/fred/search",
-          "GET /v1/fred/series/{series_id}",
-          "GET /v1/mcp/tools",
-          "POST /v1/mcp/invoke",
-          "GET /v1/openapi.json",
-          "POST /mcp",
-          "GET /mcp",
-          "DELETE /mcp",
-          "GET /sse"
-        ]
-      },
-      {
-        "group": "Skills & Superpowers",
-        "pages": [
-          "skills/overview",
-          "skills/superpowers",
-          "skills/skill-catalog"
-        ]
-      },
-      {
-        "group": "Statuses & Labels",
-        "pages": [
-          "statuses/overview",
-          "statuses/customizing",
-          "labels/overview",
-          "labels/auto-apply-rules"
-        ]
-      },
-      {
-        "group": "Automation (Preview)",
-        "pages": [
-          "hooks/overview"
-        ]
-      },
-      {
-        "group": "Customisation",
-        "pages": [
-          "customisation/themes",
-          "customisation/colors",
-          "customisation/icons"
-        ]
-      },
-      {
-        "group": "OMNI Intelligence",
-        "pages": [
-          "omni-intelligence/daily-briefing-pipeline",
-          "omni-intelligence/portfolio-intelligence",
-          "omni-intelligence/factors-news-events"
-        ]
-      },
-      {
-        "group": "Go Further",
-        "pages": [
-          "go-further/sharing-conversations",
-          "go-further/connect-to-anything",
-          "go-further/project-contexts",
-          "go-further/deep-links",
-          "go-further/data-tables",
-          "go-further/html-preview",
-          "go-further/pdf-preview",
-          "go-further/mermaid"
-        ]
-      },
-      {
-        "group": "Architecture",
-        "pages": [
-          "architecture"
-        ]
-      },
-      {
-        "group": "Agent Backend",
-        "pages": [
-          "agent-backend/tools",
-          "agent-backend/skills"
-        ]
-      },
-      {
-        "group": "Support",
-        "pages": [
-          "troubleshooting"
+        "dropdown": "Product Docs",
+        "icon": "layout-dashboard",
+        "groups": [
+          {
+            "group": "Product Docs",
+            "pages": [
+              "product/index",
+              "product/account-setup"
+            ]
+          },
+          {
+            "group": "Filings & companies",
+            "pages": [
+              "product/filings",
+              "product/situations"
+            ]
+          },
+          {
+            "group": "Delivery",
+            "pages": [
+              "product/monitors",
+              "product/webhooks"
+            ]
+          },
+          {
+            "group": "Administrative",
+            "pages": [
+              "product/billing",
+              "product/support"
+            ]
+          }
         ]
       }
     ]
   },
-  "footerSocials": {
-    "website": "https://turos.app"
+  "redirects": [
+    {
+      "source": "/getting-started",
+      "destination": "/account-setup"
+    },
+    {
+      "source": "/getting-started/quickstart",
+      "destination": "/account-setup"
+    },
+    {
+      "source": "/getting-started/installation",
+      "destination": "/account-setup"
+    },
+    {
+      "source": "/getting-started/platform-scope",
+      "destination": "/coverage/coverage"
+    },
+    {
+      "source": "/getting-started/client-api-versioning",
+      "destination": "/api-reference"
+    },
+    {
+      "source": "/getting-started/client-api-sdk-quickstart",
+      "destination": "/sdks/javascript"
+    },
+    {
+      "source": "/getting-started/client-api-quickstart",
+      "destination": "/account-setup"
+    },
+    {
+      "source": "/quickstart",
+      "destination": "/account-setup"
+    },
+    {
+      "source": "/troubleshooting",
+      "destination": "/admin/support"
+    },
+    {
+      "source": "/architecture",
+      "destination": "/index"
+    },
+    {
+      "source": "/platform/introduction",
+      "destination": "/index"
+    },
+    {
+      "source": "/sources/overview",
+      "destination": "/coverage/coverage"
+    },
+    {
+      "source": "/sources/apis",
+      "destination": "/api-reference"
+    },
+    {
+      "source": "/sources/mcp-servers",
+      "destination": "/mcp"
+    },
+    {
+      "source": "/sources/local-folders",
+      "destination": "/mcp"
+    },
+    {
+      "source": "/sources/client-api-webhooks",
+      "destination": "/events/configure"
+    },
+    {
+      "source": "/sources/client-api-webhooks-ops",
+      "destination": "/events/deliveries"
+    },
+    {
+      "source": "/sources/client-api-v1-5-roadmap",
+      "destination": "/changelog"
+    },
+    {
+      "source": "/sources/client-api-usage-billing",
+      "destination": "/admin/billing"
+    },
+    {
+      "source": "/sources/client-api-sdks",
+      "destination": "/sdks/javascript"
+    },
+    {
+      "source": "/sources/client-api-retries",
+      "destination": "/events/deliveries"
+    },
+    {
+      "source": "/sources/client-api-reference",
+      "destination": "/api-reference"
+    },
+    {
+      "source": "/sources/client-api-openapi",
+      "destination": "/api-reference"
+    },
+    {
+      "source": "/sources/client-api-migrations",
+      "destination": "/changelog"
+    },
+    {
+      "source": "/sources/client-api-mcp",
+      "destination": "/mcp"
+    },
+    {
+      "source": "/sources/client-api-mcp-hosted",
+      "destination": "/mcp"
+    },
+    {
+      "source": "/sources/client-api-mcp-compatibility",
+      "destination": "/mcp"
+    },
+    {
+      "source": "/sources/client-api-keys",
+      "destination": "/coverage/api-keys"
+    },
+    {
+      "source": "/sources/client-api-internal-beta-policy",
+      "destination": "/organizations/overview"
+    },
+    {
+      "source": "/sources/client-api-fred",
+      "destination": "/intelligence/macro"
+    },
+    {
+      "source": "/sources/client-api-errors",
+      "destination": "/filings/troubleshooting"
+    },
+    {
+      "source": "/sources/client-api-endpoints",
+      "destination": "/api-reference"
+    },
+    {
+      "source": "/sources/client-api-changelog",
+      "destination": "/changelog"
+    },
+    {
+      "source": "/sources/client-api-auth",
+      "destination": "/coverage/authentication"
+    },
+    {
+      "source": "/skills/superpowers",
+      "destination": "/ai/agent"
+    },
+    {
+      "source": "/skills/skill-catalog",
+      "destination": "/ai/agent"
+    },
+    {
+      "source": "/skills/overview",
+      "destination": "/ai/agent"
+    },
+    {
+      "source": "/omni-intelligence/portfolio-intelligence",
+      "destination": "/intelligence/overview"
+    },
+    {
+      "source": "/omni-intelligence/factors-news-events",
+      "destination": "/intelligence/factors"
+    },
+    {
+      "source": "/omni-intelligence/daily-briefing-pipeline",
+      "destination": "/intelligence/overview"
+    },
+    {
+      "source": "/labels/overview",
+      "destination": "/index"
+    },
+    {
+      "source": "/labels/auto-apply-rules",
+      "destination": "/index"
+    },
+    {
+      "source": "/hooks/overview",
+      "destination": "/index"
+    },
+    {
+      "source": "/go-further/sharing-conversations",
+      "destination": "/ai/agent"
+    },
+    {
+      "source": "/go-further/project-contexts",
+      "destination": "/ai/agent"
+    },
+    {
+      "source": "/go-further/pdf-preview",
+      "destination": "/filings/pdf"
+    },
+    {
+      "source": "/go-further/mermaid",
+      "destination": "/ai/agent"
+    },
+    {
+      "source": "/go-further/html-preview",
+      "destination": "/ai/agent"
+    },
+    {
+      "source": "/go-further/deep-links",
+      "destination": "/ai/agent"
+    },
+    {
+      "source": "/go-further/data-tables",
+      "destination": "/ai/agent"
+    },
+    {
+      "source": "/go-further/connect-to-anything",
+      "destination": "/mcp"
+    },
+    {
+      "source": "/customisation/themes",
+      "destination": "/product/index"
+    },
+    {
+      "source": "/customisation/icons",
+      "destination": "/product/index"
+    },
+    {
+      "source": "/customisation/colors",
+      "destination": "/product/index"
+    },
+    {
+      "source": "/core-concepts/working-directory",
+      "destination": "/index"
+    },
+    {
+      "source": "/core-concepts/permissions",
+      "destination": "/coverage/authentication"
+    },
+    {
+      "source": "/core-concepts/conversations",
+      "destination": "/ai/agent"
+    },
+    {
+      "source": "/agent-backend/tools",
+      "destination": "/ai/agent"
+    },
+    {
+      "source": "/agent-backend/skills",
+      "destination": "/ai/agent"
+    },
+    {
+      "source": "/statuses/overview",
+      "destination": "/admin/trust-center"
+    },
+    {
+      "source": "/statuses/customizing",
+      "destination": "/admin/trust-center"
+    },
+    {
+      "source": "/overview",
+      "destination": "/index"
+    },
+    {
+      "source": "/api-overview",
+      "destination": "/api-reference"
+    },
+    {
+      "source": "/test-keys",
+      "destination": "/test-mode"
+    },
+    {
+      "source": "/non-billable",
+      "destination": "/test-mode"
+    },
+    {
+      "source": "/try-it",
+      "destination": "/test-mode"
+    },
+    {
+      "source": "/api-playground",
+      "destination": "/test-mode"
+    },
+    {
+      "source": "/auth-and-pricing",
+      "destination": "/coverage/authentication"
+    },
+    {
+      "source": "/api-conventions",
+      "destination": "/api-reference"
+    },
+    {
+      "source": "/api-versioning",
+      "destination": "/api-reference"
+    },
+    {
+      "source": "/enterprise",
+      "destination": "/organizations/overview"
+    },
+    {
+      "source": "/enterprise-commercial",
+      "destination": "/organizations/overview"
+    },
+    {
+      "source": "/coverage-and-depth",
+      "destination": "/coverage/coverage"
+    },
+    {
+      "source": "/edgar-statistics",
+      "destination": "/coverage/coverage"
+    },
+    {
+      "source": "/freshness-and-trust",
+      "destination": "/coverage/coverage"
+    },
+    {
+      "source": "/resolve-then-fetch",
+      "destination": "/coverage/identifiers"
+    },
+    {
+      "source": "/object-graph",
+      "destination": "/filings/overview"
+    },
+    {
+      "source": "/first-request-flows",
+      "destination": "/filings/api-submission"
+    },
+    {
+      "source": "/advanced-quickstarts",
+      "destination": "/filings/batch"
+    },
+    {
+      "source": "/views-and-includes",
+      "destination": "/filings/views"
+    },
+    {
+      "source": "/filing-types-and-exhibits",
+      "destination": "/filings/form-types"
+    },
+    {
+      "source": "/request-diagnostics",
+      "destination": "/filings/troubleshooting"
+    },
+    {
+      "source": "/error-code-catalog",
+      "destination": "/filings/troubleshooting"
+    },
+    {
+      "source": "/products/entity",
+      "destination": "/filings/entity-resolution"
+    },
+    {
+      "source": "/products/filing-search",
+      "destination": "/filings/fetch-overview"
+    },
+    {
+      "source": "/products/search",
+      "destination": "/filings/fetch-overview"
+    },
+    {
+      "source": "/products/ownership",
+      "destination": "/filings/ownership"
+    },
+    {
+      "source": "/products/special-situations",
+      "destination": "/situations/checks"
+    },
+    {
+      "source": "/products/intelligence",
+      "destination": "/intelligence/overview"
+    },
+    {
+      "source": "/special-situations-workflows",
+      "destination": "/situations/checks"
+    },
+    {
+      "source": "/investment-intelligence",
+      "destination": "/intelligence/overview"
+    },
+    {
+      "source": "/named-intel-jobs",
+      "destination": "/intelligence/overview"
+    },
+    {
+      "source": "/macro-intelligence",
+      "destination": "/intelligence/macro"
+    },
+    {
+      "source": "/macro-tier1",
+      "destination": "/intelligence/macro"
+    },
+    {
+      "source": "/market-data",
+      "destination": "/intelligence/market"
+    },
+    {
+      "source": "/market-calendar",
+      "destination": "/intelligence/market"
+    },
+    {
+      "source": "/artifact-operations",
+      "destination": "/intelligence/artifacts-overview"
+    },
+    {
+      "source": "/mcp-install",
+      "destination": "/mcp"
+    },
+    {
+      "source": "/mcp-workflows",
+      "destination": "/mcp"
+    },
+    {
+      "source": "/javascript-sdk",
+      "destination": "/sdks/javascript"
+    },
+    {
+      "source": "/python-sdk",
+      "destination": "/sdks/python"
+    },
+    {
+      "source": "/go-sdk",
+      "destination": "/sdks/go"
+    },
+    {
+      "source": "/rust-sdk",
+      "destination": "/sdks/rust"
+    },
+    {
+      "source": "/cli",
+      "destination": "/sdks/cli"
+    },
+    {
+      "source": "/libraries-and-sdks",
+      "destination": "/sdks/javascript"
+    },
+    {
+      "source": "/webhook-stream-workflows",
+      "destination": "/events/configure"
+    },
+    {
+      "source": "/webhook-delivery-audit",
+      "destination": "/events/deliveries"
+    },
+    {
+      "source": "/webhook-sla",
+      "destination": "/events/deliveries"
+    },
+    {
+      "source": "/stream-polling",
+      "destination": "/events/deliveries"
+    },
+    {
+      "source": "/monitors",
+      "destination": "/product/monitors"
+    },
+    {
+      "source": "/billing-faq",
+      "destination": "/admin/billing"
+    },
+    {
+      "source": "/payg",
+      "destination": "/admin/billing"
+    },
+    {
+      "source": "/plans",
+      "destination": "/admin/billing"
+    },
+    {
+      "source": "/give-this-prompt-to-your-agent",
+      "destination": "/ai/build-with-ai"
+    },
+    {
+      "source": "/agent-operating-layer",
+      "destination": "/ai/agent"
+    },
+    {
+      "source": "/custom-skills",
+      "destination": "/ai/build-with-ai"
+    },
+    {
+      "source": "/agent-billing",
+      "destination": "/ai/agent"
+    },
+    {
+      "source": "/business-breakdown",
+      "destination": "/filings/financials"
+    },
+    {
+      "source": "/methodology-registry",
+      "destination": "/intelligence/factors"
+    },
+    {
+      "source": "/audit-logs",
+      "destination": "/events/deliveries"
+    },
+    {
+      "source": "/status",
+      "destination": "/admin/trust-center"
+    },
+    {
+      "source": "/openapi/sec-api.v1.json",
+      "destination": "/openapi/sec-api-public.v1.json"
+    },
+    {
+      "source": "/.well-known/api-catalog",
+      "destination": "/.well-known/api-catalog.json"
+    },
+    {
+      "source": "/evaluate/sec-filing-search-api",
+      "destination": "/filings/fetch-overview"
+    },
+    {
+      "source": "/evaluate/xbrl-facts-api",
+      "destination": "/filings/financials"
+    },
+    {
+      "source": "/evaluate/13f-api",
+      "destination": "/filings/ownership"
+    },
+    {
+      "source": "/evaluate/insider-trading-api",
+      "destination": "/filings/ownership"
+    },
+    {
+      "source": "/evaluate/sec-filings-mcp-server",
+      "destination": "/mcp"
+    },
+    {
+      "source": "/evaluate/sec-filing-rag",
+      "destination": "/ai/build-with-ai"
+    },
+    {
+      "source": "/evaluate/pricing-and-limits",
+      "destination": "/admin/billing"
+    },
+    {
+      "source": "/for-investment-managers",
+      "destination": "/index"
+    },
+    {
+      "source": "/for-hedge-funds",
+      "destination": "/index"
+    },
+    {
+      "source": "/compare-sec-api",
+      "destination": "/index"
+    },
+    {
+      "source": "/benchmark-sec-api",
+      "destination": "/index"
+    },
+    {
+      "source": "/seo/sec-pdf-download-api",
+      "destination": "/filings/pdf"
+    },
+    {
+      "source": "/seo/sec-edgar-api",
+      "destination": "/filings/overview"
+    },
+    {
+      "source": "/seo/13f-data-api",
+      "destination": "/filings/ownership"
+    },
+    {
+      "source": "/factors/methodology",
+      "destination": "/intelligence/factors"
+    }
+  ],
+  "footer": {
+    "socials": {
+      "website": "https://turos.app"
+    }
   },
   "integrations": {
     "ga4": {

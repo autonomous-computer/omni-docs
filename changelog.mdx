@@ -1,0 +1,156 @@
+---
+title: "Changelog"
+description: "Every change to the TUROS API and developer experience, newest first."
+---
+
+Every change to the public API and developer experience, newest first.
+
+<Update label="June 24, 2026" description="Macro intelligence endpoints" tags={["TUROS", "Release"]}>
+TUROS now gives agents and investor systems country-level context for return attribution, factor interpretation, and risk explanation. You can search official-source indicators, fetch compact country packs, and connect macro scenarios to portfolios and factors in one workflow.
+
+### Highlights
+
+- New macro endpoints: indicator search, observations, release history, upcoming calendar, forecasts, regimes, and a per-country status check
+- `GET /v1/macro/high-signal-pack` returns an agent-ready country pack with latest values, upcoming releases, forecasts, regime, and source posture
+- `POST /v1/intelligence/country-report` returns a dense investment briefing with key drivers, watch items, and implications
+- Connect macro to portfolio stress tests and `GET /v1/factors/macro-sensitivity`, all exposed as MCP tools
+</Update>
+
+<Update label="June 22, 2026" description="New API key format and key management" tags={["TUROS", "Release"]}>
+TUROS API keys now use a clear, prefixed format that's easy to recognize in code and logs, with a refreshed creation and rotation experience in the TUROS dashboard.
+
+### Highlights
+
+- Keys use a consistent `secapi_` prefix for live and test environments
+- Improved key creation, naming, and rotation flows in the dashboard
+- API keys remain the primary authentication method across REST, SDKs, CLI, and MCP
+</Update>
+
+<Update label="June 21, 2026" description="Refreshed dashboard and onboarding" tags={["TUROS", "Release"]}>
+The TUROS dashboard and first-run onboarding now make it faster to find your keys, watch usage, and get to a first successful request.
+
+### Highlights
+
+- Inline notifications and loading states across the dashboard
+- Clearer onboarding with a usage chart and key-state indicators
+- Accessibility and responsive-layout improvements throughout the app
+</Update>
+
+<Update label="June 19, 2026" description="Fresher filing feeds and freshness signals" tags={["TUROS", "Release"]}>
+TUROS now orders filing lists by when the SEC accepted each filing, so the newest activity surfaces first. Freshness monitoring is tighter and reflects real ingestion lag rather than transient blips.
+
+### Highlights
+
+- `GET /v1/filings` results ordered by SEC acceptance time for accurate recency
+- Real-time hot-lane ingestion keeps the latest filings flowing as they post to EDGAR
+- More reliable freshness and trust metadata on filing responses
+</Update>
+
+<Update label="June 18, 2026" description="Business Breakdown segments and factor quality calibration" tags={["TUROS", "Release"]}>
+TUROS now classifies company segment breakdowns across product, geographic, and operating axes more reliably, and factor returns went through an empirical quality calibration ahead of general availability.
+
+### Highlights
+
+- `GET /v1/companies/segments` groups XBRL segment facts into product, geographic, and operating axes with per-segment revenue share, margin, and YoY growth
+- Each axis is flagged `reported` or `low_confidence` based on whether it ties to total revenue
+- Empirical calibration of factor returns for more trustworthy factor analytics
+</Update>
+
+<Update label="June 17, 2026" description="Cleaner provenance in API responses" tags={["TUROS", "Release"]}>
+TUROS responses now carry clean, public-safe provenance metadata. Internal source identifiers were removed from `/v1` payloads while all SEC source citations and accession references are preserved.
+
+### Highlights
+
+- Provenance and source fields scrubbed of internal identifiers
+- SEC accession numbers, filing dates, and citation fields fully retained
+- More accurate per-period factor return math at the boundaries
+</Update>
+
+<Update label="June 16, 2026" description="Launch-ready docs and faster filing throughput" tags={["TUROS", "Release"]}>
+TUROS documentation is now finalized for public launch, filing search ordering is corrected, and a dedicated signup flow is live.
+
+### Highlights
+
+- Documentation finalized and de-beta'd for public launch
+- Filing search now sorts by true filing date, so older filings no longer surface at the top
+- Dedicated signup page and an accuracy pass on the session and pricing docs
+</Update>
+
+<Update label="June 15, 2026" description="Longer-lived dashboard sessions and legal hardening" tags={["TUROS", "Release"]}>
+TUROS dashboard sign-ins now stay active far longer, duplicate organizations are prevented on signup, and the Terms of Service and Privacy Policy were audited and updated for launch.
+
+### Highlights
+
+- Refresh-backed sessions keep you signed in to the dashboard for 30 days (90 with remember-me)
+- Signing in with a verified email joins your existing organization instead of creating a duplicate
+- Audited Terms of Service and Privacy Policy with explicit consent capture
+</Update>
+
+<Update label="June 10, 2026" description="Hardened sign-in exchange" tags={["TUROS", "Release"]}>
+TUROS now uses a confidential WorkOS AuthKit exchange for dashboard sign-in, with stronger token handling.
+
+### Highlights
+
+- Confidential authorization-code exchange for dashboard sign-in
+- More resilient insider-trade list responses under load
+</Update>
+
+<Update label="April 26, 2026" description="Dilution endpoints in every SDK and the CLI" tags={["TUROS", "Release"]}>
+TUROS now exposes all 14 dilution endpoints as first-class methods in the TypeScript, Python, Go, and Rust SDKs and in the `secapi` CLI, so the dilution surface is reachable from any runtime.
+
+### Highlights
+
+- Dilution events, warrants, convertibles, lockups, ROFR, cash position, corporate actions, Nasdaq compliance, ratings, reverse splits, score, share-float history, and coverage in all four SDKs
+- New `secapi dilution` command group with 14 subcommands
+- Agent-shaped responses available across the dilution endpoints
+</Update>
+
+<Update label="April 24, 2026" description="Structured 8-K Item 5.07 voting results" tags={["TUROS", "Release"]}>
+TUROS now returns structured shareholder voting results parsed from 8-K Item 5.07 filings, with per-proposal vote counts, approval outcomes, and proposal-type classification.
+
+### Highlights
+
+- New `GET /v1/events/voting-results` with ticker, CIK, date range, meeting type, and cursor pagination
+- New `events.voting_results` MCP tool
+- Per-proposal counts (for, against, abstain, broker non-votes), approval outcome, and proposal-type classification with a parsing-confidence signal
+</Update>
+
+<Update label="April 23, 2026" description="API keys are the primary authentication method" tags={["TUROS", "Release"]}>
+API keys are now the primary authentication method across REST, SDKs, the CLI, and MCP. OAuth and SSO remain available for dashboard sign-in on the enterprise tier.
+
+### Highlights
+
+- API keys are the primary authentication method for all plans
+- OAuth and SSO via WorkOS are planned for the enterprise tier in 2026 Q3 and beyond
+- Hosted MCP continues to use WorkOS OAuth discovery for the MCP surface
+</Update>
+
+<Update label="April 14, 2026" description="Thematic factor baskets" tags={["TUROS", "Release"]}>
+TUROS now includes curated thematic baskets and roughly 70 new thematic stock-basket factors, with methodology documentation, expanding the factor catalog for screening and rotation workflows.
+
+### Highlights
+
+- 16 curated thematic baskets plus around 70 new thematic stock-basket factors
+- Published methodology, so factor definitions are inspectable
+- Available through the factors catalog, returns, and screen endpoints
+</Update>
+
+<Update label="April 3, 2026" description="Geographic segment depth and preferred-stock equity" tags={["TUROS", "Release"]}>
+TUROS now recognizes geographic segment groupings such as EMEA, APAC, and Americas for cleaner most-granular filtering, and common-equity derivation correctly deducts preferred stock when common equity isn't filed separately.
+
+### Highlights
+
+- Geographic segment recognition for EMEA, APAC, LACC, and Americas groupings
+- Common equity derived from statement-level, then supplemental, then preferred-stock deduction
+- More accurate financial statements across the companies endpoints
+</Update>
+
+<Update label="March 13, 2026" description="TUROS foundations" tags={["TUROS", "Release"]}>
+The first releases of TUROS: resolve companies, read filings, extract sections, and pull normalized financial statements, ownership, and insider data with provenance preserved end to end.
+
+### Highlights
+
+- Filings, sections, and XBRL-derived income, balance-sheet, and cash-flow statements
+- Company overview, ratios, subsidiaries, ownership, and insider transactions from Forms 3, 4, and 5
+- TypeScript, Python, Go, and Rust SDKs plus the `secapi` CLI
+</Update>

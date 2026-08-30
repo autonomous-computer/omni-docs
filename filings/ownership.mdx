@@ -1,0 +1,53 @@
+---
+title: "Ownership and insiders"
+description: "Query institutional 13F, insider, beneficial-ownership, compensation, and board disclosures with their reporting-period limits intact"
+---
+
+Ownership questions map to distinct SEC disclosure families, and each family has a different filer, reporting period, and evidentiary limit. Start with the family that supports the question: 13F for a manager's reported holdings, Forms 3/4/5 for insider transactions, Schedule 13D/13G for beneficial ownership, DEF 14A for compensation and board disclosures.
+
+The most common mistake is treating any of these as current state. A 13F report describes a manager's reported period - it is not a real-time ownership ledger, and a quarter-old report is not today's portfolio.
+
+## Choose the disclosure family
+
+| Route | Job |
+| --- | --- |
+| `GET /v1/owners/13f` | The latest normalized 13F report for a manager CIK. |
+| `GET /v1/owners/13f/filings` | A manager's recent 13F filing history - use it to select a specific `reportDate`. |
+| `POST /v1/owners/13f/compare` | Compare the manager's latest two parsable reports. It doesn't accept arbitrary quarter selectors. |
+| `GET /v1/owners/institutional/ticker` | Institutional holders of one issuer, based on a 13F cohort. |
+| `GET /v1/owners/institutional/investor` | A manager's holdings and quarter-over-quarter changes. |
+| `GET /v1/owners/13d-13g` | Beneficial-ownership reports, filterable by issuer, filer, form, and filing date. |
+| `GET /v1/insiders` | Normalized records from Forms 3, 4, and 5. |
+| `GET /v1/compensation` | Compensation records derived from the latest DEF 14A. |
+| `GET /v1/board` | Board disclosures. |
+
+## Screen insider transactions
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  "https://api.secapi.ai/v1/insiders?ticker=AAPL&forms=4&transaction_code=P&limit=25"
+```
+
+`transactionCode` and `transactionDirection` are different fields - preserve both, along with the transaction date, filing date, accession number, and filing URL. A row can omit a price, title, or post-transaction ownership; leave absent fields absent rather than estimating them. A filed transaction identifies a disclosure to review - it doesn't establish motive or current exposure.
+
+## Get a manager's reported 13F holdings
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  "https://api.secapi.ai/v1/owners/13f?cik=0001067983&limit=20"
+```
+
+To select a particular report, take a `reportDate` from `GET /v1/owners/13f/filings` and pass it back. Note that `view=agent` caps 13F holdings at 50 regardless of `limit` - use the default view when you need complete holdings.
+
+Comparison rows from `POST /v1/owners/13f/compare` mark positions `added`, `removed`, or `changed`. A change in reported shares or value is a research lead, not evidence of a current trade or manager intent.
+
+## Interpret within the reporting period
+
+- 13F reports describe the manager's reported period, not current ownership. Compare `reportDate`, `filingDate`, and `accessionNumber` before joining data across quarters.
+- Beneficial ownership is limited to the 13D and 13G families; a filing is not a real-time cap table or a complete measure of economic exposure.
+- Compensation records come from the latest DEF 14A - they describe what was disclosed there, for the periods it covers.
+- A missing row is not proof that no position, transaction, beneficial owner, award, or board role exists.
+
+Record the report date, filing date, accession, source URL, and units with every result. Then retrieve the cited filing before presenting a holding, transaction, or ownership percentage as a material fact.

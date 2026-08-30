@@ -1,44 +1,42 @@
 ---
-title: Introduction
-description: OMNI is a financial terminal, portfolio intelligence platform, and agentic operating system for research and execution.
+title: "Developer Docs"
+description: "Build source-backed SEC filing and market intelligence workflows with the TUROS API."
 ---
 
-# OMNI Docs
+TUROS turns SEC filings into APIs you can build on. Resolve a company, retrieve the filing behind a claim, and query intelligence with the same API key.
 
-At a high level, OMNI combines:
+New to TUROS? Start in [test mode](/test-mode) with a free test key, or [set up your account](/account-setup) and send your first request in a couple of minutes.
 
-- A **financial terminal** with robust symbol lookup and market context
-- A **portfolio intelligence platform** with Daily Briefing synthesis at 1M+ analyzed tokens per day
-- A **synced portfolio tracker** with holdings, models, and factor diagnostics
-- An **agentic chat runtime** with skills, tools, and permissioned execution
-
-## Where To Start
+## Filings & companies
 
 <CardGroup cols={2}>
-  <Card title="Quickstart" icon="rocket" href="/getting-started/quickstart">
-    Learn the product surfaces and first workflows in minutes.
+  <Card title="Overview" href="/filings/overview">
+    Learn how TUROS structures entities, filings, facts, and statements, and how to keep the identifiers that make results reviewable.
   </Card>
-  <Card title="Installation" icon="terminal" href="/getting-started/installation">
-    Set up the local dev stack for web + backend.
+  <Card title="Fetch filings" href="/filings/fetch-overview">
+    Retrieve filings by issuer, form, date, accession number, or full-text query, then read sections and exhibits.
   </Card>
-  <Card title="Agentic Superpowers" icon="sparkles" href="/skills/superpowers">
-    See how skills map to backend intelligence and execution.
+  <Card title="Special situations" href="/situations/checks">
+    Search live deal and event coverage backed by the filings that disclosed them.
   </Card>
-  <Card title="Daily Briefing Pipeline" icon="newspaper" href="/omni-intelligence/daily-briefing-pipeline">
-    Understand the synthesis pipeline behind OMNI briefings.
+  <Card title="Filings API reference" href="/api-reference/filings">
+    Confirm parameters, response fields, and route-specific limits for the filings endpoints.
   </Card>
 </CardGroup>
 
-## Product Scope
+## Intelligence & market data
 
-OMNI is built for:
-
-- Financial terminal workflows with deep symbol and market context
-- Portfolio intelligence and Daily Briefing synthesis
-- Agentic chat workflows for analysis, code execution, and document production
-
-Use the platform scope page for a detailed map of OMNI capabilities.
-
-<Card title="Platform Scope" icon="clipboard-list" href="/getting-started/platform-scope">
-  Capability map of OMNI surfaces, intelligence pipelines, and execution runtime.
-</Card>
+<CardGroup cols={2}>
+  <Card title="Overview" href="/intelligence/overview">
+    Run named intelligence jobs that assemble cited briefs and reports from filings, factors, and macro data.
+  </Card>
+  <Card title="Market data" href="/intelligence/market">
+    Retrieve market snapshots and calendar data alongside filing-backed results.
+  </Card>
+  <Card title="Model Context Protocol (MCP)" href="/mcp">
+    Connect an MCP client to the hosted TUROS server and discover tools at runtime.
+  </Card>
+  <Card title="Intelligence API reference" href="/api-reference/intelligence">
+    Confirm request shapes, billing behavior, and job status polling for the intelligence endpoints.
+  </Card>
+</CardGroup>

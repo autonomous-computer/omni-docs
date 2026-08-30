@@ -1,0 +1,44 @@
+---
+title: "Batch requests"
+description: "Page through filing manifests with limit and cursor, and keep a bulk retrieval workflow inside rate and billing limits"
+---
+
+When you need more than one filing, page through `GET /v1/filings` rather than firing parallel one-off requests. The list route returns a paginated manifest with everything you need to continue: `data`, `hasMore`, `nextCursor`, and `requestId`.
+
+## Request a page
+
+`limit` is 1 through 50. Constrain broad searches with issuer, form, date, or text filters - an unbounded crawl is slower for you and easier to rate-limit.
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/filings?ticker=AAPL&form=10-K&limit=50"
+```
+
+## Continue with the cursor
+
+When the response returns `hasMore: true`, send the returned `nextCursor` as the next request's `cursor`. Stop when `hasMore` is `false`.
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/filings?ticker=AAPL&form=10-K&limit=50&cursor=50"
+```
+
+The cursor rules:
+
+1. Use the returned `nextCursor` as-is. On `/v1/filings` the cursor is a zero-based offset; other list routes use opaque tokens. Either way, don't construct one from result counts.
+2. Keep the query and filters unchanged while paging. Don't reuse a cursor after changing the filters - it points into a different result set.
+3. Stop on `hasMore: false`. An empty page with your filters recorded is a result, not an error.
+
+Some list endpoints don't paginate. Each route's reference defines its `limit` and pagination contract - check it before assuming a cursor exists.
+
+## Keep a batch inside its limits
+
+- Run pages sequentially or with bounded concurrency. On `429`, honor `Retry-After` and reduce concurrency - don't fan out concurrent retries.
+- Live-key list reads are metered. Check `GET /v1/limits` and `GET /v1/billing/rates` before a large batch, and watch the `SECAPI-Meter-Class` response header rather than hard-coding a plan assumption.
+- Retain `requestId` per page. If a batch fails partway, the request IDs plus the recorded filters let you diagnose and resume instead of restarting.
+
+For each filing you keep, preserve `accessionNumber`, `filingDate`, and `filingUrl`. When a batch feeds document retrieval, hand each accession to [accession lookup](/filings/accession-lookup) or [filing PDF](/filings/pdf) rather than re-searching.

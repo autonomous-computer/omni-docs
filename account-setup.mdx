@@ -1,0 +1,87 @@
+---
+title: "Account setup"
+description: "Create a TUROS account, create an API key, and send your first authenticated request."
+---
+
+Learn how to create a TUROS account, create the API key your code will use, and understand which actions need a dashboard session instead of a key. By the end of this page you'll have sent one authenticated request and kept the identifiers that make it reviewable.
+
+## Accounts
+
+A TUROS account belongs to an organization. Members sign in to the [TUROS dashboard](https://turos.app) through WorkOS, and refresh-backed sessions keep you signed in for 30 days, or 90 days with remember-me. Signing in with a verified email joins your existing organization instead of creating a duplicate.
+
+Enterprise plans can federate dashboard sign-in to a corporate identity provider - SAML and OIDC via WorkOS, including Okta, Azure AD, and Google Workspace.
+
+### Create an account
+
+1. Go to [turos.app](https://turos.app) and click **Sign up**.
+2. Verify your email address.
+3. Sign in to the dashboard.
+
+## API keys
+
+Machine requests authenticate with an API key. The prefix is the mode: `secapi_test_` keys are free and fixture-only, and `secapi_live_` keys bill successful production work. Start in [test mode](/test-mode) if you're still exploring.
+
+### Create an API key
+
+1. In the [TUROS dashboard](https://turos.app), go to **API keys**.
+2. Click **Create key**, name it, and choose test or live.
+3. Copy the secret and store it in the environment that will make requests.
+
+TUROS shows the secret once. The public `keyPrefix` is the first 20 characters, which is what you'll see in logs and the dashboard afterward.
+
+```bash
+export SECAPI_API_KEY="secapi_..."
+```
+
+Keep the key server-side. Don't put it in browser code, a URL, a request body, or a repository.
+
+## Dashboard session vs API key
+
+A dashboard session and an API key aren't interchangeable. Use the right credential for each action:
+
+| Action | Credential |
+| --- | --- |
+| Read SEC data from code, an SDK, the CLI, or an MCP client | API key in `x-api-key` |
+| Create, reveal, rotate, or revoke an API key | Signed-in dashboard session |
+| Change billing, payment methods, or budgets | Signed-in dashboard session |
+| Manage monitors and webhook endpoints | Signed-in dashboard session |
+
+An API key can't create keys or change billing, and a dashboard session isn't a substitute for an API key on a data request.
+
+## Send your first request
+
+<Warning>
+TUROS machine requests use the `x-api-key` header. An API key is not an `Authorization: Bearer` token.
+</Warning>
+
+Resolve `AAPL` to its canonical entity record. It's a small request with a response you can inspect before adding filing retrieval or automation:
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/entities/resolve?ticker=AAPL&view=agent"
+```
+
+TUROS returns the matched identity and a request ID:
+
+```json
+{
+  "company": {
+    "name": "Apple Inc.",
+    "ticker": "AAPL",
+    "cik": "0000320193"
+  },
+  "requestId": "req_..."
+}
+```
+
+Carry the returned CIK, ticker, and company name forward. Don't infer a CIK from a ticker string or an old filing URL.
+
+If the request returns `401 missing_api_key`, the request didn't include `x-api-key`. If it returns `401 authentication_failed`, the supplied key wasn't accepted. Don't switch to a bearer header to fix either error.
+
+## Next steps
+
+- Retrieve the issuer's latest filing and keep the citation fields - see [Identifiers](/coverage/identifiers) for the resolve-then-fetch pattern.
+- Read [Authentication](/coverage/authentication) for versioning, error codes, and the full credential model.
+- Read [API keys](/coverage/api-keys) for rotation and key limits before you deploy.

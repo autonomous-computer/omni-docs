@@ -1,0 +1,48 @@
+---
+title: "Troubleshooting"
+description: "Diagnose special situations failures: gated-store 404s, embed vs. paid route confusion, and account stops"
+---
+
+Most situations failures come from one of three places: the store is dark, the request hit the wrong route family, or an account condition stopped it. Read the status and error `code` together, and keep the `Request-Id` before retrying anything.
+
+## 404 on `/v1/situations`: check the availability catalog
+
+The authenticated `/v1/situations` routes are gated. When the situations store is dark, they return `404` - and that `404` is availability, not a missing situation. Check the catalog before treating it as a data problem:
+
+```bash
+curl -sS "https://api.secapi.ai/.well-known/api-catalog.json"
+```
+
+Read the `availability` field for situations. If it's `gated` and dark, the authenticated routes won't serve - the anonymous `/v1/embed/situations` preview stays up for public sites. Don't make a gated route your integration's first request, and don't retry a dark store in a loop; availability changes when the catalog says it does.
+
+A `404` on a specific situation ID while the store is live is a different outcome: verify the ID, and remember a missing situation is not proof that no related event exists.
+
+## Embed vs. paid: use the right route family
+
+| Symptom | Cause | Fix |
+| --- | --- | --- |
+| `401` on `/v1/situations` | No `x-api-key` reached the paid route. | Send the key from your server process. The paid routes are never anonymous. |
+| Capped or shallow results from `/v1/embed/situations` | The preview is intentionally limited to a capped, recent public projection. | Move to `/v1/situations` with a server-held key for research workflows. |
+| Key exposed in browser code | Embed routes need no key; paid keys must stay server-side. | Never send `x-api-key` to embed routes, and never ship a paid key to a browser. Revoke a leaked key first, then rotate. |
+
+## Account and request stops
+
+| Response | What to do next |
+| --- | --- |
+| `401 missing_api_key` / `401 authentication_failed` | Send `x-api-key` from the calling process, or rotate the rejected key in the TUROS dashboard. Don't switch to a bearer header. |
+| `402 billing_required` | Branch on `details.reason` and resolve the stated account condition. Situations research on a paid plan stops here when the plan or credits can't cover it. |
+| `403` | The credential or plan isn't entitled to the resource. Activating email or webhook delivery on a watchlist requires a signed-in organization session - an API key alone creates a filter-only watchlist with delivery suppressed. Configure delivery in the TUROS dashboard. |
+| `429 rate_limit_exceeded` | Honor `Retry-After`, reduce concurrency, and retry after the interval. |
+| `400` on list filters or cursor | Correct the named parameter. `limit` is 1 through 100, and a cursor is only valid with the filters that produced it - don't reuse one after changing filters. |
+
+## Verify the account, then the workload
+
+Reproduce with the failing workload's key - a different key can have different plan and quota state:
+
+```bash
+curl -i -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  "https://api.secapi.ai/v1/limits"
+```
+
+If `/v1/limits` succeeds but situations requests fail, the problem is route availability or entitlement, not the credential. When you escalate, include the endpoint, status, error code, `Request-Id`, the catalog's `availability` value at the time, and the `GET /v1/limits` outcome - and exclude API keys and private payloads.

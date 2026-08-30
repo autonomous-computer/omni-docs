@@ -1,0 +1,27 @@
+---
+title: "Intelligence"
+description: "One-call research bundles for companies, securities, portfolios, countries, and watchlists, plus compiled intelligence workloads."
+---
+
+Intelligence routes assemble source-cited research bundles in one call: a company brief, a security snapshot with catalysts, a portfolio review, or a country report. Intelligence is a packer over the underlying stores - filings, letters, factors, and macro - not a separate dataset.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/v1/intelligence/company` | Return a one-call company bundle spanning market, filings, ownership, macro, factor, and risk context. |
+| `GET` | `/v1/intelligence/security` | Return a one-call security bundle with snapshot, catalysts, filings, and factor context. |
+| `GET` | `/v1/intelligence/earnings-preview` | Return an earnings preview bundle with estimates, drivers, risks, and traceable supporting context. |
+| `POST` | `/v1/intelligence/query` | Submit a named intelligence job with its required identity fields; returns a completed result or a job ID to poll. |
+| `GET` | `/v1/intelligence/query/{jobId}` | Poll an async intelligence workload until the final traced result is ready. |
+| `POST` | `/v1/intelligence/country-report` | Return a country intelligence bundle covering the prior period's macro path, likely drivers, and forward view. |
+| `POST` | `/v1/intelligence/portfolio` | Return a one-call portfolio intelligence bundle with exposures, stress scenarios, events, and hedge ideas. |
+| `POST` | `/v1/intelligence/macro-exposure` | Return revenue-weighted macro sensitivities for a portfolio with per-holding contributions and a coverage percentage. |
+| `POST` | `/v1/intelligence/watchlist` | Return a watchlist briefing bundle with movers, catalysts, factor context, and regime overlays. |
+| `POST` | `/v1/intelligence/footnotes/query` | Return a structured filing-footnote investigation bundle for one ticker or a multi-ticker collection. |
+
+## Billing
+
+Named intelligence jobs bill once, on successful completion. Intelligence packs (`deal_brief`, `letter_brief`, `filing_brief`, `move_brief`) are $0.50; intelligence reports (`country_report`, `portfolio_review`, `strategy`, `underwriting_pack`) are $1.50. A `202` acceptance, status polls, failures, and cache hits aren't billed, and the channel you call through doesn't change the price.
+
+Intelligence routes draw from the `ai_queries` quota; quota-counted responses carry the `SECAPI-AI-Quota-*` headers. Sandbox accounts have a trial allowance of 10 per month. Send an `Idempotency-Key` on billable POSTs - see [Idempotency](/api-reference#idempotency).
+
+See the [Introduction](/api-reference) for authentication, pagination, and error behavior.

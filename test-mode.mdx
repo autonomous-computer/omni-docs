@@ -1,0 +1,95 @@
+---
+title: "Test mode"
+description: "Use free, fixture-only test keys to build and validate TUROS workflows before sending billable production traffic."
+---
+
+Test mode provides a separate test environment where you can wire up entity resolution, filing retrieval, intelligence jobs, and artifacts without spending money. Test keys are free, run against fixture data, and never enter the billable rail - a `200` in test mode isn't a production transaction.
+
+The key prefix is the mode. There's no third prefix.
+
+| Prefix | `livemode` | What it does |
+| --- | --- | --- |
+| `secapi_test_…` | `false` | Test traffic. Not billed. Doesn't debit prepaid credits or consume the starter grant. |
+| `secapi_live_…` | `true` | Production traffic. Bills the published rate on successful work. |
+
+## Generate test API keys
+
+1. Go to the [TUROS dashboard](https://turos.app) and sign in.
+2. Go to **API keys**.
+3. Click **Create key** and choose the test environment.
+4. Copy the secret and store it where the calling process runs.
+
+TUROS shows the secret once. The public `keyPrefix` is the first 20 characters of that secret.
+
+## Send a test request
+
+Set the test key in your shell, then resolve an issuer the same way you would in production:
+
+```bash
+export SECAPI_API_KEY="secapi_test_..."
+
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/entities/resolve?ticker=AAPL&view=agent"
+```
+
+TUROS returns the same agent-view entity shape as production:
+
+```json
+{
+  "object": "entity",
+  "id": "cent_...",
+  "ticker": "AAPL",
+  "cik": "0000320193",
+  "name": "Apple Inc.",
+  "matchConfidence": 1,
+  "matchBasis": "ticker",
+  "requestId": "req_..."
+}
+```
+
+From there, retrieve a filing to prove the full path:
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/filings/latest?ticker=AAPL&form=10-K&view=agent"
+```
+
+Keep the returned `accessionNumber`, `form`, `filingDate`, `filingUrl`, and `requestId` in your test assertions - they're the same citation fields your production workflow should preserve.
+
+## Use MCP with a test key
+
+The hosted MCP server accepts test keys the same way it accepts live keys. Point a client at it with the test key in the `x-api-key` header:
+
+```bash
+claude mcp add --transport http secapi https://api.secapi.ai/mcp \
+  --header "x-api-key: $SECAPI_API_KEY"
+```
+
+Tool calls made with a test key stay on the non-billable rail, so you can let an agent explore `tools.search` and `tools.describe` freely before you hand it a live credential. See [Model Context Protocol (MCP)](/mcp) for the full setup.
+
+## What test mode doesn't bill
+
+Test-key traffic is on the published non-billable list. These are free on any key:
+
+| Item | Why it's free |
+| --- | --- |
+| Health | `GET /healthz` and `GET /readyz` are platform liveness. |
+| Quote | `POST /v1/billing/quote` estimates cost. It doesn't run the job. |
+| Limits | `GET /v1/limits` and `GET /v1/billing` are account introspection. |
+| Catalog | Rate and guide discovery endpoints, including `GET /v1/billing/rates`. |
+| Test-key traffic | `secapi_test_…` keys (`livemode: false`) are free and fixture-only. |
+| Failed before work | `4xx` and `5xx` responses that fail before work starts. Failed, cancelled, or in-flight intelligence and artifact jobs are free. |
+
+On a live key, TUROS bills once on successful completion: store reads bill their family, and named intelligence jobs bill `$0.50` for a pack or `$1.50` for a report. Enqueue responses (`202`), in-flight polls, failures, and cache hits aren't billed. Send `Idempotency-Key` on billable POSTs - TUROS replays the first response for 24 hours, returns `422` if you reuse the key with a different body, and returns `409` with `Retry-After` while the first call is in flight.
+
+## What test mode doesn't do
+
+- A test key runs against fixture data. Don't use test-mode responses to validate coverage, freshness, or data density for a production workload.
+- A test key can't create keys or change billing. Those are dashboard-session actions on any key mode.
+- A test key isn't a production key with the meter turned off after the fact - the request never entered the billable rail.
+
+When you're ready for production, create a `secapi_live_` key in the [TUROS dashboard](https://turos.app) and read [Account setup](/account-setup) for the first live request.

@@ -1,0 +1,43 @@
+---
+title: "Webhooks"
+description: "Create signed webhook endpoints in the TUROS dashboard, verify deliveries, and replay what your receiver missed."
+---
+
+Webhooks push events to a receiver you host - most commonly `monitor.match` events from a saved [monitor](/product/monitors). Every delivery is signed so your receiver can verify it came from TUROS.
+
+## Configure endpoints in the dashboard
+
+Create endpoint destinations, change event subscriptions, rotate signing secrets, send test events, and replay deliveries from the webhooks section of the [TUROS dashboard](https://turos.app). These actions require your signed-in organization session. Don't give an API key or an autonomous agent authority to make them.
+
+To wire up a monitor:
+
+1. Go to the webhooks section and create an endpoint with your receiver's URL.
+2. Subscribe the endpoint to `monitor.match`.
+3. Save the signing secret - TUROS shows it once.
+4. Point the saved monitor's delivery at the endpoint.
+5. Send a test event and confirm your receiver verifies and accepts it.
+
+## Verify every delivery
+
+Your receiver must verify the `x-secapi-signature` header against the exact raw request body before parsing JSON, and reject deliveries with stale timestamps or invalid signatures. Delivery is at-least-once, so store the delivery or event identifier in a durable idempotency table and skip work you've already done.
+
+Process deliveries in this order:
+
+1. Read the raw body and verify `x-secapi-signature`.
+2. Reject old timestamps and invalid signatures.
+3. Record the delivery identifier for idempotency.
+4. Queue the work and return a fast `2xx`, then retrieve the filing evidence you need downstream.
+
+Keep the event type, event ID, request ID, monitor ID, accession number, and filing URL with the queued work. An event payload can be incomplete or retried - it isn't a substitute for the filing source.
+
+## Replay a missed delivery
+
+If your receiver was down or rejected a delivery, replay it from the delivery history in the dashboard. Replay re-emits the stored event to the endpoint, so your idempotency table is what prevents double-processing. Automatic retry and endpoint auto-pause are being rolled out; until they reach your organization, treat replay as a manual step.
+
+## Rotate a signing secret
+
+Rotate the endpoint's secret from the dashboard when a secret may have been exposed or on your normal rotation schedule. Update the receiver with the new secret before deliveries resume, or verification will fail.
+
+## Prefer polling? Use streams
+
+If your worker needs explicit checkpoints and controlled replay instead of a public receiver, poll stream events with a cursor and commit the cursor only after a durable write. See the stream routes in the [Delivery API reference](/api-reference/delivery).

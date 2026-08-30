@@ -1,0 +1,58 @@
+---
+title: "Set up your account"
+description: "Create a TUROS account, sign in, and create the API keys your organization will use."
+---
+
+Learn how to create a TUROS account, sign in, and manage the API keys that authenticate your requests. All of these actions require a signed-in browser session in the [TUROS dashboard](https://turos.app) - an API key can't create keys or change billing.
+
+## Create an account
+
+1. Go to [turos.app](https://turos.app) and sign up.
+2. Complete signup to create your organization. New organizations receive 100 included calls each month; the allowance renews automatically.
+
+Enterprise plans support Single Sign-On (SSO) through SAML and OIDC, including Okta, Azure AD, and Google Workspace.
+
+## API keys
+
+API keys authenticate machine requests to the TUROS API. There are two kinds, and the prefix tells you which mode a key is in:
+
+- **Test keys** (`secapi_test_…`): `livemode: false`. Free, and limited to fixture data. Use them to exercise request and response shapes without billing.
+- **Live keys** (`secapi_live_…`): `livemode: true`. Bill successful work against your plan.
+
+### Create an API key
+
+1. Sign in to the TUROS dashboard.
+2. Go to the API keys section of account settings.
+3. Click to create a key and choose test or live mode.
+4. Copy the secret immediately.
+
+TUROS shows the full secret exactly once. After that, the dashboard displays only the `keyPrefix` - the first 20 characters - so you can tell keys apart. Store the secret in a secret manager or your deployment environment:
+
+```bash
+export SECAPI_API_KEY="secapi_..."
+```
+
+Don't put an API key in browser code, a URL, or a repository.
+
+### Rotate a key
+
+We recommend rotating keys on a schedule and immediately after any suspected exposure:
+
+1. Create a new key in the dashboard.
+2. Deploy it to your environment.
+3. Verify the new key works - a request to `GET /v1/limits` confirms the key authenticates and shows the account it belongs to.
+4. Revoke the old key.
+
+If a key leaks, revoke it first, then create its replacement.
+
+### Revoke a key
+
+Delete the key from the API keys section of the dashboard. Revocation takes effect immediately.
+
+<Warning>
+Revoking a key breaks every integration still using it. Deploy the replacement before you revoke.
+</Warning>
+
+## Next steps
+
+Choose a plan and set up payment in [Billing and pricing](/product/billing), or start [reviewing filings](/product/filings).

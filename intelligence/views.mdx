@@ -1,0 +1,14 @@
+---
+title: "Intelligence views"
+description: "Use response_mode on factor and macro routes to keep payloads small without treating a projection as an intelligence job."
+---
+
+Views control the shape of a store read. They are not the intelligence product: a projection stays a store read, and a cited assembly is a [named intel job](/intelligence/overview). For `view=` and `include=` on filings and companies, see [Filing views](/filings/views).
+
+## response_mode on factor and macro routes
+
+Factor and macro routes shape responses with `response_mode=compact|standard|verbose`. Compact is designed for agents, charts, and tables; it can omit heavier sections, which you request back with `include`. Pair `response_mode=compact&include=trust` when a workflow needs both a small payload and the audit metadata.
+
+## When to keep the default
+
+Use the default view when you need the full envelope: provenance, freshness, full holdings, or a compliance store. The compact projections exist to save tokens, not to be the record.

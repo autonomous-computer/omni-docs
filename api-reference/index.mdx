@@ -1,0 +1,93 @@
+---
+title: "Introduction"
+description: "Authenticate to the TUROS API, page through results, handle errors, and upgrade safely."
+---
+
+The TUROS APIs give you programmatic access to SEC filings, company financials, special situations, factor and macro intelligence, and delivery infrastructure. The base URL for every request is `https://api.secapi.ai`.
+
+Each resource family has its own reference page listing the operations it supports. This page covers the behavior every request shares: authentication, pagination, errors, limits, idempotency, and versioning.
+
+## Authentication
+
+Every machine request is authenticated with an API key.
+
+### API key types
+
+The key prefix tells you the mode:
+
+| Prefix | Mode | Behavior |
+| --- | --- | --- |
+| `secapi_test_` | Test (`livemode: false`) | Free, limited to fixture data. Use it to exercise request and response shapes. |
+| `secapi_live_` | Live (`livemode: true`) | Bills successful work against your plan. |
+
+### Creating an API key
+
+Create keys in the [TUROS dashboard](https://turos.app). TUROS shows the full secret exactly once; afterward the dashboard displays only the `keyPrefix` - the first 20 characters. Store the secret in a secret manager or deployment environment:
+
+```bash
+export SECAPI_API_KEY="secapi_..."
+```
+
+An API key can't create other keys or change billing - those are dashboard-session actions.
+
+### Passing the API key
+
+Send the key in the `x-api-key` header. Don't send it as an `Authorization: Bearer` token, and don't put it in a URL, request body, or browser JavaScript.
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/entities/resolve?ticker=AAPL&view=agent"
+```
+
+A `401 missing_api_key` means the request didn't include `x-api-key`. A `401 authentication_failed` means the supplied key wasn't accepted. Don't switch to a bearer header to fix either error.
+
+### Deleting an API key
+
+Revoke keys from the dashboard. Enterprise organizations can also call `DELETE /v1/api_keys/{keyId}` with a signed-in session. Revocation takes effect immediately. To rotate safely: create the new key, deploy it, verify it with `GET /v1/limits`, then revoke the old key. If a key leaks, revoke it first.
+
+## Pagination
+
+List endpoints that paginate return `hasMore` and `nextCursor`. Pass `nextCursor` as the next request's `cursor` parameter with otherwise unchanged filters, and stop when `hasMore` is `false`. Some list endpoints don't paginate - each route's reference defines its `limit` and pagination contract.
+
+## Error responses
+
+Error responses include a machine-readable `code`, a message, and a request ID. Branch on the `code` (and on `details.reason` for `402` responses), not on message text.
+
+| Status | Meaning | First action |
+| --- | --- | --- |
+| `400` | Invalid request | Correct the request using the endpoint reference. |
+| `401` | Credential problem | Confirm a valid `x-api-key` reached the API. |
+| `402` | Account state | Resolve the billing, entitlement, or budget condition in `details.reason`. |
+| `403` | Not entitled | Check that the key and plan are authorized for the resource. |
+| `429` | Rate limited | Honor `Retry-After`; use bounded backoff without concurrent retry fan-out. |
+| `5xx` | Service failure | Retry with bounded backoff; keep the request ID for support. |
+
+Retain `Request-Id` and `traceparent` from both successes and failures, along with `SECAPI-Meter-Class`, `SECAPI-Estimated-Cost`, and `SECAPI-Token-Count` when returned. Don't retry a billing, budget, quota, or authorization stop until its stated condition changes.
+
+## Limits
+
+Read your organization's effective plan, billing state, and route quota windows with `GET /v1/limits`. On `429`, honor `Retry-After` when present.
+
+Intelligence and enhanced-dilution routes draw from the `ai_queries` quota; quota-counted responses carry `SECAPI-AI-Quota-Limit`, `SECAPI-AI-Quota-Used`, `SECAPI-AI-Quota-Remaining`, and `SECAPI-AI-Quota-Reset`. Free-allowance accounts also receive `SECAPI-Grant-*` advisory headers from 80% consumption onward, so an integration can add a payment method before requests start failing.
+
+Health checks, quotes, limits reads, catalog reads, test-key traffic, and requests rejected with a `4xx` before work starts are never billed.
+
+## Idempotency
+
+Send an `Idempotency-Key` header on billable POST requests. TUROS replays the stored response for 24 hours when the same key and body arrive again, returns `422` when the same key arrives with a different body, and returns `409` with `Retry-After` while the original request is still in flight.
+
+## API upgrades
+
+Pin a dated version with the `secapi-version` request header:
+
+```bash
+-H "secapi-version: 2026-03-19"
+```
+
+TUROS resolves a version for every request and returns it in the `SECAPI-Version` response header, whether or not you pinned one. A pinned version can still receive additive fields, so parse the fields your application uses and tolerate new ones. Record the returned `SECAPI-Version` alongside `Request-Id` when you need to reproduce behavior.
+
+## Clients
+
+You don't have to hand-roll HTTP. TUROS ships a [JavaScript SDK](/sdks/javascript), [Python SDK](/sdks/python), [Go SDK](/sdks/go), [Rust SDK](/sdks/rust), and a [CLI](/sdks/cli), plus a hosted Model Context Protocol (MCP) server at `https://api.secapi.ai/mcp` for agent clients.

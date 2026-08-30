@@ -1,0 +1,66 @@
+---
+title: "Company intelligence"
+description: "Retrieve one-call company, security, and earnings-preview bundles, or submit a named job on the query route and poll it to completion."
+---
+
+Company intelligence gives you a composed research starting point for one issuer: a company bundle, a security bundle, or an earnings preview. Each is a route over the four stores - use it to orient a review, then retrieve the cited filing before relying on a specific claim.
+
+Company and security requests require a ticker or CIK. Do not infer a CIK from a ticker or an old filing URL - resolve it.
+
+## Choose the route by the question
+
+| Research question | Call | Returns |
+| --- | --- | --- |
+| What company context matters for fundamental review? | `GET /v1/intelligence/company` | A one-call company bundle spanning market, filings, ownership, macro, factor, and risk context. |
+| What is currently notable about one security? | `GET /v1/intelligence/security` | Security context and catalysts. |
+| What should a reviewer inspect before an earnings event? | `GET /v1/intelligence/earnings-preview` | An earnings preview with estimates, drivers, risks, and supporting context. |
+| A cited assembly or priced report | `POST /v1/intelligence/query` | A completed named job or a job ID to poll. |
+
+The [Intelligence reference](/api-reference) is the authority for accepted inputs and returned fields. Don't assume every bundle contains every filing, factor, market, or macro representation.
+
+## Retrieve a company bundle
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/intelligence/company?ticker=AAPL"
+```
+
+Record the request parameters, retrieval time, and response identifiers (`requestId`, `traceparent`). When a conclusion relies on a filing fact, keep the accession number, filing URL, and period with it. An omitted field can reflect available supporting data, not a negative conclusion.
+
+These routes count against the `ai_queries` quota. Quota-counted responses carry `SECAPI-AI-Quota-*` headers.
+
+## Submit a named job
+
+For a cited assembly or a priced report, submit a named job on the query route. There is no open prompt - send `job` plus the identity fields that job requires.
+
+```bash
+curl --fail-with-body -sS -X POST \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  -H "Idempotency-Key: underwriting-aapl-2026-08-23" \
+  -H "content-type: application/json" \
+  -d '{"job":"underwriting_pack","entities":["AAPL"]}' \
+  "https://api.secapi.ai/v1/intelligence/query"
+```
+
+## 200 versus 202
+
+`POST /v1/intelligence/query` has two success shapes. Handle them as distinct outcomes:
+
+- **`200`:** the job completed synchronously. The body is the final result. Attach its trace and cited sources to your research record.
+- **`202`:** the job is queued. The body carries a job ID. Poll `GET /v1/intelligence/query/{jobId}` to a final state, and retain the final response - the acceptance response is not analysis.
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/intelligence/query/$JOB_ID"
+```
+
+Handle `202`, `404`, and `502` as distinct poll outcomes - see [Check job status](/intelligence/status). Billing lands once, on successful completion: `$0.50` for a pack, `$1.50` for a report. Polls, failures, and cache hits are not billed.
+
+## Keep evidence separate from analysis
+
+A bundle is a composed research output, not an independent source of record. Retrieve the underlying filing or section when a reader needs to inspect the cited language, and label model output separately from reported filing facts. Show stale, partial, or degraded evidence as a condition, not a silent success.

@@ -1,0 +1,71 @@
+---
+title: "Identifiers"
+description: "Resolve tickers, CIKs, and other identifiers to a canonical entity, then carry that identity into every issuer-specific request."
+---
+
+Every issuer-specific workflow starts with identity. Resolve a ticker, name, or market identifier to a canonical entity first, then carry the returned identity into filing, statement, and intelligence requests. The stores take that identity - they don't invent it.
+
+## Resolve, then fetch
+
+`GET /v1/entities/resolve` is the identity call:
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/entities/resolve?ticker=AAPL&view=agent"
+```
+
+Keep `id`, `cik`, `ticker`, `matchConfidence`, and `matchBasis` when TUROS returns them. A low-confidence match is a correction task, not a join key. Don't infer a CIK from a ticker string or an old filing URL - tickers can be reused or changed, and the CIK in the response is the durable identifier.
+
+The path is always the same:
+
+1. Resolve the issuer, manager, or security.
+2. Carry the returned CIK, and the entity `id` when present.
+3. Fetch one store, or run one named intelligence job.
+
+| After resolve, you want | Fetch |
+| --- | --- |
+| The official record | `GET /v1/filings/latest` |
+| One disclosed number | `GET /v1/facts` |
+| A financials page | `GET /v1/statements` |
+| Why a price moved | `GET /v1/factors/catalog` |
+| A country print | `GET /v1/macro/indicators` |
+| A cited assembly | A named intelligence job |
+
+## Identifier types
+
+Ticker, CIK, and FIGI-family identifiers are available to every account. CUSIP and ISIN are licensed identifiers: accounts without that entitlement receive `null` in those fields, and resolving by CUSIP or ISIN returns `licensed_identifier_required`.
+
+A match is identity metadata, not proof of a legal relationship, beneficial owner, corporate parent, or security equivalence.
+
+## Resolve vs search
+
+Resolve returns one entity. When the task starts with a broad search, use a search route instead - an empty resolve request is invalid.
+
+| Job | Route | Use it when |
+| --- | --- | --- |
+| Identity | `GET /v1/entities/resolve` | You have a ticker, CIK, FIGI, name, or other identifier and need one entity. |
+| Canonical search | `GET /v1/entities` | You need a paginated list of canonical entities. |
+| EDGAR catalog search | `GET /v1/entities/edgar` | You need paginated EDGAR source records. Not an identity peer of resolve. |
+
+Company overview (`GET /v1/companies/overview`) is a company view, not a substitute for resolve.
+
+## The object graph
+
+Once you hold an identity, every object hangs off it. Each object is a real record you can fetch, filter, and cite - a filing isn't a fact, and a fact isn't a situation, so ask for the object you mean.
+
+```text
+entity
+  -> filing  -> fact | statement | events
+  -> letter  -> thesis
+  -> factor
+  -> situation
+  -> position
+  -> snapshot
+  -> observation (country)
+```
+
+Four stores hold records: filings, letters, factors, and macro. Other routes are views of those stores, not extra warehouses, and intelligence is a packer over these objects, not a fifth store. Letters and authenticated situations are gated stores that return `404` when dark - check `availability` on the [API catalog](https://api.secapi.ai/.well-known/api-catalog.json) before calling them.
+
+Keep the identifiers each response gives you: entity `id`, CIK, accession number, and `requestId`. That's how a later reader finds the same source.

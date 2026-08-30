@@ -1,0 +1,33 @@
+---
+title: "Overview"
+description: "Fetch and search SEC filings with TUROS: resolve the issuer, select a filing, then retrieve the section or document you need"
+---
+
+Fetching a filing is a three-step workflow: resolve the issuer, select the filing, then retrieve the piece you actually need - a manifest, a named section, or the source document. Each step returns identifiers that the next step consumes, so you never have to guess a CIK or reconstruct a filing URL.
+
+You can run the workflow two ways:
+
+- **API**: Send requests to `https://api.secapi.ai` with an API key. Use this for integrations, agents, and any repeated workload. See [Retrieve filings - API](/filings/api-submission).
+- **Dashboard**: Review filings in the TUROS dashboard at [turos.app](https://turos.app) when you want to read a filing rather than build against it. See [Retrieve filings - dashboard](/filings/dashboard-search).
+
+## The workflow
+
+1. Resolve the issuer with `GET /v1/entities/resolve`. Keep the returned CIK and entity identity - don't infer a CIK from a ticker string or an old filing URL. See [entity resolution](/filings/entity-resolution).
+2. Select a filing. Use `GET /v1/filings` for a filterable manifest, `GET /v1/filings/latest` when the workflow genuinely needs the current latest matching filing, or `GET /v1/filings/{accession_number}` when you already know the filing. See [accession and CIK lookup](/filings/accession-lookup).
+3. Retrieve the content. Fetch a named section such as `item_1a`, render the filing as readable text, or download the source document. See [sections and exhibits](/filings/sections) and [filing PDF](/filings/pdf).
+
+## Selection rules
+
+| Route | Use it when |
+| --- | --- |
+| `GET /v1/filings` | You're starting with issuer, form, date, fiscal-period, text, or accession filters and need a paginated manifest. |
+| `GET /v1/filings/latest` | The workflow needs the current latest matching filing. The result is time-dependent - the accession changes when the issuer files again. |
+| `GET /v1/filings/{accession_number}` | A workflow already selected a filing. The accession number is immutable, so this is the reproducible path. |
+
+For historical work, always select a concrete accession. A "latest" result answers a then-current question and won't reproduce later.
+
+A manifest is not filing text. Use the accession number and source URL for review, and retrieve the selected section before quoting it. When the question is about language inside a filing rather than which filing exists, search filing content with `GET /v1/search/fulltext` or `GET /v1/search/semantic`, then fetch the cited section.
+
+## What to keep
+
+For every filing-backed result, preserve `accessionNumber`, `form`, `filingDate`, `filingUrl`, and `requestId` when the response returns them. Those fields are the minimum citation artifact - they identify the source even after a latest-filing result moves on.

@@ -1,0 +1,71 @@
+---
+title: "Overview"
+description: "Intelligence is a packer over the four TUROS stores. You submit a named job and receive a cited assembly or a priced report - there is no open prompt."
+---
+
+TUROS intelligence is a packer, not a fifth store. The platform has four stores - filings, letters, factors, and macro - and every other route is a view over them. An intelligence job assembles cited output from those stores; it doesn't hold data of its own.
+
+You buy intelligence as a named job. You do not send a free-text prompt. Submit a job type plus the identity fields that job requires, and TUROS returns a completed result or a job ID to poll.
+
+## Packs and reports
+
+There are two list prices. REST, MCP, SDK, and CLI use the same SKU - the channel is not a discount.
+
+| SKU | List | Jobs | What you buy |
+| --- | --- | --- | --- |
+| Intel pack | `$0.50` | `deal_brief`, `letter_brief`, `filing_brief`, `move_brief` | One cited assembly from the stores. Source, date, and ID stay attached. |
+| Intel report | `$1.50` | `country_report`, `portfolio_review`, `strategy`, `underwriting_pack` | One priced report. |
+
+TUROS bills once, on successful completion of the named job. Enqueue responses (`202`), in-flight polls, failures, and cache hits are not billed. Internal store hops the packer makes are not billed separately. A situations list row remains an ordinary store read - the deal *brief* is the pack.
+
+## Named jobs and their identity fields
+
+Submit `job` plus the required identity fields. Prompt-only bodies are rejected.
+
+| Job | SKU | Required identity |
+| --- | --- | --- |
+| `filing_brief` | pack | ticker or CIK, and form or accession |
+| `letter_brief` | pack | ticker or manager ID |
+| `deal_brief` | pack | situation ID or ticker |
+| `move_brief` | pack | ticker or CIK, lookback |
+| `country_report` | report | ISO country code |
+| `portfolio_review` | report | holdings body |
+| `strategy` | report | documented strategy body |
+| `underwriting_pack` | report | ticker or CIK |
+
+Letters and authenticated situations are gated stores. Jobs that depend on them return `404` when that store is dark. Check `availability` on `/.well-known/api-catalog.json` before you depend on them.
+
+## Submit, then poll
+
+`POST /v1/intelligence/query` returns `200` with a completed result or `202` with a job ID. Poll `GET /v1/intelligence/query/{jobId}` to a final state.
+
+```bash
+curl --fail-with-body -sS -X POST \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  -H "Idempotency-Key: deal-aapl-2026-08-23" \
+  -H "content-type: application/json" \
+  -d '{"job":"deal_brief","entities":["AAPL"]}' \
+  "https://api.secapi.ai/v1/intelligence/query"
+```
+
+Send `Idempotency-Key` on every billable POST. The first response is replayed for 24 hours; reusing the key with a different body returns `422`, and an in-flight first call returns `409` with `Retry-After`. See [Check job status](/intelligence/status) for the polling contract.
+
+## Stores versus views
+
+The four stores hold the data. Everything else - company overview, `?include=` enrichments, agent views - is a projection over them, billed as a store read, not as intelligence.
+
+| Surface | What it is |
+| --- | --- |
+| Filings, letters, factors, macro | The four stores. Reads bill their own family. |
+| `GET /v1/companies/overview`, `?include=` expands | Views over the stores. Not intel jobs. |
+| Named intel jobs | The packer. One debit per successful completion. |
+
+A cited assembly is a named job. If you want the full envelope from a store, read the store. See [Intelligence views](/intelligence/views) for the projection rules.
+
+## Read next
+
+- [Test intelligence workflows](/intelligence/test-workflows) - wire jobs with a test key before spending the wallet
+- [Company intelligence](/intelligence/company) - one-call company, security, and earnings bundles
+- [Check job status](/intelligence/status) - poll queued jobs to a final state
+- [Billing and pricing](/admin/billing) - the full price list and meters

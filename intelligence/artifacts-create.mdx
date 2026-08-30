@@ -1,0 +1,75 @@
+---
+title: "Create artifacts"
+description: "Submit POST /v1/artifacts to build and persist a filing-derived bundle, and handle the 202 acceptance contract."
+---
+
+Submit `POST /v1/artifacts` to build one derived bundle for a selected issuer or comparison workflow. TUROS persists the bundle to your organization and returns the persisted record.
+
+## Request fields
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `ticker` or `cik` | Yes | The issuer for the bundle. `kind=ownership_compare_bundle` requires a CIK. |
+| `form` | No | Filing form for a filing-derived bundle. Defaults to `10-K`. |
+| `sectionKey` | No | Selects one resolved canonical section when available, such as `item_1a`. |
+| `kind` | No | Bundle kind - for example `markdown_bundle`, `ownership_compare_bundle`, or `compensation_compare_bundle`. |
+
+## Submit the build
+
+```bash
+curl --fail-with-body -sS -X POST \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  -H "Idempotency-Key: aapl-10k-item1a-2026-08" \
+  -H "content-type: application/json" \
+  -d '{"ticker":"AAPL","form":"10-K","sectionKey":"item_1a","kind":"markdown_bundle"}' \
+  "https://api.secapi.ai/v1/artifacts"
+```
+
+The response is the persisted artifact record:
+
+```json
+{
+  "object": "artifact",
+  "id": "art_example_123",
+  "kind": "markdown_bundle",
+  "status": "ready",
+  "downloadUrl": "/v1/artifacts/art_example_123/download",
+  "storageMode": "local",
+  "manifest": {
+    "filename": "aapl-10-k-item-1a.md",
+    "contentType": "text/markdown; charset=utf-8",
+    "byteLength": 18432,
+    "lineCount": 420,
+    "checksumSha1": "example_checksum",
+    "filing": {
+      "accessionNumber": "0000320193-25-000079",
+      "form": "10-K"
+    },
+    "section": { "key": "item_1a", "title": "Risk Factors" },
+    "exportedFormats": ["json", "markdown", "compact_json"]
+  },
+  "provenance": {
+    "accessionNumber": "0000320193-25-000079",
+    "filingUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927_htm.xml"
+  }
+}
+```
+
+## The 202 contract
+
+The route returns an asynchronous-style acceptance (`202`) even when the returned record already reports `status: ready`. Don't infer a successful source lookup from the `202` alone - inspect the returned `status` and `manifest`. Use the artifact ID for follow-up retrieval, and keep `downloadUrl` only as a signal that the bundle is fetchable now.
+
+Send `Idempotency-Key` on every create. The first response is replayed for 24 hours; a changed body returns `422`; an in-flight duplicate returns `409` with `Retry-After`. Creation bills once, on successful completion - failed and cancelled builds are free.
+
+## Errors
+
+| Response | Meaning |
+| --- | --- |
+| `400 invalid_json` | The body is malformed JSON. Correct it and resubmit. |
+| `400 validation_error` | The JSON parses but a value is structurally invalid. |
+| `502 artifact_build_failed` | The build, source resolution, rendering, or persistence failed. Do not treat this as an empty bundle. |
+
+When a build fails, retain the selected issuer, `form`, `sectionKey`, `kind`, and `requestId` with the failure record, then correct and resubmit with a new idempotency key.
+
+Continue to [Retrieve artifacts](/intelligence/artifacts-retrieve) to fetch what you built.

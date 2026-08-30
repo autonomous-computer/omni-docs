@@ -1,0 +1,34 @@
+---
+title: "Check job status"
+description: "Poll a queued intelligence job to a final state, and handle 202, 404, and 502 as distinct outcomes."
+---
+
+When `POST /v1/intelligence/query` returns `202`, the work is queued and the body carries a job ID. Poll the job route until you have a final state, and retain the final response - the acceptance response is not analysis.
+
+## Poll the job
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/intelligence/query/$JOB_ID"
+```
+
+Handle each outcome distinctly rather than collapsing them into "not done yet":
+
+| Response | Meaning | Next action |
+| --- | --- | --- |
+| `200` | The job reached a final state. | Read the returned status and result. Attach the trace and cited sources to your research record. |
+| `202` | The job is still running. | Wait, then poll again with bounded backoff. |
+| `404` | The job ID is unknown, or the job depends on a gated store that is dark. | Verify the ID; check `availability` on `/.well-known/api-catalog.json` before resubmitting. |
+| `502` | The job failed in execution. | Do not treat this as an empty result. Keep the `requestId` and resubmit with a new `Idempotency-Key` if appropriate. |
+
+Polls are not billed. The one debit lands when the named job completes successfully - `$0.50` for a pack, `$1.50` for a report. Failed and cancelled jobs are free.
+
+## Keep the identifiers
+
+Store the job ID, the `requestId` from each poll, and `traceparent` when present. If you contact us about a stuck job, those identifiers are what make it findable. Never include the API key itself in a report.
+
+## Skip polling with webhooks
+
+If your organization has a webhook endpoint configured, subscribe it to `intelligence.query.completed` and `intelligence.query.failed`. TUROS submits the terminal state to your receiver, so a worker doesn't need a poll loop. The event payload identifies the job; retrieve the final result from `GET /v1/intelligence/query/{jobId}` and keep its `requestId` and cited sources. See [Configure and test](/events/configure).

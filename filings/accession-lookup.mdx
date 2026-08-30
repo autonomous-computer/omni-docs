@@ -1,0 +1,44 @@
+---
+title: "Accession and CIK lookup"
+description: "Fetch one immutable SEC filing by accession number, and resolve a CIK the reliable way"
+---
+
+An accession number identifies exactly one SEC filing, forever. When a workflow already knows which filing it needs - from a manifest, a monitor event, or a stored citation - fetch it by accession instead of re-searching. The result is reproducible in a way a "latest" request never is.
+
+## Resolve the CIK first
+
+When you're starting from a ticker or company name, resolve it before any issuer-specific lookup:
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/entities/resolve?ticker=AAPL&view=agent"
+```
+
+Carry the returned CIK forward. Don't infer a CIK from a ticker string or from an old filing URL - tickers can be reused or changed, and a stale URL can point at a different filer. See [entity resolution](/filings/entity-resolution) for match confidence and identifier rules.
+
+## Fetch the filing by accession
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/filings/0000320193-25-000079"
+```
+
+TUROS returns the materialized manifest for that one filing - `accessionNumber`, `ticker`, `cik`, `form`, `filingDate`, `primaryDocument`, and provenance. Preserve the provenance and `requestId` before rendering or extracting sections from the filing.
+
+Optional `ticker`, `cik`, and `form` query values are resolution hints, not substitutes for the accession number. Don't let conflicting hints select a different filing.
+
+## Handle a miss honestly
+
+A `404 filing_not_found` means the requested accession couldn't be resolved under the supplied constraints. Verify the accession and any hints before widening coverage. Don't silently substitute the latest filing or a similarly named issuer - a not-found lookup is a retrieval outcome, not proof the filing doesn't exist.
+
+## Where accessions come from
+
+- [Filing search](/filings/batch) - `GET /v1/filings` returns `accessionNumber` on every manifest row.
+- [Latest filing](/filings/api-submission) - `GET /v1/filings/latest` returns the accession of the then-current match. Store it if you'll need the same filing later.
+- Your own records - an accession you stored yesterday fetches the same filing today.
+
+Once you hold the manifest, continue to [sections](/filings/sections) for named-section extraction or [filing PDF](/filings/pdf) for the source document.

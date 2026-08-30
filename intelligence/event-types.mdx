@@ -1,0 +1,35 @@
+---
+title: "Event types"
+description: "The event names TUROS delivers, and the catalog route that stays authoritative for them."
+---
+
+`GET /v1/event_types` is the authority for available event types, producer status, replay support, retention, and billing family metadata. Read it before wiring a receiver - do not invent an event name in a configuration.
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/event_types"
+```
+
+## Events you can subscribe to
+
+| Event | Emitted when |
+| --- | --- |
+| `monitor.match` | A saved filing monitor finds new matches during its scheduled hourly dispatch. |
+| `intelligence.query.completed` | An async `POST /v1/intelligence/query` job finished successfully. |
+| `intelligence.query.failed` | An async intelligence job failed. |
+| `export.completed` | An async bulk export finished and a signed download URL is available. |
+| `export.failed` | An async bulk export failed. |
+
+A `monitor.match` is a notification to retrieve and assess the identified filing. It doesn't guarantee immediate EDGAR publication or imply a materiality judgment. An `export.completed` payload carries the job ID, dataset, format, row count, a signed `downloadUrl`, and its expiry - fetch before the URL expires, or re-sign through the export job.
+
+## What to preserve from every event
+
+For each received event, keep the event ID, type, created time, and `requestId` when present - plus the job-specific identifiers: monitor ID and match accession numbers for `monitor.match`, job ID for intelligence and export events. These values connect a downstream alert to the source record and the delivery audit trail.
+
+An event payload can be incomplete or retried. It identifies work; it is not a substitute for retrieving the filing or the job result.
+
+## Delivery records
+
+Webhook and stream delivery attempts are metered as `delivery_events` and recorded in the delivery ledger. Inspect them with `GET /v1/delivery/events`, or export JSON or NDJSON with `GET /v1/delivery/events/export`. See [Deliveries and retries](/events/deliveries).

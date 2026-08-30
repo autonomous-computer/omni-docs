@@ -1,0 +1,52 @@
+---
+title: "Filing PDF"
+description: "Download a filing's source document, export a rendered filing as PDF or another format, or render it as readable text"
+---
+
+TUROS has three filing-delivery paths, and they answer different questions. `download` returns the source document as filed. `export` generates a derived file - PDF, Markdown, CSV, XLSX, or DOCX - from the filing rendering. `render` returns readable text for indexing or analysis. None of them promises that the SEC's original source was itself a PDF.
+
+All three start from a filing you've already selected. Capture the accession number first - see [accession lookup](/filings/accession-lookup).
+
+## Download the source document
+
+`GET /v1/filings/{accession_number}/download` resolves the accession to its source document:
+
+```bash
+curl --fail-with-body \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  "https://api.secapi.ai/v1/filings/0000320193-25-000079/download" \
+  --output filing-source.html
+```
+
+The response may return cached bytes directly or answer with a `302` redirect to a signed URL or the SEC source. Don't use `curl --location` on the authenticated request - a redirect can leave `api.secapi.ai`, and `--location` would forward your API key to another host. Read the `Location` header and follow it in a separate, unauthenticated request.
+
+Don't assume the downloaded document is a PDF. Its content type comes from the filing source - most primary documents are HTML. Preserve the accession and the final source URL when the filed presentation is evidence.
+
+## Export a PDF deliberately
+
+`GET /v1/filings/{accession_number}/export` defaults to `format=json`, which returns the structured filing record. Set `format` explicitly when you need a file:
+
+```bash
+curl --fail-with-body \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  "https://api.secapi.ai/v1/filings/0000320193-25-000079/export?format=pdf" \
+  --output filing-export.pdf
+```
+
+`format` accepts `json`, `markdown`, `csv`, `xlsx`, `docx`, or `pdf`. The non-JSON formats are generated from the filing rendering, can be large, and don't replace the original filing as evidence - keep the accession number, filing date, and source URL alongside any exported file so recipients can tell it apart from an issuer-provided attachment.
+
+## Render readable text
+
+`GET /v1/filings/latest/render` returns a Markdown-like rendering of an issuer's latest selected filing:
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  "https://api.secapi.ai/v1/filings/latest/render?ticker=AAPL&form=10-K"
+```
+
+This route defaults to a 10-K, unlike the any-form latest-filing route. Check `truncated` before treating `renderedMd` as complete source text - when it's `true`, don't represent the text as the whole filing. Rendered filings can exceed agent context budgets; prefer [section extraction](/filings/sections) with `view=agent` when you only need one item.
+
+## When delivery fails
+
+A `404` (`filing_not_found` or `filing_url_missing`) means the source lookup was unavailable - it's not evidence that no SEC filing exists. A `502 filing_render_failed` on the render route is retryable with bounded backoff. For an evidentiary workflow, confirm the source filing before relying on rendered pagination, layout, tables, or exhibits.

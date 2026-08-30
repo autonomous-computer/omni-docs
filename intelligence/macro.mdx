@@ -1,0 +1,80 @@
+---
+title: "Macro intelligence"
+description: "Search for an indicator key, fetch the country high-signal pack, separate released history from the upcoming calendar, and page bulk observations."
+---
+
+The macro store gives investor systems country context for return attribution, portfolio planning, factor interpretation, and risk explanation. It is not a generic macro database - it exists to make filing, factor, and portfolio workflows more useful.
+
+Every macro response returns `requestId` and `traceparent`. Preserve freshness, provenance, methodology, and degraded-state fields when they are present.
+
+## Search for an indicator key
+
+Indicator keys drive every other macro call. Search first when the key is unknown:
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/macro/search?q=inflation&country=US&limit=10"
+```
+
+Use the returned `indicatorKey` in later calls - for example, US CPI is available as `CPIAUCSL`.
+
+## Fetch the country high-signal pack
+
+`GET /v1/macro/high-signal-pack` is the one-call country bundle: bounded series summaries, latest value, upcoming release, forecast, regime, and source posture. It defaults to `country=US` and `response_mode=compact` - the compact shape is designed for agents.
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/macro/high-signal-pack?country=US"
+```
+
+Expand only when needed: `response_mode=standard&include=series,trust`.
+
+For individual observations, call `GET /v1/macro/indicators?country=US&indicator=CPIAUCSL&limit=12`. The `limit` maximum is `240`.
+
+## Calendar versus releases
+
+These are different questions. Don't mix them.
+
+- **`GET /v1/macro/releases?status=released`** returns released history - what actually printed.
+- **`GET /v1/macro/calendar`** returns future scheduled releases only. Past rows belong in `releases`.
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/macro/calendar?country=US&indicator=CPIAUCSL&days=45&limit=12&response_mode=compact"
+```
+
+Add `GET /v1/macro/forecasts` and `GET /v1/macro/regimes` when the workflow needs forward context, and check `GET /v1/macro/status` before citing freshness-sensitive conclusions. When runtime validation artifacts are missing, status returns an explicit degraded `runtime_registry_fallback` response - treat that as a caution flag, cite the degraded status, and avoid freshness-sensitive claims.
+
+## Country rings
+
+Coverage ships in two rings. Don't claim equal depth across them.
+
+| Ring | Countries | Posture |
+| --- | --- | --- |
+| Launch ring | `US`, `CN`, `JP`, `TW`, `IL` | Curated official-source coverage, deepest launch validation. |
+| Expansion ring | `CA`, `GB`, `EZ`, `KR`, `BR`, `IN`, `SA` | Smaller high-signal packs, explicit source and fallback posture. |
+
+Observations carry source provenance: the official agency, revision status, and whether the row was fetched directly from the official source or via a documented fallback bridge. A fallback is always annotated in metadata, never presented as primary provenance.
+
+## Bulk observations with /all
+
+For research or backfill, `GET /v1/macro/all` returns a filterable page of raw observations across countries and indicators:
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/macro/all?country=US&indicator_type=inflation&limit=250"
+```
+
+The route is cursor-paginated - follow `nextCursor` until it is absent. It accepts `country` (single or comma-separated), `indicator_type`, `indicator`, `frequency`, `date_from`, `date_to`, and `limit` (max `1000`). Pass `format=csv` for an attachment; an oversized export is materialized asynchronously and returned as an export job whose signed download URL arrives via the `export.completed` webhook event. See [Event types](/intelligence/event-types).
+
+## One dense country briefing
+
+When an agent needs a single compact answer - indicators, releases, forecasts, regime, likely drivers, and an investor-shaped briefing - submit a `country_report` named job. It is an intel report (`$1.50`), billed once on successful completion. See the [intelligence overview](/intelligence/overview).

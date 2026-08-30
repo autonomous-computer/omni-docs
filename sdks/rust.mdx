@@ -1,0 +1,73 @@
+---
+title: "Rust SDK"
+description: "Add the async TUROS Rust client, make one bounded request, and retain the source identity from the response."
+---
+
+Learn how to add the async TUROS Rust client, authenticate, make one bounded request, and handle errors.
+
+## Prerequisites
+
+- Rust and Cargo.
+- An API key in `SECAPI_API_KEY`. Create one in the [TUROS dashboard](https://turos.app).
+
+```bash
+cargo new --bin secapi-rust-quickstart
+cd secapi-rust-quickstart
+export SECAPI_API_KEY="secapi_..."
+```
+
+Replace the generated `[dependencies]` section in `Cargo.toml`:
+
+```toml
+[dependencies]
+sec-api-sdk-rust = "2.0.0"
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+```
+
+The client sends the key in the `x-api-key` header. Keep credentials in the runtime environment or a secret manager, never in source.
+
+## Retrieve one filing
+
+Replace `src/main.rs`:
+
+```rust
+use sec_api_sdk_rust::SecApiClient;
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let client = SecApiClient::new(std::env::var("SECAPI_API_KEY").ok());
+    let filing = client
+        .latest_filing(&[("ticker", "AAPL"), ("form", "10-K"), ("view", "agent")])
+        .await?;
+
+    println!("{filing}");
+    Ok(())
+}
+```
+
+```bash
+cargo run
+```
+
+Expect a JSON response identifying the current matching filing. Preserve its accession number, filing URL, and request ID when present. A response in agent view is intentionally smaller and can omit default-view metadata - use the default response when a workflow needs provenance or freshness fields, and confirm each parameter in the [Filings API reference](/api-reference/filings).
+
+## Errors, timeouts, and retries
+
+The SDK defaults to a 30-second request timeout and a bounded retry policy that honors `Retry-After`. A `429` can be retried even after a mutating request; treatment of other failures depends on whether the client is issuing a read or a mutation.
+
+Use `with_timeout(...)` to set a service-appropriate budget. Before a mutation whose replay is unsafe, use `without_retries()` or ensure the operation is idempotent. Don't combine multiple unbounded retry layers.
+
+```rust
+use sec_api_sdk_rust::SecApiClient;
+use std::time::Duration;
+
+let client = SecApiClient::new(std::env::var("SECAPI_API_KEY").ok())
+    .with_timeout(Duration::from_secs(10));
+```
+
+## Production notes
+
+- Capture status, request ID, response version, and source identifiers with failures and persisted results.
+- Prefer typed builders for common paths, but confirm each parameter and optional field in the API reference.
+
+Next: [Go SDK](/sdks/go), [CLI](/sdks/cli), or the [API reference](/api-reference).

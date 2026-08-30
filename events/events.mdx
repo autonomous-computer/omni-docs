@@ -1,0 +1,23 @@
+---
+title: "Events"
+description: "How the delivery ledger records what TUROS sent, and where to look up event names."
+---
+
+TUROS emits a small, named set of events. `GET /v1/event_types` is the authority for the catalog - producer status, replay support, retention, and billing family. For the event names themselves (`monitor.match`, intelligence job completion, export completion), see [Event types](/intelligence/event-types).
+
+An event is a notification, not the work product. Fetch the filing, job result, or export after the event arrives.
+
+## Delivery records
+
+Every webhook and stream delivery attempt lands in the delivery ledger. Inspect it with filters, or export it for support and compliance tooling:
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/delivery/events?kind=event&type=monitor.match&limit=20"
+```
+
+`GET /v1/delivery/events/export` produces JSON or NDJSON with the same filters (`kind`, `type`, `requestId`, `since`, `limit`). Use NDJSON for line-oriented ingestion into log processors. Delivery events meter as `delivery_events`.
+
+For destination setup and signature verification, see [Configure and test](/events/configure). For retry behavior, replay, and cursors, see [Deliveries and retries](/events/deliveries).
