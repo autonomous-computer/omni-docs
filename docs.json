@@ -16,18 +16,14 @@
   "navbar": {
     "links": [
       {
-        "label": "App",
-        "href": "https://turos.app"
-      },
-      {
         "label": "Status",
-        "href": "https://status.secapi.ai/"
+        "href": "https://status.turos.app"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Get API key",
-      "href": "https://turos.app"
+      "label": "Start for free",
+      "href": "https://www.turos.app/signup"
     }
   },
   "api": {
@@ -220,13 +216,13 @@
             ]
           },
           {
-                        "tab": "API Reference",
-                        "icon": "square-terminal",
-                        "openapi": {
-                          "source": "openapi/sec-api-public.v1.json",
-                          "directory": "api-reference"
-                        },
-                        "groups": [
+            "tab": "API Reference",
+            "icon": "square-terminal",
+            "openapi": {
+              "source": "openapi/sec-api-public.v1.json",
+              "directory": "api-reference"
+            },
+            "groups": [
               {
                 "group": "Introduction",
                 "pages": [
@@ -782,40 +778,6 @@
             ]
           }
         ]
-      },
-      {
-        "dropdown": "Product Docs",
-        "icon": "layout-dashboard",
-        "groups": [
-          {
-            "group": "Product Docs",
-            "pages": [
-              "product/index",
-              "product/account-setup"
-            ]
-          },
-          {
-            "group": "Filings & companies",
-            "pages": [
-              "product/filings",
-              "product/situations"
-            ]
-          },
-          {
-            "group": "Delivery",
-            "pages": [
-              "product/monitors",
-              "product/webhooks"
-            ]
-          },
-          {
-            "group": "Administrative",
-            "pages": [
-              "product/billing",
-              "product/support"
-            ]
-          }
-        ]
       }
     ]
   },
@@ -1026,15 +988,15 @@
     },
     {
       "source": "/customisation/themes",
-      "destination": "/product/index"
+      "destination": "/index"
     },
     {
       "source": "/customisation/icons",
-      "destination": "/product/index"
+      "destination": "/index"
     },
     {
       "source": "/customisation/colors",
-      "destination": "/product/index"
+      "destination": "/index"
     },
     {
       "source": "/core-concepts/working-directory",
@@ -1258,7 +1220,7 @@
     },
     {
       "source": "/monitors",
-      "destination": "/product/monitors"
+      "destination": "/index"
     },
     {
       "source": "/billing-faq",
@@ -1371,6 +1333,38 @@
     {
       "source": "/factors/methodology",
       "destination": "/intelligence/factors"
+    },
+    {
+      "source": "/product/index",
+      "destination": "/index"
+    },
+    {
+      "source": "/product/account-setup",
+      "destination": "/account-setup"
+    },
+    {
+      "source": "/product/filings",
+      "destination": "/filings/overview"
+    },
+    {
+      "source": "/product/situations",
+      "destination": "/situations/checks"
+    },
+    {
+      "source": "/product/monitors",
+      "destination": "/index"
+    },
+    {
+      "source": "/product/webhooks",
+      "destination": "/index"
+    },
+    {
+      "source": "/product/billing",
+      "destination": "/admin/billing"
+    },
+    {
+      "source": "/product/support",
+      "destination": "/admin/support"
     }
   ],
   "footer": {

@@ -15475,7 +15475,7 @@
                             "coveragePct": 1,
                             "methodologyVersion": "secapi_factor_returns_v1",
                             "modelName": "secapi_stock_basket_factor_model_v1",
-                            "methodologyUrl": "https://docs.secapi.ai/factors/methodology",
+                            "methodologyUrl": "https://www.turos.app/docs/intelligence/factors",
                             "sourceMetadata": {
                               "latestAsOf": "2026-06-09",
                               "latestSourcePublishedAt": "2026-06-09T21:30:00.000Z",
@@ -15491,7 +15491,7 @@
                                 "2026-06-09"
                               ],
                               "metadataMethodologyUrls": [
-                                "https://docs.secapi.ai/factors/methodology"
+                                "https://www.turos.app/docs/intelligence/factors"
                               ]
                             },
                             "degradedReasons": []
@@ -15505,7 +15505,7 @@
                             "source": "secapi_factor_pipeline",
                             "sourceLabel": "SecAPI factor pipeline",
                             "accessionNumber": null,
-                            "filingUrl": "https://docs.secapi.ai/factors/methodology",
+                            "filingUrl": "https://www.turos.app/docs/intelligence/factors",
                             "acceptedAt": null,
                             "retrievedAt": "2026-06-09T22:15:00.000Z",
                             "parserVersion": "secapi-factor-pipeline"
@@ -15792,7 +15792,7 @@
                         "coveragePct": 1,
                         "methodologyVersion": "secapi_factor_returns_v1",
                         "modelName": "secapi_stock_basket_factor_model_v1",
-                        "methodologyUrl": "https://docs.secapi.ai/factors/methodology",
+                        "methodologyUrl": "https://www.turos.app/docs/intelligence/factors",
                         "sourceMetadata": {
                           "latestAsOf": "2026-06-09",
                           "latestSourcePublishedAt": "2026-06-09T21:30:00.000Z",
@@ -15808,7 +15808,7 @@
                             "2026-06-09"
                           ],
                           "metadataMethodologyUrls": [
-                            "https://docs.secapi.ai/factors/methodology"
+                            "https://www.turos.app/docs/intelligence/factors"
                           ]
                         },
                         "degradedReasons": []
@@ -15822,7 +15822,7 @@
                         "source": "secapi_factor_pipeline",
                         "sourceLabel": "SecAPI factor pipeline",
                         "accessionNumber": null,
-                        "filingUrl": "https://docs.secapi.ai/factors/methodology",
+                        "filingUrl": "https://www.turos.app/docs/intelligence/factors",
                         "acceptedAt": null,
                         "retrievedAt": "2026-06-09T22:15:00.000Z",
                         "parserVersion": "secapi-factor-pipeline"
@@ -16134,7 +16134,7 @@
                             "coveragePct": 1,
                             "methodologyVersion": "secapi_factor_returns_v1",
                             "modelName": "secapi_stock_basket_factor_model_v1",
-                            "methodologyUrl": "https://docs.secapi.ai/factors/methodology",
+                            "methodologyUrl": "https://www.turos.app/docs/intelligence/factors",
                             "sourceMetadata": {
                               "latestAsOf": "2026-06-09",
                               "latestSourcePublishedAt": "2026-06-09T21:30:00.000Z",
@@ -16150,7 +16150,7 @@
                                 "2026-06-09"
                               ],
                               "metadataMethodologyUrls": [
-                                "https://docs.secapi.ai/factors/methodology"
+                                "https://www.turos.app/docs/intelligence/factors"
                               ]
                             },
                             "degradedReasons": []
@@ -16164,7 +16164,7 @@
                             "source": "secapi_factor_pipeline",
                             "sourceLabel": "SecAPI factor pipeline",
                             "accessionNumber": null,
-                            "filingUrl": "https://docs.secapi.ai/factors/methodology",
+                            "filingUrl": "https://www.turos.app/docs/intelligence/factors",
                             "acceptedAt": null,
                             "retrievedAt": "2026-06-09T22:15:00.000Z",
                             "parserVersion": "secapi-factor-pipeline"
@@ -16333,7 +16333,7 @@
                             "source": "secapi_factor_pipeline",
                             "sourceLabel": "SecAPI factor pipeline",
                             "accessionNumber": null,
-                            "filingUrl": "https://docs.secapi.ai/factors/methodology",
+                            "filingUrl": "https://www.turos.app/docs/intelligence/factors",
                             "acceptedAt": null,
                             "retrievedAt": "2026-06-09T22:15:00.000Z",
                             "parserVersion": "secapi-factor-pipeline"
@@ -16508,7 +16508,7 @@
                         "source": "secapi_factor_pipeline",
                         "sourceLabel": "SecAPI factor pipeline",
                         "accessionNumber": null,
-                        "filingUrl": "https://docs.secapi.ai/factors/methodology",
+                        "filingUrl": "https://www.turos.app/docs/intelligence/factors",
                         "acceptedAt": null,
                         "retrievedAt": "2026-06-09T22:15:00.000Z",
                         "parserVersion": "secapi-factor-pipeline"
@@ -16669,7 +16669,7 @@
                             "source": "secapi_factor_pipeline",
                             "sourceLabel": "SecAPI factor pipeline",
                             "accessionNumber": null,
-                            "filingUrl": "https://docs.secapi.ai/factors/methodology",
+                            "filingUrl": "https://www.turos.app/docs/intelligence/factors",
                             "acceptedAt": null,
                             "retrievedAt": "2026-06-09T22:15:00.000Z",
                             "parserVersion": "secapi-factor-pipeline"
@@ -17115,7 +17115,7 @@
                             "source": "secapi_factor_pipeline",
                             "sourceLabel": "SecAPI factor pipeline",
                             "accessionNumber": null,
-                            "filingUrl": "https://docs.secapi.ai/factors/methodology",
+                            "filingUrl": "https://www.turos.app/docs/intelligence/factors",
                             "acceptedAt": null,
                             "retrievedAt": "2026-06-09T22:15:00.000Z",
                             "parserVersion": "secapi-factor-pipeline"
@@ -17396,7 +17396,7 @@
                             "source": "secapi_factor_pipeline",
                             "sourceLabel": "SecAPI factor pipeline",
                             "accessionNumber": null,
-                            "filingUrl": "https://docs.secapi.ai/factors/methodology",
+                            "filingUrl": "https://www.turos.app/docs/intelligence/factors",
                             "acceptedAt": null,
                             "retrievedAt": "2026-06-09T22:15:00.000Z",
                             "parserVersion": "secapi-factor-pipeline"
@@ -17695,7 +17695,7 @@
                             "source": "secapi_factor_pipeline",
                             "sourceLabel": "SecAPI factor pipeline",
                             "accessionNumber": null,
-                            "filingUrl": "https://docs.secapi.ai/factors/methodology",
+                            "filingUrl": "https://www.turos.app/docs/intelligence/factors",
                             "acceptedAt": null,
                             "retrievedAt": "2026-06-09T22:15:00.000Z",
                             "parserVersion": "secapi-factor-pipeline"
@@ -17928,7 +17928,7 @@
                         "source": "secapi_factor_pipeline",
                         "sourceLabel": "SecAPI factor pipeline",
                         "accessionNumber": null,
-                        "filingUrl": "https://docs.secapi.ai/factors/methodology",
+                        "filingUrl": "https://www.turos.app/docs/intelligence/factors",
                         "acceptedAt": null,
                         "retrievedAt": "2026-06-09T22:15:00.000Z",
                         "parserVersion": "secapi-factor-pipeline"
@@ -18147,7 +18147,7 @@
                             "source": "secapi_factor_pipeline",
                             "sourceLabel": "SecAPI factor pipeline",
                             "accessionNumber": null,
-                            "filingUrl": "https://docs.secapi.ai/factors/methodology",
+                            "filingUrl": "https://www.turos.app/docs/intelligence/factors",
                             "acceptedAt": null,
                             "retrievedAt": "2026-06-09T22:15:00.000Z",
                             "parserVersion": "secapi-factor-pipeline"
@@ -18382,7 +18382,7 @@
                         "source": "secapi_factor_pipeline",
                         "sourceLabel": "SecAPI factor pipeline",
                         "accessionNumber": null,
-                        "filingUrl": "https://docs.secapi.ai/factors/methodology",
+                        "filingUrl": "https://www.turos.app/docs/intelligence/factors",
                         "acceptedAt": null,
                         "retrievedAt": "2026-06-09T22:15:00.000Z",
                         "parserVersion": "secapi-factor-pipeline"
@@ -18620,7 +18620,7 @@
                             "source": "secapi_factor_pipeline",
                             "sourceLabel": "SecAPI factor pipeline",
                             "accessionNumber": null,
-                            "filingUrl": "https://docs.secapi.ai/factors/methodology",
+                            "filingUrl": "https://www.turos.app/docs/intelligence/factors",
                             "acceptedAt": null,
                             "retrievedAt": "2026-06-09T22:15:00.000Z",
                             "parserVersion": "secapi-factor-pipeline"
@@ -18848,7 +18848,7 @@
                             "source": "secapi_factor_pipeline",
                             "sourceLabel": "SecAPI factor pipeline",
                             "accessionNumber": null,
-                            "filingUrl": "https://docs.secapi.ai/factors/methodology",
+                            "filingUrl": "https://www.turos.app/docs/intelligence/factors",
                             "acceptedAt": null,
                             "retrievedAt": "2026-06-09T22:15:00.000Z",
                             "parserVersion": "secapi-factor-pipeline"
@@ -19082,7 +19082,7 @@
                             "source": "secapi_factor_pipeline",
                             "sourceLabel": "SecAPI factor pipeline",
                             "accessionNumber": null,
-                            "filingUrl": "https://docs.secapi.ai/factors/methodology",
+                            "filingUrl": "https://www.turos.app/docs/intelligence/factors",
                             "acceptedAt": null,
                             "retrievedAt": "2026-06-09T22:15:00.000Z",
                             "parserVersion": "secapi-factor-pipeline"
@@ -19303,7 +19303,7 @@
                         "source": "secapi_factor_pipeline",
                         "sourceLabel": "SecAPI factor pipeline",
                         "accessionNumber": null,
-                        "filingUrl": "https://docs.secapi.ai/factors/methodology",
+                        "filingUrl": "https://www.turos.app/docs/intelligence/factors",
                         "acceptedAt": null,
                         "retrievedAt": "2026-06-09T22:15:00.000Z",
                         "parserVersion": "secapi-factor-pipeline"
@@ -19630,7 +19630,7 @@
                         "source": "secapi_factor_pipeline",
                         "sourceLabel": "SecAPI factor pipeline",
                         "accessionNumber": null,
-                        "filingUrl": "https://docs.secapi.ai/factors/methodology",
+                        "filingUrl": "https://www.turos.app/docs/intelligence/factors",
                         "acceptedAt": null,
                         "retrievedAt": "2026-06-09T22:15:00.000Z",
                         "parserVersion": "secapi-factor-pipeline"
@@ -19919,7 +19919,7 @@
                         "source": "secapi_factor_pipeline",
                         "sourceLabel": "SecAPI factor pipeline",
                         "accessionNumber": null,
-                        "filingUrl": "https://docs.secapi.ai/factors/methodology",
+                        "filingUrl": "https://www.turos.app/docs/intelligence/factors",
                         "acceptedAt": null,
                         "retrievedAt": "2026-06-09T22:15:00.000Z",
                         "parserVersion": "secapi-factor-pipeline"
@@ -20206,7 +20206,7 @@
                         "source": "secapi_factor_pipeline",
                         "sourceLabel": "SecAPI factor pipeline",
                         "accessionNumber": null,
-                        "filingUrl": "https://docs.secapi.ai/factors/methodology",
+                        "filingUrl": "https://www.turos.app/docs/intelligence/factors",
                         "acceptedAt": null,
                         "retrievedAt": "2026-06-09T22:15:00.000Z",
                         "parserVersion": "secapi-factor-pipeline"
@@ -20626,7 +20626,7 @@
                           "source": "secapi_factor_pipeline",
                           "sourceLabel": "SecAPI factor pipeline",
                           "accessionNumber": null,
-                          "filingUrl": "https://docs.secapi.ai/factors/methodology",
+                          "filingUrl": "https://www.turos.app/docs/intelligence/factors",
                           "acceptedAt": null,
                           "retrievedAt": "2026-06-09T22:15:00.000Z",
                           "parserVersion": "secapi-factor-pipeline"
@@ -20790,7 +20790,7 @@
                           "source": "secapi_factor_pipeline",
                           "sourceLabel": "SecAPI factor pipeline",
                           "accessionNumber": null,
-                          "filingUrl": "https://docs.secapi.ai/factors/methodology",
+                          "filingUrl": "https://www.turos.app/docs/intelligence/factors",
                           "acceptedAt": null,
                           "retrievedAt": "2026-06-09T22:15:00.000Z",
                           "parserVersion": "secapi-factor-pipeline"
@@ -20972,7 +20972,7 @@
                           "source": "secapi_factor_pipeline",
                           "sourceLabel": "SecAPI factor pipeline",
                           "accessionNumber": null,
-                          "filingUrl": "https://docs.secapi.ai/factors/methodology",
+                          "filingUrl": "https://www.turos.app/docs/intelligence/factors",
                           "acceptedAt": null,
                           "retrievedAt": "2026-06-09T22:15:00.000Z",
                           "parserVersion": "secapi-factor-pipeline"
@@ -21097,7 +21097,7 @@
                         "source": "secapi_factor_pipeline",
                         "sourceLabel": "SecAPI factor pipeline",
                         "accessionNumber": null,
-                        "filingUrl": "https://docs.secapi.ai/factors/methodology",
+                        "filingUrl": "https://www.turos.app/docs/intelligence/factors",
                         "acceptedAt": null,
                         "retrievedAt": "2026-06-09T22:15:00.000Z",
                         "parserVersion": "secapi-factor-pipeline"
@@ -21298,7 +21298,7 @@
                         "source": "secapi_factor_pipeline",
                         "sourceLabel": "SecAPI factor pipeline",
                         "accessionNumber": null,
-                        "filingUrl": "https://docs.secapi.ai/factors/methodology",
+                        "filingUrl": "https://www.turos.app/docs/intelligence/factors",
                         "acceptedAt": null,
                         "retrievedAt": "2026-06-09T22:15:00.000Z",
                         "parserVersion": "secapi-factor-pipeline"
@@ -21721,7 +21721,7 @@
                         "source": "secapi_factor_pipeline",
                         "sourceLabel": "SecAPI factor pipeline",
                         "accessionNumber": null,
-                        "filingUrl": "https://docs.secapi.ai/factors/methodology",
+                        "filingUrl": "https://www.turos.app/docs/intelligence/factors",
                         "acceptedAt": null,
                         "retrievedAt": "2026-06-09T22:15:00.000Z",
                         "parserVersion": "secapi-factor-pipeline"
@@ -22052,7 +22052,7 @@
                         "source": "secapi_factor_pipeline",
                         "sourceLabel": "SecAPI factor pipeline",
                         "accessionNumber": null,
-                        "filingUrl": "https://docs.secapi.ai/factors/methodology",
+                        "filingUrl": "https://www.turos.app/docs/intelligence/factors",
                         "acceptedAt": null,
                         "retrievedAt": "2026-06-09T22:15:00.000Z",
                         "parserVersion": "secapi-factor-pipeline"
@@ -22246,7 +22246,7 @@
                             "source": "secapi_factor_pipeline",
                             "sourceLabel": "SecAPI factor pipeline",
                             "accessionNumber": null,
-                            "filingUrl": "https://docs.secapi.ai/factors/methodology",
+                            "filingUrl": "https://www.turos.app/docs/intelligence/factors",
                             "acceptedAt": null,
                             "retrievedAt": "2026-06-09T22:15:00.000Z",
                             "parserVersion": "secapi-factor-pipeline"
@@ -22327,7 +22327,7 @@
                             "source": "secapi_factor_pipeline",
                             "sourceLabel": "SecAPI factor pipeline",
                             "accessionNumber": null,
-                            "filingUrl": "https://docs.secapi.ai/factors/methodology",
+                            "filingUrl": "https://www.turos.app/docs/intelligence/factors",
                             "acceptedAt": null,
                             "retrievedAt": "2026-06-09T22:15:00.000Z",
                             "parserVersion": "secapi-factor-pipeline"
@@ -22389,7 +22389,7 @@
                         "source": "secapi_factor_pipeline",
                         "sourceLabel": "SecAPI factor pipeline",
                         "accessionNumber": null,
-                        "filingUrl": "https://docs.secapi.ai/factors/methodology",
+                        "filingUrl": "https://www.turos.app/docs/intelligence/factors",
                         "acceptedAt": null,
                         "retrievedAt": "2026-06-09T22:15:00.000Z",
                         "parserVersion": "secapi-factor-pipeline"
@@ -22971,7 +22971,7 @@
                         "source": "secapi_factor_pipeline",
                         "sourceLabel": "SecAPI factor pipeline",
                         "accessionNumber": null,
-                        "filingUrl": "https://docs.secapi.ai/factors/methodology",
+                        "filingUrl": "https://www.turos.app/docs/intelligence/factors",
                         "acceptedAt": null,
                         "retrievedAt": "2026-06-09T22:15:00.000Z",
                         "parserVersion": "secapi-factor-pipeline"
