@@ -12,7 +12,6 @@ Billing routes let an integration read the account it's running against before d
 | `GET` | `/v1/billing/rates` | Return the public pricing catalog, free-allowance metadata, plan metadata, and meter-family rates. No key required. |
 | `POST` | `/v1/billing/quote` | Quote a billable workflow or meter class against the current billing plan and budget gates. |
 | `PUT` | `/v1/billing/budget` | Update organization-level spend caps, soft caps, and approval thresholds. |
-| `GET` | `/v1/usage` | Return the current organization's usage. |
 | `GET` | `/v1/billing/credits` | Return the prepaid credit balance, auto-top-up settings, lifetime totals, and low-balance status. |
 | `GET` | `/v1/billing/credits/transactions` | List prepaid credit ledger entries - top-ups, debits, refunds, grants, adjustments - newest first. |
 | `POST` | `/v1/billing/payg/enable` | Enable Pay As You Go: save a card, make an initial top-up, optionally turn on auto-top-up. Requires a signed-in session, not an API key. |

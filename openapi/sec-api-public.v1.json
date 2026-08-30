@@ -1133,7 +1133,18 @@
           "metadata": {
             "title": "Set a saved payment method as primary and/or change its auto-top-up"
           }
-        }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `id`."
+          }
+        ]
       },
       "delete": {
         "summary": "Remove a saved payment method from the current organization",
@@ -1168,7 +1179,18 @@
           "metadata": {
             "title": "Remove a saved payment method from the current organization"
           }
-        }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `id`."
+          }
+        ]
       }
     },
     "/v1/billing/payg/enable": {
@@ -3974,7 +3996,18 @@
           "metadata": {
             "title": "Update a webhook endpoint URL, description, subscribed event types, or"
           }
-        }
+        },
+        "parameters": [
+          {
+            "name": "webhook_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `webhook_id`."
+          }
+        ]
       },
       "delete": {
         "summary": "Delete a webhook endpoint while preserving delivery audit history",
@@ -4049,7 +4082,18 @@
           "metadata": {
             "title": "Delete a webhook endpoint while preserving delivery audit history"
           }
-        }
+        },
+        "parameters": [
+          {
+            "name": "webhook_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `webhook_id`."
+          }
+        ]
       }
     },
     "/v1/webhook_endpoints/{webhook_id}/enable": {
@@ -4119,7 +4163,18 @@
           "metadata": {
             "title": "Enable a webhook endpoint"
           }
-        }
+        },
+        "parameters": [
+          {
+            "name": "webhook_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `webhook_id`."
+          }
+        ]
       }
     },
     "/v1/webhook_endpoints/{webhook_id}/disable": {
@@ -4189,7 +4244,18 @@
           "metadata": {
             "title": "Disable a webhook endpoint without deleting delivery history"
           }
-        }
+        },
+        "parameters": [
+          {
+            "name": "webhook_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `webhook_id`."
+          }
+        ]
       }
     },
     "/v1/webhook_endpoints/{webhook_id}/test": {
@@ -4323,7 +4389,18 @@
           "metadata": {
             "title": "Send a signed webhook.test event to a webhook endpoint"
           }
-        }
+        },
+        "parameters": [
+          {
+            "name": "webhook_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `webhook_id`."
+          }
+        ]
       }
     },
     "/v1/webhook_endpoints/{webhook_id}/rotate_secret": {
@@ -4394,7 +4471,18 @@
           "metadata": {
             "title": "Rotate the signing secret for a webhook endpoint"
           }
-        }
+        },
+        "parameters": [
+          {
+            "name": "webhook_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `webhook_id`."
+          }
+        ]
       }
     },
     "/v1/webhook_endpoints/{webhook_id}/deliveries": {
@@ -4421,6 +4509,15 @@
               "default": 20
             },
             "description": "Maximum attempts to return. Values outside 1 through 50 are clamped."
+          },
+          {
+            "name": "webhook_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `webhook_id`."
           }
         ],
         "responses": {
@@ -4818,7 +4915,27 @@
           "metadata": {
             "title": "Replay a stored webhook delivery attempt by re-emitting its source"
           }
-        }
+        },
+        "parameters": [
+          {
+            "name": "webhook_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `webhook_id`."
+          },
+          {
+            "name": "delivery_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `delivery_id`."
+          }
+        ]
       }
     },
     "/v1/monitors": {
@@ -4958,7 +5075,18 @@
           "metadata": {
             "title": "Retrieve a single monitor by id"
           }
-        }
+        },
+        "parameters": [
+          {
+            "name": "monitor_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `monitor_id`."
+          }
+        ]
       },
       "delete": {
         "summary": "Deactivate a monitor (idempotent; sets is_active=false)",
@@ -4993,7 +5121,18 @@
           "metadata": {
             "title": "Deactivate a monitor (idempotent; sets is_active=false)"
           }
-        }
+        },
+        "parameters": [
+          {
+            "name": "monitor_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `monitor_id`."
+          }
+        ]
       }
     },
     "/v1/monitors/{monitor_id}/matches": {
@@ -5042,7 +5181,18 @@
           "metadata": {
             "title": "Run the monitor's saved query and return new matches since"
           }
-        }
+        },
+        "parameters": [
+          {
+            "name": "monitor_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `monitor_id`."
+          }
+        ]
       }
     },
     "/v1/monitors/{monitor_id}/delivery": {
@@ -5088,7 +5238,18 @@
           "metadata": {
             "title": "Update or replace the monitor's delivery destination (e.g., set or"
           }
-        }
+        },
+        "parameters": [
+          {
+            "name": "monitor_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `monitor_id`."
+          }
+        ]
       }
     },
     "/v1/monitors/compile": {
@@ -6965,7 +7126,18 @@
           "metadata": {
             "title": "Update a stream subscription description, event types, transport, or"
           }
-        }
+        },
+        "parameters": [
+          {
+            "name": "stream_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `stream_id`."
+          }
+        ]
       },
       "delete": {
         "summary": "Delete a stream subscription while preserving delivery records",
@@ -7040,7 +7212,18 @@
           "metadata": {
             "title": "Delete a stream subscription while preserving delivery records"
           }
-        }
+        },
+        "parameters": [
+          {
+            "name": "stream_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `stream_id`."
+          }
+        ]
       }
     },
     "/v1/stream_subscriptions/{stream_id}/enable": {
@@ -7111,7 +7294,18 @@
           "metadata": {
             "title": "Enable a stream subscription"
           }
-        }
+        },
+        "parameters": [
+          {
+            "name": "stream_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `stream_id`."
+          }
+        ]
       }
     },
     "/v1/stream_subscriptions/{stream_id}/disable": {
@@ -7182,7 +7376,18 @@
           "metadata": {
             "title": "Disable a stream subscription without deleting its delivery records"
           }
-        }
+        },
+        "parameters": [
+          {
+            "name": "stream_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `stream_id`."
+          }
+        ]
       }
     },
     "/v1/stream_subscriptions/{stream_id}/events": {
@@ -8195,7 +8400,18 @@
           "metadata": {
             "title": "Resolve a single shared trace record by trace identifier across"
           }
-        }
+        },
+        "parameters": [
+          {
+            "name": "trace_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `trace_id`."
+          }
+        ]
       }
     },
     "/v1/analytics/query": {
@@ -22383,7 +22599,18 @@
           "metadata": {
             "title": "Poll an async intelligence workload until the final traced result is"
           }
-        }
+        },
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `jobId`."
+          }
+        ]
       }
     },
     "/v1/intelligence/security": {
@@ -27888,7 +28115,18 @@
           "metadata": {
             "title": "Open a filing's source document by accession number"
           }
-        }
+        },
+        "parameters": [
+          {
+            "name": "accession_number",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `accession_number`."
+          }
+        ]
       }
     },
     "/v1/filings/{accession_number}/export": {
@@ -27934,6 +28172,15 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "accession_number",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `accession_number`."
           }
         ],
         "responses": {

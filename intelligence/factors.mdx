@@ -13,18 +13,18 @@ Start with the catalog. It is the canonical reference for the factor identifiers
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/factors/catalog?category=style"
+  "https://api.secapi.ai/v1/factors/catalog?response_mode=compact&include=trust"
 ```
 
-Each catalog entry includes a methodology description, source status, construction and orthogonalization metadata, and a category assignment: `market`, `style`, `sector`, or `industry`. Launch factors target a `2015-01-01` public history floor - a target is not row-level proof, so use the returned history and freshness metadata for the individual factor and period.
+The catalog query accepts `response_mode` and `include`. Category is a field on each returned entry (`market`, `style`, `sector`, or `industry`), not a filter argument. Launch factors target a `2015-01-01` public history floor - a target is not row-level proof, so use the returned history and freshness metadata for the individual factor and period.
 
-Then request the smallest return window that proves your workflow:
+Then request returns with the same compact/trust envelope:
 
 ```bash
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/factors/returns?keys=VALUE,MOMENTUM,QUALITY&lookback=6m&response_mode=compact&include=trust"
+  "https://api.secapi.ai/v1/factors/returns?response_mode=compact&include=trust"
 ```
 
 Use single-factor history when you need a 1D-through-MAX table, chart, or backtest input:

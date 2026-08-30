@@ -34,16 +34,17 @@ curl --fail-with-body -sS \
   "https://api.secapi.ai/v1/entities/resolve?ticker=AAPL&view=agent"
 ```
 
-TUROS returns the same response shape as production, with `livemode: false` on data objects:
+TUROS returns the same agent-view entity shape as production:
 
 ```json
 {
-  "company": {
-    "name": "Apple Inc.",
-    "ticker": "AAPL",
-    "cik": "0000320193"
-  },
-  "livemode": false,
+  "object": "entity",
+  "id": "cent_...",
+  "ticker": "AAPL",
+  "cik": "0000320193",
+  "name": "Apple Inc.",
+  "matchConfidence": 1,
+  "matchBasis": "ticker",
   "requestId": "req_..."
 }
 ```

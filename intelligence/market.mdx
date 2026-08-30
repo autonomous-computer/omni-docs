@@ -18,31 +18,31 @@ curl --fail-with-body -sS \
 
 ## Bars
 
-`GET /v1/market/bars` returns historical OHLCV bars for a single symbol.
+`GET /v1/market/bars` returns daily OHLCV bars for a single symbol. Supply `ticker` or its `symbol` alias. The route is daily only - there is no `timeframe` parameter.
 
 | Parameter | Required | Description |
 | --- | --- | --- |
-| `symbol` | Yes | Ticker symbol. |
-| `timeframe` | No | `1D`, `1W`, or `1M`. Defaults to `1D`. |
-| `start`, `end` | No | Dates in `YYYY-MM-DD` format. |
-| `limit` | No | Maximum bars. Defaults to `252`. |
+| `ticker` or `symbol` | Yes (one of) | Security symbol. |
+| `date_from`, `date_to` | No | Inclusive dates in `YYYY-MM-DD`. `date_from` defaults to about one year before the request; `date_to` defaults to the request date. |
+| `limit` | No | Maximum bars. Defaults to `365`. Values above 1,000 are capped. |
+| `adjusted` | No | Compatibility flag. Preserve the returned bar metadata rather than assuming an adjustment method. |
 
 ```bash
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/market/bars?symbol=AAPL&timeframe=1D&start=2025-01-01&end=2025-12-31"
+  "https://api.secapi.ai/v1/market/bars?ticker=AAPL&date_from=2025-01-01&date_to=2025-12-31"
 ```
 
 ## Corporate actions
 
-`GET /v1/market/corporate-actions` returns dividends, splits, and spinoffs for one symbol or market-wide within a date range. Omit `symbol` for market-wide results; filter with `type=dividend|split|spinoff`; page with `cursor` from the previous response (`limit` defaults to `100`).
+`GET /v1/market/corporate-actions` returns corporate actions for one symbol (`ticker` or `symbol`) or, if you omit the symbol, for the stored universe. Narrow the window with `date_from` and `date_to`. Cap the page with `limit`.
 
 ```bash
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/market/corporate-actions?symbol=AAPL&type=dividend&start=2025-01-01"
+  "https://api.secapi.ai/v1/market/corporate-actions?ticker=AAPL&date_from=2025-01-01"
 ```
 
 ## Calendar coverage semantics
