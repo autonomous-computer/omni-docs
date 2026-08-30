@@ -6,9 +6,9 @@ Brand actor in our docs is **TUROS** (where Stedi would say "Stedi"). Dashboard 
 
 ## Navigation to match
 
-- Header tabs: **Guides** | **API Reference**
-- Sidebar two-hub toggle: **Developer Docs** | **Product Docs** (Stedi: Developer Docs | Provider Docs)
-- First sidebar link: **Changelog** (single link, top of the sidebar)
+- Header tabs (Developer Docs): **Guides** | **API Reference**
+- Sidebar two-hub toggle: **Developer Docs** | **Product Docs** (Stedi: Developer Docs | Provider Docs). Implemented as Mintlify `navigation.dropdowns`.
+- First sidebar link: **Changelog** (global anchor, `/changelog`)
 - Then ungrouped: Developer Docs (hub), Test mode, Account setup
 - Group names: sentence case, `&` not "and" (`Filings & companies`, `Coverage & access`)
 - Section landings are titled **Overview**; the group name supplies context

@@ -2,9 +2,9 @@
 
 Sources: `autonomous-computer/docs` origin/main (`f1066d0`) and omni-datastream mintlify. ~158 guide pages + ~316 API endpoint pages compress into the IA below.
 
-Header: **Guides** | **API Reference**
-Sidebar hub toggle: **Developer Docs** | **Product Docs**
-First sidebar link: **Changelog**
+Header (inside Developer Docs): **Guides** | **API Reference**
+Sidebar hub toggle: **Developer Docs** | **Product Docs** (Mintlify dropdowns)
+First sidebar link: **Changelog** (global anchor)
 
 ## Developer Docs (Guides)
 
@@ -42,6 +42,7 @@ First sidebar link: **Changelog**
 | `intelligence/overview.mdx` | Overview | `investment-intelligence.mdx`, `named-intel-jobs.mdx` | |
 | `intelligence/test-workflows.mdx` | Test intelligence workflows | test-keys + intel billing | |
 | `intelligence/company.mdx` | Company intelligence | `products/intelligence.mdx` | |
+| `intelligence/letters.mdx` | Fund letters | fund-letters endpoints + `letter_brief` | |
 | `intelligence/factors.mdx` | Factor intelligence | factor-* pages + methodology trio | |
 | `intelligence/macro.mdx` | Macro intelligence | `macro-intelligence.mdx`, `macro-tier1.mdx` | |
 | `intelligence/market.mdx` | Market data | `market-data.mdx`, `market-calendar.mdx` | |
@@ -86,7 +87,7 @@ First sidebar link: **Changelog**
 | --- | --- |
 | `api-reference/index.mdx` | Introduction |
 
-Keep existing OpenAPI endpoint MDX when applying. Relabel sidebar groups to Stedi style (`METHOD Name`). Delete empty groups: Dashboard, Diagnostics, Model Portfolios, Observability.
+OpenAPI file: `openapi/sec-api-public.v1.json`. Sidebar groups by resource; items are `METHOD /path` (Mintlify renders the OpenAPI summary as the page title). Family overview MDX is the first page in Entities, Filings, Companies, Intelligence, Factors, Macro, Market, Situations, Delivery, and Billing. Omitted groups: Dashboard, Diagnostics, Model Portfolios, Observability.
 
 ## Redirect everything else
 
