@@ -1,0 +1,66 @@
+---
+title: "TUROS Agent"
+description: "Give an unattended agent its own credential, preflight billing and limits, and define the conditions where it must stop."
+---
+
+An unattended agent needs three things before it touches production: a credential it owns, proof that the account can pay for the run, and explicit stop conditions. A successful test request proves one request worked - it says nothing about the limits, budget gates, or quotas that apply to a loop.
+
+## Bootstrap a machine credential
+
+Don't hand an agent a key copied from a developer's shell. An authorized organization member issues a short-lived, single-use sponsor token through `POST /v1/agent/bootstrap_tokens`, and the agent exchanges it at `POST /v1/agent/bootstrap`. TUROS returns an organization-scoped API key along with billing, limits, and MCP installation metadata, so the agent can configure itself from the exchange response.
+
+Two rules apply to the exchange:
+
+- The sponsor-token secret and the issued API-key secret are each returned once. Don't put either in logs, task output, source control, or a prompt transcript.
+- Expired, used, invalid, scope-limited, and key-limit responses are stop conditions, not reasons to mint credentials in a loop.
+
+The bootstrap flow creates a machine credential. It doesn't give the machine permission to change a budget or mint more credentials - budget changes use a signed-in dashboard session, and an unattended process should never hold a human browser token.
+
+## Preflight the run
+
+Before a watchlist, backfill, or scheduled job, prove the credential that will run it can pay for it. Use the same key the job will use:
+
+```bash
+curl --fail-with-body -sS -H "x-api-key: $SECAPI_API_KEY" \
+  "https://api.secapi.ai/v1/billing"
+
+curl --fail-with-body -sS -H "x-api-key: $SECAPI_API_KEY" \
+  "https://api.secapi.ai/v1/limits"
+```
+
+These describe the organization behind this key, not a public price list. Store the redacted responses with the run record, and keep the key out of logs, prompts, and saved artifacts.
+
+Then quote each route and unit count in the workload instead of extrapolating from one call:
+
+```bash
+curl --fail-with-body -sS -X POST \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "content-type: application/json" \
+  -d '{"path":"/v1/filings/latest","method":"GET","units":1}' \
+  "https://api.secapi.ai/v1/billing/quote"
+```
+
+Save `requestId`, `planKey`, `meterClass`, `units`, `budget`, and `budgetGate` with the run record. A quote is an estimate, not a reservation. Set a maximum work-unit count before the job begins.
+
+Quote requests, `GET /v1/billing`, and `GET /v1/limits` are all non-billable, so the preflight itself is free.
+
+## Stop conditions
+
+Don't retry a refusal until its cause changes. Encode these behaviors in the agent's operating policy:
+
+| Condition | Required behavior |
+| --- | --- |
+| `400` | Correct the arguments from the endpoint reference or discovered MCP schema, then retry once. |
+| `401` or `403` | Stop. Repair the credential or organization authorization. |
+| `402 billing_required` | Stop. Branch on `details.reason` (for example, `starter_grant_exhausted`), not on message text. |
+| `429` | Honor `Retry-After` when present and reduce concurrency. Don't start parallel retry loops. |
+| Budget gate, hard cap, or quota error | Stop and keep the response context. Raising a cap is a human dashboard action. |
+| `5xx` | Bounded backoff, then stop. Retain the request ID for support. |
+
+TUROS also sends advisory headers as the included grant runs down, starting at 80% consumption: `SECAPI-Grant-Status`, `SECAPI-Grant-Consumed-Percent`, `SECAPI-Grant-Remaining`, `SECAPI-Grant-Warning`, `SECAPI-Grant-Action`, and `SECAPI-Grant-Action-Url`. Surface them in the run record rather than waiting for the `402`.
+
+On billable POSTs, send `Idempotency-Key` so a crash-and-restart doesn't pay twice. TUROS replays the first response for 24 hours, returns `422` on a body mismatch, and returns `409` with `Retry-After` while the first call is in flight.
+
+## A bounded first run
+
+For the first scheduled run, use one issuer and one form, save the redacted preflight and quote, and verify the filing identity - `accessionNumber`, `form`, `filingDate`, `filingUrl`, and `requestId` - in the result. Widen the issuer set only after the job stops cleanly at the configured authentication, quota, billing, and budget boundaries.

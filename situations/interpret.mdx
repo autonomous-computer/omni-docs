@@ -1,0 +1,44 @@
+---
+title: "Interpret the situation response"
+description: "Read situation detail, filing timelines, and weekly digest issues without confusing current data with immutable snapshots"
+---
+
+A situation response answers one of two different questions, and mixing them corrupts research. Current detail answers "what does this situation look like now?" - it changes as new filings arrive. A weekly digest issue answers "what did the digest publish then?" - it's an immutable publication-time snapshot. Keep those two facts separate in anything you store.
+
+## Read current detail
+
+`GET /v1/situations/{situation_id}` returns one situation with its full per-filing timeline, oldest first:
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/situations/sit_abc123"
+```
+
+Keep the `situationId`, accession numbers, source URLs, event dates, and `requestId` with any resulting memo. The timeline is the evidence: retrieve the original SEC filing for each term or date you use in a decision. Use `GET /v1/situations/{situation_id}/filings` when you only need to page the timeline.
+
+For a compact handoff, `GET /v1/situations/{situation_id}/summary` returns compact markdown, deal terms, and the latest timeline event.
+
+## Current vs. immutable
+
+| You're asking | Use | Behavior |
+| --- | --- | --- |
+| What does the situation look like now? | `GET /v1/situations/{situation_id}` | Current detail. Changes as filings arrive. |
+| What did the weekly digest publish? | `GET /v1/situations/issues/{issue}` | Frozen at publication. Never changes. |
+
+Digest issues carry their reproducibility anchors: issue number or slug, publication timestamp, `sourceSituationIds`, `sourceEventIds`, and source-event snapshots. When you cite an issue, fetch the referenced `situationId` separately before describing live terms or current status - the issue tells you what was true at publication, not what's true today.
+
+Calendar and performance responses answer yet other questions - disclosed future dates, and closed-situation outcome cohorts - and should stay separate from current detail in a research record.
+
+## Export a cited record
+
+- `GET /v1/situations/{situation_id}/export` exports one situation. `?format=` accepts `json`, `csv`, `xlsx`, `pdf`, or `llm` (Copy-for-LLM Markdown).
+- `GET /v1/situations/{situation_id}/underwriting-pack` assembles detail, narrative, timeline, and copyable source context in one research packet.
+- `GET /v1/situations/export` enqueues an async bulk export of a filtered roster or weekly issue; poll it with `GET /v1/exports/{job_id}`, which also re-signs the download URL.
+
+An export is a factual brief with citations, not investment advice and not a substitute for reading the source filings.
+
+## Interpretation boundaries
+
+Situations are filing-derived. They don't confirm that a transaction will close, or that a disclosed date, term, or status remains current. When a field is absent - consideration, timing, premium, counterparty - leave it absent rather than inferring it. Separate filing-supported facts from inference in anything you hand to an analyst or an agent, and state which facts came from live detail versus archive data.

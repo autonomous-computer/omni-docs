@@ -1,0 +1,51 @@
+---
+title: "Filing views"
+description: "Choose between view=default, compact, and agent response projections, and use include= as an opt-in expand"
+---
+
+Some endpoints let you choose how much of the response you get. `view=` selects a projection of the record; `include=` expands related objects the default response omits. Neither changes what the record is - only how much of it travels.
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  "https://api.secapi.ai/v1/filings/latest?ticker=AAPL&form=10-K&view=agent"
+```
+
+## `view=`
+
+Supported endpoints accept `view=default`, `view=compact`, or `view=agent`.
+
+| Value | What you get |
+| --- | --- |
+| omitted / `default` | The full documented response for that route. |
+| `compact` | A smaller endpoint-specific projection. |
+| `agent` | An endpoint-specific projection for retrieval and citation. |
+
+`view=agent` keeps identity and citation fields on supported routes - accession number, filing URL, section key. It can omit provenance, freshness, materialization, pagination, or other envelope fields the default response carries. Compare both shapes before you store an agent view as a compliance record.
+
+Views aren't a universal schema. A field present on filings `view=agent` isn't promised on facts `view=agent`. Confirm support and fields in the route's reference before depending on one.
+
+## `include=` is an expand
+
+`include=` adds related objects or metadata that the default response omits - an opt-in expand. The default stays small, and you ask for what you need:
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  "https://api.secapi.ai/v1/companies/overview?ticker=AAPL&include=factors"
+```
+
+Rules:
+
+1. Only send `include` values the route documents. An unknown value is a validation error, not a silent ignore.
+2. Each expand can add size and, on some routes, a different meter class. Quote the actual path with `POST /v1/billing/quote` before running a loop.
+3. An expanded view is still a view. `GET /v1/companies/overview?include=factors` is a company view with factor enrichments, not the intelligence product - a cited assembly is a named intel job.
+
+## When to keep the default
+
+Use the default view when you need the full envelope: provenance, freshness, complete holdings, or a compliance store. Two concrete cases:
+
+- `view=agent` on 13F responses caps holdings at 50 regardless of `limit`.
+- Section `view=agent` keeps citation fields and can omit the section body.
+
+If a downstream reader will audit the result, retrieve the default shape and store it. Use `view=agent` for the retrieval loop, not the archive.

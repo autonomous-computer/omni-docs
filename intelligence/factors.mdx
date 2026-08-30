@@ -1,0 +1,81 @@
+---
+title: "Factor intelligence"
+description: "Work from the factor catalog to returns and history, keep the trust envelope attached, and understand how the factors are constructed."
+---
+
+The factor store gives you a structured factor model for U.S. market, style, sector, and industry workflows: catalog, daily and intraday returns, single-factor history, exposures, correlations, extreme moves, and regime-conditioned performance.
+
+## Catalog, then returns, then history
+
+Start with the catalog. It is the canonical reference for the factor identifiers used by every other factor endpoint.
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/factors/catalog?category=style"
+```
+
+Each catalog entry includes a methodology description, source status, construction and orthogonalization metadata, and a category assignment: `market`, `style`, `sector`, or `industry`. Launch factors target a `2015-01-01` public history floor - a target is not row-level proof, so use the returned history and freshness metadata for the individual factor and period.
+
+Then request the smallest return window that proves your workflow:
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/factors/returns?keys=VALUE,MOMENTUM,QUALITY&lookback=6m&response_mode=compact&include=trust"
+```
+
+Use single-factor history when you need a 1D-through-MAX table, chart, or backtest input:
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/factors/history/VALUE?range=1y&response_mode=compact&include=trust"
+```
+
+From there, `GET /v1/factors/exposures` returns per-stock loadings, `GET /v1/factors/extreme-moves` ranks unusual moves by z-score, and `GET /v1/factors/regime-performance` conditions rankings on the current macro regime.
+
+## Keep the trust fields
+
+Compact responses omit heavier metadata; `include=trust` requests it explicitly. When a result informs a model, report, or decision, preserve these fields unchanged:
+
+| Field | Use |
+| --- | --- |
+| `requestId` and `traceparent` | Correlate the result with request and downstream tracing evidence. |
+| `freshness` | Evaluate recency - `freshness.status`, `freshness.asOf`, `freshness.lagMs`. |
+| `materialization` | The returned read-model or computation version. Treat it as opaque and store it - a change can accompany a data or methodology revision. |
+| `methodology` | Model family, inputs, and construction notes when returned. |
+| `sourceRights` | The returned source-rights posture. |
+| `degradedState` | A partial result, fallback, or missing dependency. Show it downstream; don't rewrite it as success. |
+
+Daily and intraday outputs use different clocks. Weekends and U.S. market holidays don't create missing daily rows. A stale intraday snapshot means avoiding live-market language, not filling the gap.
+
+## How the factors are built
+
+**Universe.** Stock-basket factors use a monthly refreshed, point-in-time U.S. equity universe: at least $100M market capitalization, $5M average daily dollar volume, and a $1.00 share price, across NYSE, NASDAQ, AMEX, ARCA, and BATS listings. Warrants, units, rights, ETFs, ETNs, and ADR certificates are excluded. Historical reference snapshots determine membership at rebalance to avoid look-ahead bias; when snapshots are absent, the fallback to latest reference data is approximate rather than point-in-time.
+
+**Style factors.** Cap-weighted long-short decile spreads: rank on a characteristic, assign deciles, take the top-minus-bottom return, rebalance monthly. Definitions can use point-in-time SEC XBRL fundamentals, SIC classification, or documented basket and proxy inputs.
+
+**Thematic factors.** The catalog includes 16 curated thematic baskets and roughly 70 thematic stock-basket factors. ETF-backed thematic factors use the ETF return less a relevant benchmark; curated baskets use equal-weight constituent returns less a relevant benchmark. Macro and country factors use a documented proxy spread. No single construction applies to every category - the catalog metadata identifies what applies to a specific factor.
+
+**Purification and scaling.** Each factor has one to three declared parents. A rolling 156-trading-day OLS regression estimates the residual return not explained by those parents. Residual scaling uses the preceding 60 residual returns plus the current one to estimate sample volatility, annualizes with 252 trading days, targets 10% annualized volatility, and caps leverage at 3.0. Returns are converted to rolling z-scores for comparison. These are model outputs, not forecasts or investment recommendations.
+
+## Macro sensitivity is a heuristic
+
+`GET /v1/factors/macro-sensitivity` answers which factors are most sensitive to a macro scenario. It is labeled `macro_factor_sensitivity_v1_heuristic`: it combines scenario shock maps with current macro-regime factor impacts. It is explainable and fast - it is not a point-in-time empirical regression. Don't present its output as estimated betas.
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/factors/macro-sensitivity?country=US&scenario_key=higher_for_longer&keys=VALUE,MOMENTUM,QUALITY&response_mode=compact"
+```
+
+## Portfolio decomposition
+
+`POST /v1/portfolio/analyze` decomposes a holdings body into factor exposures, return attribution, and hedge suggestions; `POST /v1/portfolio/attribution` and `POST /v1/portfolio/hedge` are the dedicated variants. A degraded portfolio result - missing exposures, incomplete bar inputs, no hedge candidates under constraints - is data, not a generic failure. Preserve its code, message, and missing capabilities.
+
+Factor reads bill as store reads. The intel job that synthesizes factor output into a cited assembly is a [named intel job](/intelligence/overview).

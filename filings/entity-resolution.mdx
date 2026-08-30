@@ -1,0 +1,54 @@
+---
+title: "Entity resolution"
+description: "Resolve a ticker, name, or market identifier to one canonical entity and CIK before any issuer-specific request"
+---
+
+Resolve the issuer before you fetch. `GET /v1/entities/resolve` turns a ticker, name, or market identifier into one canonical entity with match metadata, and the stores consume that identity - they don't invent it. Skipping this step is how integrations end up querying the wrong filer after a ticker changes hands.
+
+## Resolve, then fetch
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/entities/resolve?ticker=AAPL&view=agent"
+```
+
+Keep `id`, `cik`, `ticker`, `matchConfidence`, and `matchBasis` when they're returned. A low-confidence match is a correction task, not a join key. Don't infer a CIK from a ticker string or an old filing URL - tickers can be reused or changed, and the CIK is the identifier that survives.
+
+Then carry the identity into the fetch:
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/filings/latest?ticker=AAPL&form=10-K&view=agent"
+```
+
+Ticker, `symbol`, and CIK must not conflict in a single request. When issuer input could be ambiguous, resolve it first rather than passing conflicting hints downstream.
+
+## The identity routes
+
+| Route | Use it when |
+| --- | --- |
+| `GET /v1/entities/resolve` | You have a ticker, CIK, FIGI, name, ISIN, or CUSIP and need one entity. An empty resolve request is invalid. |
+| `GET /v1/entities` | You need a paginated canonical entity search - the right start when the task begins with a broad name search. |
+| `GET /v1/entities/edgar` | You need paginated EDGAR source records. This is catalog search, not an identity peer of resolve. |
+
+Company overview (`GET /v1/companies/overview`) is a company view, not a substitute for resolve.
+
+## Licensed identifiers
+
+CUSIP and ISIN are licensed identifiers. Accounts without that entitlement receive `null` for those fields, and resolving by CUSIP or ISIN returns `licensed_identifier_required`. Ticker, CIK, and FIGI-family identifiers need no license. If your workflow joins on CUSIP or ISIN, confirm the entitlement before you build on it - the fallback join key is the CIK.
+
+## What a match does and doesn't establish
+
+A match is identity metadata: this input resolves to this entity, on this basis, with this confidence. It doesn't prove a legal relationship, beneficial owner, corporate parent, or security equivalence. Inspect the returned entity type and identifiers before joining records, and keep the query and filters unchanged while paging an entity list.
+
+For a high-confidence result, record the CIK with the match basis, match confidence, `requestId`, and retrieval time. That record is what lets a later reader reproduce the resolution - and what tells you why a join went wrong when it does.
+
+## Next
+
+- [Retrieve filings - API](/filings/api-submission) - carry the resolved identity into a filing request
+- [Accession and CIK lookup](/filings/accession-lookup) - fetch one immutable filing
+- [Ownership and insiders](/filings/ownership) - resolve a manager before querying holders

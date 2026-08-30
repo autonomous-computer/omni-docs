@@ -1,6 +1,8 @@
 {
+  "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "OMNI Documentation",
+  "name": "TUROS",
+  "description": "SEC filing, company, ownership, market, and intelligence APIs for developers and agents.",
   "logo": {
     "dark": "/logo/dark.svg",
     "light": "/logo/light.svg"
@@ -11,160 +13,283 @@
     "light": "#5AA9FF",
     "dark": "#2D8CFF"
   },
-  "topbarLinks": [
-    {
-      "name": "App",
-      "url": "https://app.turos.app"
+  "navbar": {
+    "links": [
+      {
+        "label": "App",
+        "href": "https://turos.app"
+      },
+      {
+        "label": "Status",
+        "href": "https://status.secapi.ai/"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Get API key",
+      "href": "https://turos.app"
     }
-  ],
-  "topbarCtaButton": {
-    "name": "Launch OMNI",
-    "url": "https://app.turos.app"
   },
   "navigation": {
-    "groups": [
+    "global": {
+      "anchors": [
+        {
+          "anchor": "Changelog",
+          "href": "/changelog",
+          "icon": "clock"
+        }
+      ]
+    },
+    "tabs": [
       {
-        "group": "Getting Started",
-        "pages": [
-          "index",
-          "getting-started/quickstart",
-          "getting-started/installation",
-          "getting-started/client-api-quickstart",
-          "getting-started/client-api-sdk-quickstart",
-          "getting-started/client-api-versioning",
-          "getting-started/platform-scope"
+        "tab": "Guides",
+        "icon": "book-open",
+        "groups": [
+          {
+            "group": "Developer Docs",
+            "pages": [
+              "index",
+              "test-mode",
+              "account-setup"
+            ]
+          },
+          {
+            "group": "AI tools",
+            "pages": [
+              "ai/build-with-ai",
+              "ai/agent"
+            ]
+          },
+          {
+            "group": "Coverage & access",
+            "pages": [
+              "coverage/coverage",
+              "coverage/authentication",
+              "coverage/api-keys",
+              "coverage/identifiers"
+            ]
+          },
+          {
+            "group": "Filings & companies",
+            "pages": [
+              "filings/overview",
+              {
+                "group": "Fetch filings",
+                "pages": [
+                  "filings/fetch-overview",
+                  {
+                    "group": "Real-time retrieval",
+                    "pages": [
+                      "filings/api-submission",
+                      "filings/dashboard-search"
+                    ]
+                  },
+                  "filings/batch",
+                  "filings/accession-lookup",
+                  "filings/views",
+                  {
+                    "group": "Read filing data",
+                    "pages": [
+                      "filings/pdf",
+                      {
+                        "group": "API responses",
+                        "pages": [
+                          "filings/company",
+                          "filings/financials",
+                          "filings/ownership"
+                        ]
+                      }
+                    ]
+                  },
+                  "filings/sections",
+                  "filings/troubleshooting",
+                  "filings/form-types"
+                ]
+              },
+              "filings/entity-resolution",
+              {
+                "group": "Special situations",
+                "pages": [
+                  "situations/checks",
+                  "situations/interpret",
+                  "situations/troubleshooting"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "Model Context Protocol (MCP)",
+            "pages": ["mcp"]
+          },
+          {
+            "group": "Intelligence & market data",
+            "pages": [
+              "intelligence/overview",
+              "intelligence/test-workflows",
+              {
+                "group": "Query intelligence",
+                "pages": [
+                  "intelligence/company",
+                  "intelligence/factors",
+                  "intelligence/macro",
+                  "intelligence/market"
+                ]
+              },
+              {
+                "group": "Artifacts",
+                "pages": [
+                  "intelligence/artifacts-overview",
+                  "intelligence/artifacts-setup",
+                  "intelligence/artifacts-create",
+                  "intelligence/artifacts-retrieve"
+                ]
+              },
+              "intelligence/status",
+              "intelligence/views",
+              "intelligence/event-types"
+            ]
+          },
+          {
+            "group": "Event destinations",
+            "pages": [
+              "events/configure",
+              "events/deliveries",
+              "events/events"
+            ]
+          },
+          {
+            "group": "Organizations",
+            "pages": [
+              "organizations/overview",
+              "organizations/setup"
+            ]
+          },
+          {
+            "group": "Administrative",
+            "pages": [
+              "admin/billing",
+              "admin/notifications",
+              "admin/trust-center",
+              "admin/support"
+            ]
+          },
+          {
+            "group": "Libraries & SDKs",
+            "pages": [
+              "sdks/javascript",
+              "sdks/python",
+              "sdks/go",
+              "sdks/rust",
+              "sdks/cli"
+            ]
+          }
         ]
       },
       {
-        "group": "Core Concepts",
-        "pages": [
-          "core-concepts/conversations",
-          "core-concepts/working-directory",
-          "core-concepts/permissions"
+        "tab": "API Reference",
+        "icon": "square-terminal",
+        "groups": [
+          {
+            "group": "Introduction",
+            "pages": ["api-reference/index"]
+          },
+          {
+            "group": "Entities",
+            "pages": ["api-reference/entities"]
+          },
+          {
+            "group": "Filings",
+            "pages": ["api-reference/filings"]
+          },
+          {
+            "group": "Companies",
+            "pages": ["api-reference/companies"]
+          },
+          {
+            "group": "Intelligence",
+            "pages": ["api-reference/intelligence"]
+          },
+          {
+            "group": "Factors",
+            "pages": ["api-reference/factors"]
+          },
+          {
+            "group": "Macro",
+            "pages": ["api-reference/macro"]
+          },
+          {
+            "group": "Market",
+            "pages": ["api-reference/market"]
+          },
+          {
+            "group": "Situations",
+            "pages": ["api-reference/situations"]
+          },
+          {
+            "group": "Delivery",
+            "pages": ["api-reference/delivery"]
+          },
+          {
+            "group": "Billing",
+            "pages": ["api-reference/billing"]
+          }
         ]
       },
       {
-        "group": "Sources",
-        "pages": [
-          "sources/overview",
-          "sources/mcp-servers",
-          "sources/client-api-endpoints",
-          "sources/client-api-reference",
-          "sources/client-api-openapi",
-          "sources/client-api-keys",
-          "sources/client-api-auth",
-          "sources/client-api-errors",
-          "sources/client-api-retries",
-          "sources/client-api-usage-billing",
-          "sources/client-api-mcp",
-          "sources/client-api-mcp-hosted",
-          "sources/client-api-mcp-compatibility",
-          "sources/client-api-sdks",
-          "sources/client-api-fred",
-          "sources/client-api-webhooks",
-          "sources/client-api-webhooks-ops",
-          "sources/client-api-changelog",
-          "sources/client-api-migrations",
-          "sources/client-api-v1-5-roadmap",
-          "sources/client-api-internal-beta-policy",
-          "sources/apis",
-          "sources/local-folders"
-        ]
-      },
-      {
-        "group": "Client API (Generated)",
-        "openapi": {
-          "source": "openapi/omni-client-api.v1.json",
-          "directory": "client-api"
-        },
-        "pages": [
-          "GET /v1/health",
-          "GET /v1/fred/search",
-          "GET /v1/fred/series/{series_id}",
-          "GET /v1/mcp/tools",
-          "POST /v1/mcp/invoke",
-          "GET /v1/openapi.json",
-          "POST /mcp",
-          "GET /mcp",
-          "DELETE /mcp",
-          "GET /sse"
-        ]
-      },
-      {
-        "group": "Skills & Superpowers",
-        "pages": [
-          "skills/overview",
-          "skills/superpowers",
-          "skills/skill-catalog"
-        ]
-      },
-      {
-        "group": "Statuses & Labels",
-        "pages": [
-          "statuses/overview",
-          "statuses/customizing",
-          "labels/overview",
-          "labels/auto-apply-rules"
-        ]
-      },
-      {
-        "group": "Automation (Preview)",
-        "pages": [
-          "hooks/overview"
-        ]
-      },
-      {
-        "group": "Customisation",
-        "pages": [
-          "customisation/themes",
-          "customisation/colors",
-          "customisation/icons"
-        ]
-      },
-      {
-        "group": "OMNI Intelligence",
-        "pages": [
-          "omni-intelligence/daily-briefing-pipeline",
-          "omni-intelligence/portfolio-intelligence",
-          "omni-intelligence/factors-news-events"
-        ]
-      },
-      {
-        "group": "Go Further",
-        "pages": [
-          "go-further/sharing-conversations",
-          "go-further/connect-to-anything",
-          "go-further/project-contexts",
-          "go-further/deep-links",
-          "go-further/data-tables",
-          "go-further/html-preview",
-          "go-further/pdf-preview",
-          "go-further/mermaid"
-        ]
-      },
-      {
-        "group": "Architecture",
-        "pages": [
-          "architecture"
-        ]
-      },
-      {
-        "group": "Agent Backend",
-        "pages": [
-          "agent-backend/tools",
-          "agent-backend/skills"
-        ]
-      },
-      {
-        "group": "Support",
-        "pages": [
-          "troubleshooting"
+        "tab": "Product Docs",
+        "icon": "layout-dashboard",
+        "groups": [
+          {
+            "group": "Product Docs",
+            "pages": [
+              "product/index",
+              "product/account-setup"
+            ]
+          },
+          {
+            "group": "Filings & companies",
+            "pages": [
+              "product/filings",
+              "product/situations"
+            ]
+          },
+          {
+            "group": "Delivery",
+            "pages": [
+              "product/monitors",
+              "product/webhooks"
+            ]
+          },
+          {
+            "group": "Administrative",
+            "pages": [
+              "product/billing",
+              "product/support"
+            ]
+          }
         ]
       }
     ]
   },
-  "footerSocials": {
-    "website": "https://turos.app"
+  "redirects": [
+    { "source": "/getting-started", "destination": "/account-setup" },
+    { "source": "/getting-started/quickstart", "destination": "/account-setup" },
+    { "source": "/getting-started/installation", "destination": "/account-setup" },
+    { "source": "/quickstart", "destination": "/account-setup" },
+    { "source": "/sources/client-api-keys", "destination": "/coverage/api-keys" },
+    { "source": "/sources/client-api-auth", "destination": "/coverage/authentication" },
+    { "source": "/sources/client-api-mcp", "destination": "/mcp" },
+    { "source": "/sources/client-api-mcp-hosted", "destination": "/mcp" },
+    { "source": "/sources/client-api-sdks", "destination": "/sdks/javascript" },
+    { "source": "/sources/client-api-webhooks", "destination": "/events/configure" },
+    { "source": "/sources/client-api-changelog", "destination": "/changelog" },
+    { "source": "/sources/client-api-usage-billing", "destination": "/admin/billing" },
+    { "source": "/troubleshooting", "destination": "/admin/support" }
+  ],
+  "footer": {
+    "socials": {
+      "website": "https://turos.app"
+    }
   },
   "integrations": {
     "ga4": {

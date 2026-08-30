@@ -1,0 +1,71 @@
+---
+title: "Market data"
+description: "Retrieve price snapshots, historical bars, corporate actions, and exchange calendars with explicit coverage and confidence semantics."
+---
+
+Market data routes return structured, source-attributed payloads: snapshots, OHLCV bars, corporate actions, reference data, calendars, and symbol search. Responses include provenance and freshness metadata - keep it attached when a result feeds a decision.
+
+## Snapshots
+
+`GET /v1/market/snapshots` returns the latest price snapshot - last price, change, volume, and timestamp - for one or more symbols. `symbols` is required and takes at most 50 comma-separated tickers per request. Batch larger universes into multiple calls; don't send 51 and expect truncation.
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/market/snapshots?symbols=AAPL,MSFT,GOOG"
+```
+
+## Bars
+
+`GET /v1/market/bars` returns historical OHLCV bars for a single symbol.
+
+| Parameter | Required | Description |
+| --- | --- | --- |
+| `symbol` | Yes | Ticker symbol. |
+| `timeframe` | No | `1D`, `1W`, or `1M`. Defaults to `1D`. |
+| `start`, `end` | No | Dates in `YYYY-MM-DD` format. |
+| `limit` | No | Maximum bars. Defaults to `252`. |
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/market/bars?symbol=AAPL&timeframe=1D&start=2025-01-01&end=2025-12-31"
+```
+
+## Corporate actions
+
+`GET /v1/market/corporate-actions` returns dividends, splits, and spinoffs for one symbol or market-wide within a date range. Omit `symbol` for market-wide results; filter with `type=dividend|split|spinoff`; page with `cursor` from the previous response (`limit` defaults to `100`).
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/market/corporate-actions?symbol=AAPL&type=dividend&start=2025-01-01"
+```
+
+## Calendar coverage semantics
+
+`GET /v1/market/calendar` returns session status, timezone and hours, and holiday coverage for supported exchanges: `XNYS`, `XNAS`, `XLON`, `XTKS`, `XHKG`, `XTAE`, and `XSAU`.
+
+The calendar is deliberately explicit about partiality. Read the coverage fields before making trade-window assumptions:
+
+| Field value | Meaning |
+| --- | --- |
+| `coverage: configured_holidays` | TUROS has an explicit holiday map and weekend rules for the exchange. |
+| `coverage: weekend_only` | TUROS knows the weekend pattern and regular hours but may not reflect every local holiday closure. |
+| `confidence: tentative` | The open session is inferred from weekend-only coverage, not confirmed against a holiday map. |
+
+`XNYS` and `XNAS` are safe for production assumptions about holiday-aware session state. Treat the other exchanges as documented public-hour utilities rather than fully holiday-complete calendars, and read `coverage`, `confidence`, and `statusNote` on every response.
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/market/calendar?market=XNYS&duration=5"
+```
+
+## Reference and search
+
+`GET /v1/market/reference?symbol=AAPL` returns company reference data - name, sector, industry, exchange, and identifiers. `GET /v1/market/search?q=apple&limit=5` matches tickers and company names. Tickers can be reused or changed over time; for a durable identity, resolve the entity rather than storing a bare ticker.

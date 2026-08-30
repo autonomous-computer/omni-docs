@@ -1,0 +1,34 @@
+---
+title: "Review filings"
+description: "Search companies, retrieve SEC filings as they arrive, and keep the citation that identifies each source."
+---
+
+TUROS gives you SEC filings in real time. Resolve a company once, retrieve its filings as EDGAR publishes them, and keep the identifiers that let anyone find the source again.
+
+## Coverage
+
+Filings are searchable across a nine-year floor. TUROS runs completeness checks for required forms for the two most recently completed years, and the current year fills in as filings arrive. Data density varies across EDGAR - a missing result is not proof that no filing exists.
+
+## Start from the company, not the ticker
+
+Tickers can be reused or changed, so resolve the company first and carry its identifiers forward. TUROS returns the entity's name, ticker, and CIK; use those in every follow-up request instead of inferring a CIK from a ticker string or an old filing URL.
+
+Ticker, CIK, and FIGI lookups need no license. CUSIP and ISIN are licensed identifiers - unlicensed accounts receive `null` with a `licensed_identifier_required` note.
+
+## Review the latest filing
+
+1. Sign in to the [TUROS dashboard](https://turos.app).
+2. Search for the company by name or ticker.
+3. Open the company and review its filings - each shows its form, filing date, and a link to the SEC source document.
+
+The dashboard reads the same records the API returns. A latest filing changes when a newer one arrives, so treat what you see as the current matching filing, not a frozen record.
+
+Building an integration instead? See [Retrieve filings - API](/filings/api-submission).
+
+## Go deeper than the cover page
+
+Open a filing to review named sections (such as Item 1A risk factors), readable text, and financial statements when they're available for that form. For the machine-readable routes behind those views, see the [Filings API reference](/api-reference/filings) and [Companies API reference](/api-reference/companies).
+
+## Get notified instead of polling
+
+If you're watching for new filings, don't poll. Save the search as a [monitor](/product/monitors) and let TUROS alert you by email or webhook when a matching filing arrives.

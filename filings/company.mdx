@@ -1,0 +1,45 @@
+---
+title: "Company overview, identifiers, and listings"
+description: "Start issuer research with the SEC-derived company snapshot, and understand which identifiers TUROS returns"
+---
+
+The company overview is the starting view for issuer research: identity, classification, the latest material filing, and a financial snapshot drawn from recent annual SEC XBRL facts. It's a view over the filings store, not a separate database - every number traces back to a filing you can fetch.
+
+## Retrieve the snapshot
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/companies/overview?ticker=AAPL"
+```
+
+`companyType` determines which metrics are meaningful - null margins or cash-flow values are expected for financial institutions and pre-revenue companies, not a data gap. Optional enrichments such as `include=factors` are bounded and independently statused; factor exposure is descriptive, not a forecast. Preserve the returned filing, provenance, and freshness fields before presenting the snapshot as current.
+
+The overview is a company view, not a substitute for [entity resolution](/filings/entity-resolution). Resolve first when the input could be ambiguous, then carry the CIK into company routes.
+
+## Identifiers
+
+TUROS returns the identifiers your account is entitled to:
+
+- **Ticker, CIK, and FIGI-family identifiers**: Available on every plan. The CIK is the durable join key - tickers can be reused or changed, so store the CIK for work that must survive a ticker change.
+- **CUSIP and ISIN**: Licensed identifiers. Accounts without that entitlement receive `null` for those fields, and resolving by CUSIP or ISIN returns `licensed_identifier_required`. This is an entitlement outcome, not missing data.
+
+An identifier match is identity metadata. It doesn't prove a legal relationship, beneficial owner, corporate parent, or security equivalence - check the returned entity type and identifiers before joining records.
+
+## The company route family
+
+The overview is one of several company views, each answering a narrower question:
+
+| Route | What it returns |
+| --- | --- |
+| `GET /v1/companies/overview` | Identity, latest material filing, and a sector-aware financial snapshot. |
+| `GET /v1/companies/financials` | Income, balance-sheet, and cash flow statements in one response. |
+| `GET /v1/companies/income-statements`, `/balance-sheets`, `/cash-flow-statements` | One statement family's history with normalized fields. |
+| `GET /v1/companies/ratios` | Statement-derived profitability, return, valuation, dividend, and leverage ratios with period context. |
+| `GET /v1/companies/segments` | Product, geographic, and operating segment breakdown (beta). |
+| `GET /v1/companies/subsidiaries` | Subsidiaries disclosed in the latest available 10-K Exhibit 21. |
+| `GET /v1/companies/audit-fees` | Principal-accountant fee rows from the latest DEF 14A or 10-K. |
+| `GET /v1/companies/macro-exposure` | Revenue-weighted macro exposure from disclosed geographic revenue. |
+
+For statement-level detail and the rules for comparing values across periods, continue to [financial statements](/filings/financials).

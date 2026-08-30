@@ -1,0 +1,25 @@
+---
+title: "Entities"
+description: "Resolve and search best-match public-market entities across issuers, managers, insiders, and funds."
+---
+
+Resolve and search entities across issuers, managers, insiders, and funds. Resolve first: tickers can be reused or changed, so start every workflow by resolving the identifier you have into the canonical entity, then carry its name, ticker, and CIK forward.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/v1/entities/resolve` | Resolve one issuer, manager, insider, or fund from a market or SEC identifier, returning the canonical entity and match confidence. |
+| `GET` | `/v1/entities` | Search canonical SEC entities across issuers, managers, insiders, and funds with offset pagination. |
+| `GET` | `/v1/entities/edgar` | Search SEC EDGAR entity records by name, ticker, CIK, or identifier with source-oriented pagination. |
+
+A resolve request looks like this:
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/entities/resolve?ticker=AAPL&view=agent"
+```
+
+Ticker, CIK, and FIGI lookups need no license. CUSIP and ISIN are licensed identifiers; unlicensed accounts receive `null` with `licensed_identifier_required`. Don't infer a CIK from a ticker string or an old filing URL - use the resolved record.
+
+Entity resolution is metered as a light read ($0.01 per call). See the [Introduction](/api-reference) for authentication, pagination, and error behavior shared by every route.

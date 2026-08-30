@@ -1,0 +1,50 @@
+---
+title: "Setup"
+description: "Create the organization's keys, verify them, set a budget, and establish a rotation habit before production traffic."
+---
+
+Set up an organization in four steps: create keys, verify them, set the budget boundary, and decide the rotation procedure before you need it.
+
+## Create keys
+
+Sign in to the TUROS dashboard and create a key for each workload. Start with a test key (`secapi_test_…`) to prove integrations, then create live keys (`secapi_live_…`) per service - one key per deploy surface makes revocation surgical. The secret is shown once; store it in your secret manager.
+
+Key creation, reveal, rotation, and revocation are dashboard-session actions - an API key cannot create keys. Enterprise organizations can also manage org-scoped keys programmatically from a signed-in session - see [API keys](/coverage/api-keys).
+
+## Verify the key
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/limits"
+```
+
+`GET /v1/limits` returns the rate limits, key limits, and throughput ceilings for the plan, and it isn't billed - it's the standard smoke test after any key change.
+
+## Set the budget
+
+Spend caps and alert thresholds prevent runaway costs across the shared wallet. Budget mutations are dashboard-session actions - they don't accept an API key.
+
+1. Sign in to the [TUROS dashboard](https://turos.app).
+2. Open billing settings.
+3. Set the spend cap, soft cap, and approval threshold for the organization.
+
+Budget events are recorded with the acting principal, previous values, and request ID for audit. `GET /v1/billing` and `GET /v1/usage` report the current state and metered usage by meter class. Use those reads with the API key that will run the workload.
+
+## Rotate keys without downtime
+
+The rotation order matters:
+
+1. Create the replacement key from the dashboard.
+2. Deploy it to the workload.
+3. Verify with `GET /v1/limits` using the new key.
+4. Revoke the old key.
+
+If a key leaks, invert the order: revoke first, then re-create and redeploy.
+
+Webhook signing secrets rotate from the dashboard - rotation is a human-authenticated organization setting and doesn't accept an API key. Save the newly shown secret and update your verification logic before the next delivery arrives.
+
+## Enterprise SSO
+
+Enterprise organizations can federate dashboard login over SAML or OIDC through WorkOS - Okta, Azure AD, Google Workspace, and other SAML 2.0 / OIDC identity providers. Contact us to enable it for your organization.

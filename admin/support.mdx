@@ -1,0 +1,37 @@
+---
+title: "Support"
+description: "Check status first, capture a secret-free diagnostic record, and contact us with the identifiers that make a request findable."
+---
+
+Before you contact us, check [status.secapi.ai](https://status.secapi.ai) and make one health request. Most reports resolve faster when they arrive with a small diagnostic record instead of a description from memory.
+
+## Capture the diagnostic record
+
+Reproduce the failing request once with headers included, and store the output privately:
+
+```bash
+curl -i -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/limits"
+```
+
+Keep this minimum record:
+
+| Capture | Why |
+| --- | --- |
+| HTTP method and endpoint path | Identifies the operation without disclosing credentials. |
+| UTC timestamp, HTTP status, and error `code` | Places the event and identifies the recovery class. |
+| `Request-Id` and `traceparent` | Correlates the request on our side. |
+| `Retry-After` plus relevant quota or billing headers | Shows whether a retry is appropriate. |
+| SDK, CLI, or MCP client name and version | Makes client behavior reproducible. |
+
+For an MCP failure, add the tool or method name and the JSON-RPC error. For a data issue, keep the returned source identifiers and state fields.
+
+## Never paste keys
+
+Redact before sharing. Remove `x-api-key` values, bearer tokens, and cookies from every command, log excerpt, and screenshot - don't paste a command with its expanded key into a ticket. Remove customer data and private holdings unless a narrowed reproduction genuinely requires them. If a key may have been exposed, revoke it first, then re-create and redeploy.
+
+## Contact us
+
+Contact us from the TUROS dashboard with the record above. Include the `Request-Id` - it's the identifier that makes your request findable on our side. For a suspected outage, reference the status page incident if one is posted.

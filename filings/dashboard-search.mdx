@@ -1,0 +1,28 @@
+---
+title: "Retrieve filings - dashboard"
+description: "Look up a company and retrieve its SEC filings in the TUROS dashboard without writing code"
+---
+
+You can retrieve filings in the TUROS dashboard when you want to read a filing rather than build an integration. The dashboard runs the same resolve-and-fetch workflow as the API, so what you review in the browser matches what a request returns.
+
+If you're building an application or an agent, use [Retrieve filings - API](/filings/api-submission) instead - the API gives you filters, pagination, and machine-readable citations.
+
+## Find a company's filings
+
+1. Sign in to the TUROS dashboard at [turos.app](https://turos.app).
+2. Search for the company by name or ticker.
+3. Open the company and review its filings.
+
+The dashboard shows each filing's form, filing date, and a link to the SEC source document, so you can confirm you're looking at the right filing before you rely on it.
+
+## When the dashboard is the right tool
+
+- You're checking a single filing - a fact, a date, a section - and don't need the result in code.
+- You're verifying what an API integration returned. The dashboard and the API read the same records, so a mismatch is a diagnostic signal, not an expected difference.
+- You're getting set up. The dashboard is also where you create API keys, watch usage, and manage billing, monitors, and webhook endpoints - none of which an API key can do on its own.
+
+When your account approaches a usage grant boundary, TUROS returns advisory headers (`SECAPI-Grant-Status` and related fields) on API responses starting at 80% consumption. The dashboard is where you act on them - add a payment method or adjust your plan before requests stop with a `402`. See [troubleshooting](/filings/troubleshooting) for what each stop means.
+
+## When to switch to the API
+
+Move to the API when the work repeats: monitoring new filings, pulling sections into a pipeline, or feeding an agent. Create a key in the dashboard, then follow [Retrieve filings - API](/filings/api-submission). For recurring alerts on new filings, set up a monitor in the dashboard instead of polling.

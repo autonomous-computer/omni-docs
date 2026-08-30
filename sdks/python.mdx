@@ -1,0 +1,63 @@
+---
+title: "Python SDK"
+description: "Install secapi-client, retrieve one filing, and retain source and diagnostic identifiers."
+---
+
+Learn how to install the TUROS Python SDK, authenticate, retrieve one filing, and handle errors. The client wraps the public REST endpoints and reads its key from the environment.
+
+## Prerequisites
+
+- Python 3.11 or newer.
+- An API key in `SECAPI_API_KEY`. Create one in the [TUROS dashboard](https://turos.app).
+
+```bash
+python -m pip install secapi-client
+export SECAPI_API_KEY="secapi_..."
+```
+
+The client sends the key in the `x-api-key` header on every request. Keep it in server-side configuration.
+
+## Retrieve one filing
+
+Create `first_request.py`:
+
+```python
+from secapi_client import SecApiClient, SecApiError
+
+client = SecApiClient()
+
+try:
+    filing = client.agent_latest_filing(ticker="AAPL", form="10-K")
+    print({
+        "accessionNumber": filing.get("accessionNumber"),
+        "filingDate": filing.get("filingDate"),
+        "filingUrl": filing.get("filingUrl"),
+        "requestId": filing.get("requestId"),
+    })
+except SecApiError as error:
+    print({"status": error.status, "code": error.code, "requestId": error.request_id})
+    raise
+```
+
+```bash
+python first_request.py
+```
+
+Expect a current filing identity and request ID. The values are live; retain the accession number and filing URL if a later process needs to locate the same source filing.
+
+`agent_latest_filing()` requests `view=agent`, a compact projection with identity and citation fields. Use the default endpoint shape when your workflow needs fields the compact view omits - the [Filings API reference](/api-reference/filings) is the authority for each route's fields.
+
+## Errors and retries
+
+`SecApiError` exposes an HTTP status, `code`, and `request_id`, plus any supplied retry details. The client has a bounded retry policy and observes `Retry-After` when present.
+
+For a `401`, check the environment variable and keep using API-key authentication - don't switch to a bearer header. For `429`, let the client wait or honor the returned interval in your own policy. Before a mutation whose replay is unsafe, construct the client with `retry=False` or ensure the operation is idempotent.
+
+## Production notes
+
+- The default client uses `https://api.secapi.ai`; override `base_url` only for an environment you control.
+- Pass `api_version` after validating the exact operation, and log `Request-Id` and `SECAPI-Version` around failures.
+- Disable SDK retries when a queue, job runner, or service mesh already owns retry behavior.
+- Endpoint fields and response views aren't interchangeable. Consult the reference before parsing optional metadata.
+
+Next: [JavaScript SDK](/sdks/javascript), [CLI](/sdks/cli), or the [API reference](/api-reference).

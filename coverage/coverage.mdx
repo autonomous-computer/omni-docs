@@ -1,0 +1,65 @@
+---
+title: "Coverage"
+description: "What TUROS covers across filings, macro countries, and gated stores, and how to test the slice your workflow needs."
+---
+
+Coverage is specific to the issuer, filing, period, and representation you request. A filing can be available while a section, normalized fact, or derived result is not, so a successful lookup isn't a coverage claim. Before you build on a result, write down the exact evidence you need and test that request.
+
+## Filings
+
+Filing and section workflows document a nine-year searchable floor. Completeness checks apply to required filing forms for the two most recently completed years, and the current year is available as filings arrive - it isn't covered by the completed-year completeness check.
+
+TUROS can return older filings. Their usefulness still depends on the issuer, form, document format, and the route's materialization path. A successful query for one issuer or year isn't a platform-wide guarantee, and TUROS doesn't claim equal data density across EDGAR.
+
+```bash
+curl --fail-with-body -sS -H "x-api-key: $SECAPI_API_KEY" \
+  "https://api.secapi.ai/v1/filings?ticker=AAPL&form=10-K&limit=25"
+```
+
+## Macro countries
+
+Macro intelligence launched with five countries, with an expansion set following:
+
+| Tier | Countries |
+| --- | --- |
+| Launch | US, CN, JP, TW, IL |
+| Expansion | CA, GB, EZ, KR, BR, IN, SA |
+
+Check the per-country status endpoint before you depend on a country's indicators in a workflow.
+
+## Gated stores
+
+Fund letters and authenticated special situations are gated stores. They return `404` when the store is dark for your account, so don't make them your first request. Check `availability` on the API catalog before calling them:
+
+```bash
+curl --fail-with-body -sS \
+  "https://api.secapi.ai/.well-known/api-catalog.json"
+```
+
+## Beta surfaces
+
+Dilution endpoints and `GET /v1/companies/segments` are beta. TUROS marks their responses with the `SECAPI-Maturity: beta` header. Treat their shapes and coverage as subject to change.
+
+## Freshness
+
+A filing can be published before it appears in a route, and a route can return a filing before a derived representation is ready. Treat those as separate facts. When a route returns a freshness state, interpret it in context:
+
+| Returned state | Practical treatment |
+| --- | --- |
+| `fresh` or `current` | Usable under that route's documented timing policy. |
+| `archival` | Historical source material can remain valid even though it's old. |
+| `stale` | Outside the route's stated freshness posture. Don't label it current. |
+| `degraded` | A response with a stated limitation, fallback, or dependency issue. |
+| `unknown` | The route can't classify the condition from the information available. |
+
+A healthy HTTP response isn't proof of source recency or complete coverage. Record both the source date and the retrieval time - they answer different questions.
+
+## Test the slice you'll use
+
+1. Name the issuer, form family, reporting period, and representation your workflow requires.
+2. Run that bounded request for a small, representative set of issuers and periods, including a known difficult case where appropriate.
+3. For each result, record the request, retrieval time, accession number or other source identifier, returned period, units, and any availability or limitation fields.
+4. Inspect missing, partial, and degraded results individually. Don't count an empty response as a zero value or a conclusive negative finding.
+5. Keep the capture with the downstream output so another reviewer can repeat the lookup.
+
+This is a suitability check, not a platform census. It demonstrates what the named requests returned at the time of capture - it doesn't prove coverage of untested issuers, forms, periods, or representations. When the evidence you need is unavailable, surface that state instead of quietly substituting a different issuer, filing, or period.

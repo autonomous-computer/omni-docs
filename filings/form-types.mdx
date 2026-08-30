@@ -1,0 +1,52 @@
+---
+title: "Form types"
+description: "Which SEC form families TUROS retrieves, and which have a purpose-built structured workflow"
+---
+
+TUROS retrieves filing manifests across SEC filing families. Structured extraction is narrower: a purpose-built workflow exists only where its route documents a result. This distinction matters when your application needs a cited disclosure rather than a link to a filing.
+
+For an unfamiliar form, start with filing search:
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  "https://api.secapi.ai/v1/filings?ticker=AAPL&forms=10-K,10-Q,8-K&limit=25"
+```
+
+The response identifies SEC filings. It doesn't promise a normalized parser for every form, attachment, or exhibit.
+
+## Form families and their documented workflows
+
+| Form family | Documented use |
+| --- | --- |
+| `10-K`, `10-Q` | Filing retrieval and named-section extraction for supported keys such as `item_1a`, `item_7`, and `item_8`. |
+| `10-K`, `10-Q`, `20-F`, `40-F` | Facts and statements workflows. |
+| `8-K`, `6-K` | Filing retrieval and persisted filing-event coverage where available. |
+| `S-1`, `S-1/A`, `424B*` | Filing retrieval and offerings workflows. |
+| `13F-HR`, `13F-HR/A` | Institutional ownership workflows. |
+| `SC 13D`, `SC 13G`, and amendments | Beneficial-ownership workflows. |
+| Forms `3`, `4`, `5` | Insider-ownership workflows. |
+| `DEF 14A` | Board and compensation workflows. |
+| `NPORT-P`, `NPORT-EX` | N-PORT holdings workflows. |
+
+## Dedicated form routes
+
+Some capital-formation, insider-sale, and fund-disclosure forms have their own list routes with cursor pagination and date filters:
+
+| Route | Form |
+| --- | --- |
+| `GET /v1/forms/1-a` | Regulation A Form 1-A offering filings. |
+| `GET /v1/forms/144` | Form 144 notices of proposed insider sales. |
+| `GET /v1/forms/c` | Form C crowdfunding offering filings. |
+| `GET /v1/forms/d` | Form D private-offering filings. |
+| `GET /v1/forms/d/{accessionNumber}` | Structured Form D offering data parsed from the filing XML. |
+| `GET /v1/forms/ncen` | Form N-CEN annual census filings. |
+| `GET /v1/forms/npx` | Form N-PX proxy voting filings. |
+
+Finding a filing in these routes means the form was filed - it doesn't mean the offering closed or the transaction completed. Don't treat filing discovery as transaction completion.
+
+## The exhibit boundary
+
+Some workflows read selected exhibits for a documented purpose: institutional-ownership workflows read the 13F information table, and selected `EX-99` material supports transcript and guidance extraction. XBRL and inline XBRL support facts and statements. For an exhibit without a named workflow, retrieve the filing and follow the SEC filing URL. See [sections and exhibits](/filings/sections).
+
+For a production workflow, retain the accession number and filing URL even when a structured result is available - the filed form supplies the context the normalized record can't.

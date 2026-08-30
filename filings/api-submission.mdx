@@ -1,0 +1,85 @@
+---
+title: "Retrieve filings - API"
+description: "Send an authenticated request to the TUROS API and retrieve an issuer's latest SEC filing with a preservable citation"
+---
+
+Learn how to retrieve a filing with a direct API request. This page walks one request end to end: authenticate, ask for an issuer's latest 10-K, and keep the fields that make the result citable.
+
+If you'd rather read filings than build against them, see [Retrieve filings - dashboard](/filings/dashboard-search).
+
+## Prerequisites
+
+You need an account and an API key. Sign up at [turos.app](https://turos.app), create a key in the TUROS dashboard, and set it in the environment of the process that makes the request:
+
+```bash
+export SECAPI_API_KEY="secapi_..."
+```
+
+Keep the key out of browser code, URLs, request bodies, and repositories. The key prefix is the mode: `secapi_test_` keys are free and fixture-only, `secapi_live_` keys bill successful work.
+
+## Test before production
+
+Use a test key (`secapi_test_...`) to validate request shapes without billing. Test-key traffic returns `livemode: false` and serves fixtures, so switch to a live key before you depend on the returned filing identity. See [Test mode](/test-mode).
+
+## Retrieve the latest 10-K
+
+Machine requests authenticate with the `x-api-key` header - not `Authorization: Bearer`, and never in the URL or body. Pin the API version with `secapi-version`.
+
+| Header | Required | Value |
+| --- | --- | --- |
+| `x-api-key` | Yes | Your API key. |
+| `secapi-version` | Recommended | A dated version such as `2026-03-19`. When omitted, TUROS resolves the current version and returns it in `SECAPI-Version`. |
+
+Send the request:
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/filings/latest?ticker=AAPL&form=10-K&view=agent"
+```
+
+TUROS returns the current latest matching filing:
+
+```json
+{
+  "object": "filing",
+  "ticker": "AAPL",
+  "form": "10-K",
+  "accessionNumber": "0000320193-25-000079",
+  "filingDate": "2025-10-31",
+  "filingUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+  "requestId": "req_2ZK8Q1W9F4M6P7R3"
+}
+```
+
+`view=agent` is a compact projection with identity and citation fields; omit `view` when you need the full documented envelope. See [filing views](/filings/views).
+
+## Preserve the citation
+
+A latest-filing result is time-dependent - the accession number changes when the issuer files again. Before summarizing or storing the result, preserve these fields when the response includes them:
+
+- `accessionNumber`
+- `form`
+- `filingDate`
+- `filingUrl`
+- `requestId`
+
+Those fields identify the source as "Apple Inc. 10-K, filed 2025-10-31, accession 0000320193-25-000079". Keep any returned provenance, freshness, and warning fields alongside them. Don't infer a CIK from a ticker or an old filing URL - resolve the issuer with `GET /v1/entities/resolve` when you need one. See [entity resolution](/filings/entity-resolution).
+
+## Continue into the filing
+
+To read a named section of the filing you just retrieved:
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/filings/latest/sections/item_1a?ticker=AAPL&form=10-K&view=agent"
+```
+
+A section answers a narrower question; it doesn't replace the filing identity from the preceding request. See [sections and exhibits](/filings/sections).
+
+## When the request stops
+
+A `401` with code `missing_api_key` means no key reached the API - send `x-api-key` from the calling process. A `401` with `authentication_failed` means the key was rejected - replace or rotate it in the dashboard. Don't switch to a bearer header to fix either error. For `429`, honor `Retry-After` before retrying. See [troubleshooting](/filings/troubleshooting) for the full table.

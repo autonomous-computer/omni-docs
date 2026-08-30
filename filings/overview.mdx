@@ -1,0 +1,23 @@
+---
+title: "Overview"
+description: "What TUROS filings and companies data covers, and the workflows for retrieving and citing it"
+---
+
+A filing is a document a company submits to the SEC through EDGAR - a 10-K, a 10-Q, an 8-K, a proxy statement, an ownership form. TUROS materializes filings into records you can search, retrieve, and cite: filing manifests, named sections, normalized facts and statements, ownership records, and filing-derived events.
+
+A company in TUROS is a resolved entity. Every filing, fact, statement, and ownership record hangs off an entity, so issuer-specific work starts by resolving a ticker, name, or identifier to one canonical entity and its CIK. From there, the object graph is simple: entity → filing → fact, statement, or event.
+
+Filings coverage has a nine-year searchable floor, with completeness checks for required forms across the two most recently completed years and the current year as filings arrive. Coverage follows SEC source material - a missing result is a retrieval outcome, not proof that an issuer made no filing.
+
+## Workflows
+
+- **Retrieve filings**: Find filing manifests by issuer, form, date, or text, then fetch the filing, a named section, or the source document. Start with [fetching filings](/filings/fetch-overview).
+- **Entity resolution**: Turn a ticker, name, or market identifier into a canonical entity and CIK before any issuer-specific request. Start with [entity resolution](/filings/entity-resolution).
+- **Company data**: Read a company snapshot, financial statements, normalized facts, segments, and ownership disclosures built from filings. Start with the [company overview](/filings/company).
+- **Special situations**: Follow filing-derived M&A, tender offers, spin-offs, activist campaigns, and restructurings with a cited filing trail. Start with [special situations search](/situations/checks).
+
+## Channels
+
+You can run every filing workflow through the TUROS API with an API key, or review filings in the TUROS dashboard at [turos.app](https://turos.app). Agent clients can use the same workflows through hosted [Model Context Protocol (MCP)](/mcp) at `https://api.secapi.ai/mcp` - the tools carry the same identifiers, billing, and citation expectations as REST.
+
+Whichever channel you use, keep the identifiers each response returns: entity `id`, CIK, `accessionNumber`, `filingUrl`, and `requestId`. They're how a later reader - or a later request - finds the same source.

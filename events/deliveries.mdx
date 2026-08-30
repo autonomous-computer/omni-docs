@@ -1,0 +1,59 @@
+---
+title: "Deliveries and retries"
+description: "Delivery is at-least-once with manual replay. Audit attempts with an API key, commit stream cursors only after durable writes, and size receivers for the hourly monitor sweep."
+---
+
+TUROS webhook delivery is signed, logged, and at-least-once, with manual replay for retained delivery attempts. Automatic retry and endpoint auto-pause are rollout-gated operational features - build your receiver for the shipped contract, not the roadmap.
+
+## At-least-once, so receivers deduplicate
+
+A retry can repeat a valid notification. Persist the event or delivery ID before processing, and deduplicate on it - for monitor events, deduplicate alerts on the filing accession number plus your delivery ID. Duplicate analyst alerts are a receiver bug, not a delivery bug.
+
+## Audit delivery attempts
+
+Read delivery history with an API key:
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/webhook_endpoints/wh_123/deliveries?limit=20"
+```
+
+Each attempt is an audit record: ID, event type, status, timestamps, latency, request ID, and `replayedFromDeliveryId` when the attempt came from a replay. Join it to the event ID your receiver stored - an HTTP status alone doesn't prove downstream processing succeeded. Page through `nextCursor` before concluding a delivery was never sent.
+
+Common failure modes:
+
+- **`401` from the receiver:** signature verification uses parsed JSON or the wrong signing secret. Verify over the raw body.
+- **Repeated `5xx`:** the handler does slow work inline. Accept and queue quickly; retrieve filings outside the request.
+- **Duplicate work:** the receiver didn't persist the event ID before processing.
+
+## Replay manually
+
+Replay is a dashboard action. Fix the receiver, destination, or secret handling first, then replay the failed delivery from the signed-in dashboard, verify the new attempt, and preserve its replay lineage with the original record. Don't replay into a receiver that will fail the same way.
+
+## Stream cursors
+
+Cursor polling is the pull-side alternative for workers that can't receive a public webhook. Create the stream subscription in the dashboard, then read with an API key:
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/stream_subscriptions/str_123/events?limit=25"
+```
+
+The response carries ordered `data`, `nextCursor` for the next read, and `replayCursor` for durable checkpoint recovery. The rules:
+
+1. Store each event ID in the same transaction that creates downstream work, then store the returned cursor. Commit the cursor only after the durable write succeeds.
+2. Never advance a cursor after a partial batch. Leave the checkpoint unchanged and rerun idempotently.
+3. Use the server-returned cursor as the checkpoint - never the last array position, a wall-clock time, or an accession number.
+4. Cursor order is recorded event order, not the SEC filing timestamp.
+
+If a worker falls behind, reduce the batch size and drain progressively rather than skipping to a newer cursor. Re-reading the same cursor window doesn't create new billable delivery units.
+
+## The monitor sweep and limits
+
+Active monitors run on an hourly cadence. A typical alert arrives about half a sweep after a new matching record becomes available; worst case is one hourly sweep plus delivery time. This is scheduled monitoring, not an instant EDGAR feed - check the sweep cadence before concluding an alert is late.
+
+Default delivery limits are 100 sends per monitor per hour and 1,000 per organization per day. Narrow a noisy query and split unrelated jobs rather than absorbing the cap. Webhook and stream delivery meter as `delivery_events`; monitor email recipients meter as `email_notifications`.

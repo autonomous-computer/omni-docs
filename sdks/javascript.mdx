@@ -1,0 +1,71 @@
+---
+title: "JavaScript SDK"
+description: "Install @secapi/sdk-js, retrieve one filing, and handle errors in a server-side runtime."
+---
+
+Learn how to install the TUROS JavaScript SDK, authenticate, retrieve one filing, and handle errors. The SDK wraps the public REST endpoints; your application still owns deployment policy and downstream persistence.
+
+## Prerequisites
+
+- Node.js 18 or newer.
+- An API key in a trusted server-side environment. Create one in the [TUROS dashboard](https://turos.app).
+
+```bash
+npm install @secapi/sdk-js
+export SECAPI_API_KEY="secapi_..."
+```
+
+The client reads `SECAPI_API_KEY` and sends it in the `x-api-key` header on every request. Keep the key in server-only configuration - never in browser code.
+
+## Retrieve one filing
+
+Create `first-request.mjs`:
+
+```js
+import { SecApiClient, SecApiError } from "@secapi/sdk-js"
+
+const sec = new SecApiClient()
+
+try {
+  const filing = await sec.agentLatestFiling({
+    ticker: "AAPL",
+    form: "10-K",
+  })
+
+  console.log(JSON.stringify({
+    accessionNumber: filing.accessionNumber,
+    filingDate: filing.filingDate,
+    filingUrl: filing.filingUrl,
+    requestId: filing.requestId,
+  }, null, 2))
+} catch (error) {
+  if (error instanceof SecApiError) {
+    console.error({ status: error.status, code: error.code, requestId: error.requestId })
+    process.exitCode = 1
+  } else {
+    throw error
+  }
+}
+```
+
+```bash
+node first-request.mjs
+```
+
+Expect an accession number, filing date, SEC filing URL, and request ID. The values are live and change after a newer filing arrives, so keep them with any derived output - they connect a result to its source filing and API request.
+
+`agentLatestFiling()` sets `view=agent`, a compact projection that keeps identity and citation fields. When you need the full endpoint response, use `latestFiling()` and check the [Filings API reference](/api-reference/filings) for the fields it returns.
+
+## Errors and retries
+
+The SDK throws `SecApiError` with an HTTP status, `code`, and `requestId`, plus retry guidance when the API supplies it. Its retry policy is bounded and honors `Retry-After`. A `429` can be retried even after a mutating request; treatment of other failures depends on the HTTP method.
+
+Don't add another concurrent retry loop on top of the SDK's. Before a mutation whose replay is unsafe, disable SDK retries with `new SecApiClient({ retry: false })` or ensure the operation is idempotent and use an idempotency key.
+
+## Production notes
+
+- Set `apiVersion` explicitly after testing the endpoint behavior you depend on, and log the response `SECAPI-Version`.
+- Use `retry: false` when your infrastructure already owns retries.
+- Paginate list endpoints with the SDK iterator rather than assuming one page is complete.
+
+Next: [Python SDK](/sdks/python), [CLI](/sdks/cli), or the [API reference](/api-reference).

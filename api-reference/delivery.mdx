@@ -1,0 +1,74 @@
+---
+title: "Delivery"
+description: "Webhook endpoints, stream subscriptions, monitors, and the durable delivery ledger."
+---
+
+Delivery routes cover the three ways TUROS pushes or checkpoints events - signed webhooks, cursor-polled streams, and saved-search monitors - plus the durable ledger that records what was delivered. Delivery is at-least-once everywhere: make receivers idempotent and deduplicate on the delivery or event identifier.
+
+Endpoint CRUD, secret rotation, and monitor creation are control-plane actions and require a signed-in dashboard session - an API key can list endpoints and read matches and deliveries. Manage those writes in the [TUROS dashboard](https://turos.app). Webhook and stream delivery is metered as `delivery_events`; monitor email recipients are metered as `email_notifications`.
+
+## Webhook endpoints
+
+Verify `x-secapi-signature` against the exact raw body on every delivery and reject stale timestamps. Replay is manual; automatic retry and endpoint auto-pause are rollout-gated.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/v1/webhook_endpoints` | List webhook endpoints for the current organization. |
+| `POST` | `/v1/webhook_endpoints` | Create a signed webhook endpoint for delivery events. |
+| `PATCH` | `/v1/webhook_endpoints/{webhook_id}` | Update an endpoint's URL, description, subscribed event types, or active status. |
+| `DELETE` | `/v1/webhook_endpoints/{webhook_id}` | Delete an endpoint while preserving delivery audit history. |
+| `POST` | `/v1/webhook_endpoints/{webhook_id}/enable` | Enable a webhook endpoint. |
+| `POST` | `/v1/webhook_endpoints/{webhook_id}/disable` | Disable an endpoint without deleting delivery history. |
+| `POST` | `/v1/webhook_endpoints/{webhook_id}/rotate_secret` | Rotate the signing secret for an endpoint. |
+| `POST` | `/v1/webhook_endpoints/{webhook_id}/test` | Send a signed `webhook.test` event to an endpoint. This is a test send, not a subscription type - it does not appear in the event-types catalog. |
+| `GET` | `/v1/webhook_endpoints/{webhook_id}/deliveries` | List canonical delivery attempts for an endpoint. |
+| `POST` | `/v1/webhook_endpoints/{webhook_id}/deliveries/{delivery_id}/replay` | Replay a stored delivery attempt by re-emitting its source event. |
+
+## Stream subscriptions
+
+Streams give a worker explicit checkpoints and controlled replay. Poll events, process them idempotently, and commit your cursor only after a durable write. Cursor order is recorded event order, not the SEC filing timestamp.
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  "https://api.secapi.ai/v1/stream_subscriptions/str_123/events?limit=25"
+```
+
+The response returns `data`, `nextCursor`, and `replayCursor`.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/v1/stream_subscriptions` | List stream subscriptions for the current organization. |
+| `POST` | `/v1/stream_subscriptions` | Create a stream subscription for event polling and replay. |
+| `PATCH` | `/v1/stream_subscriptions/{stream_id}` | Update a subscription's description, event types, transport, or status. |
+| `DELETE` | `/v1/stream_subscriptions/{stream_id}` | Delete a subscription while preserving delivery records. |
+| `POST` | `/v1/stream_subscriptions/{stream_id}/enable` | Enable a stream subscription. |
+| `POST` | `/v1/stream_subscriptions/{stream_id}/disable` | Disable a subscription without deleting its delivery records. |
+| `GET` | `/v1/stream_subscriptions/{stream_id}/events` | Poll canonical stream events for a subscription with cursor semantics. |
+
+## Monitors
+
+Monitors are saved filing searches that sweep hourly and deliver `monitor.match` events. Delivery limits are 100 sends per monitor per hour and 1,000 per organization per day.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/v1/monitors` | List saved-search monitors for the current organization. |
+| `POST` | `/v1/monitors` | Create a saved-search monitor with an optional webhook or email delivery destination. |
+| `GET` | `/v1/monitors/{monitor_id}` | Retrieve a single monitor by ID. |
+| `DELETE` | `/v1/monitors/{monitor_id}` | Deactivate a monitor (idempotent; sets `is_active` to `false`). |
+| `POST` | `/v1/monitors/{monitor_id}/delivery` | Update or replace the monitor's delivery destination. |
+| `GET` | `/v1/monitors/{monitor_id}/matches` | Run the monitor's saved query and return new matches since the last check. |
+| `POST` | `/v1/monitors/compile` | Compile a natural-language alert request into a structured monitor spec. |
+
+Reading matches with an API key doesn't send an email or webhook - use it to preview a saved query before relying on scheduled dispatch.
+
+## Delivery ledger
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/v1/delivery/events` | List durable delivery ledger, webhook delivery, and stream records for the current organization. |
+| `GET` | `/v1/delivery/events/export` | Export durable delivery ledger records as JSON or NDJSON. |
+| `GET` | `/v1/delivery/unsubscribe` | Render an unsubscribe confirmation page for a signed token. |
+| `POST` | `/v1/delivery/unsubscribe` | Unsubscribe from monitor email delivery (RFC 8058 one-click compatible). |
+
+See the [Introduction](/api-reference) for authentication, pagination, and error behavior.

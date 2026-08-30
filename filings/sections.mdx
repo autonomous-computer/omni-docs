@@ -1,0 +1,55 @@
+---
+title: "Sections and exhibits"
+description: "Extract named filing sections like Item 1A with citation fields intact, and know where the exhibit boundary sits"
+---
+
+A section is a named part of a filing - Item 1A risk factors, Item 7 management's discussion, Item 8 financial statements. Section extraction gives you that part with its citation attached, so an agent or pipeline can quote a filing without pulling the whole document into context.
+
+Section keys are canonical, not free-form heading lookups. `section_key` must be a supported key such as `item_1a`, `item_7`, or `item_8`. When you don't know the key - or the work begins with a concept rather than a heading - search sections instead.
+
+## Read Item 1A from the latest 10-K
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/filings/latest/sections/item_1a?ticker=AAPL&form=10-K&view=agent"
+```
+
+The route defaults to a 10-K. TUROS returns the section with its identity fields - `accessionNumber`, `section_key`, `source_url`, offsets, and a snippet. `view=agent` keeps citation fields and can omit the section body; use the default view when you need the full text.
+
+For a filing you've already selected, use the accession-scoped route so the result is reproducible:
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  "https://api.secapi.ai/v1/filings/0000320193-25-000079/sections/item_1a"
+```
+
+## Search sections when the heading is unknown
+
+`GET /v1/sections/search` finds extracted sections and snippets by query, issuer, form, and fiscal-period filters:
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  "https://api.secapi.ai/v1/sections/search?q=liquidity&ticker=AAPL&form=10-K&limit=20"
+```
+
+Every result row carries citation fields: `accession`, `section_key`, `char_start` / `char_end` (half-open offsets into the section text, stable across reparses), `highlighted_snippet`, `source_url`, and `ticker`. When a span can't be produced, the offsets and snippet drop to `null` and `_citation_degraded` records the reason - keep the accession and section identity and retrieve the source rather than relying on the excerpt.
+
+The cursor on this route is an opaque token: send the returned `nextCursor` unchanged while `hasMore` is true, and don't derive offsets from result counts.
+
+## Keep the citation with the excerpt
+
+Retain `accessionNumber`, `section_key`, `source_url`, and `requestId` with every excerpt you store or hand to an agent. A section answers a narrower question than the filing - it doesn't replace the filing identity, and a missing or unavailable section is not evidence that the issuer made no disclosure.
+
+## The exhibit boundary
+
+Some workflows read selected exhibits for a documented purpose - institutional-ownership workflows read the 13F information table, and selected `EX-99` material supports transcript and guidance extraction. XBRL and inline XBRL power [facts and statements](/filings/financials); that's structured-data extraction, not raw-exhibit delivery.
+
+TUROS doesn't publish a general exhibit-enumeration and normalization API for every filing. For an exhibit without a named workflow, retrieve the filing and follow the SEC filing URL to the source.
+
+## Errors
+
+Invalid `mode`, `view`, or issuer filters are `400` request errors - correct them from the route reference. A `502 section_lookup_failed` can reflect unavailable rendering or section coverage; retry with bounded backoff, and don't replace it with an invented excerpt.

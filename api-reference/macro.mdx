@@ -1,0 +1,25 @@
+---
+title: "Macro"
+description: "Country macro indicators, releases, forecasts, regimes, and sovereign credit ratings with revision-aware provenance."
+---
+
+Macro routes serve official-source country indicators, release calendars, forecasts, regime classifications, and sovereign credit ratings. Launch coverage is US, CN, JP, TW, and IL, with expansion planned for CA, GB, EZ, KR, BR, IN, and SA. Macro reads are metered as `market_data_reads`.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/v1/macro/overview` | Return a one-call country macro dashboard: headline indicators with latest/previous/change/direction and next release, the current regime, upcoming releases, and the sovereign credit rating. |
+| `GET` | `/v1/macro/indicators` | Return official-source macro indicator observations with revision-aware provenance and country-quality metadata. |
+| `GET` | `/v1/macro/releases` | Return macro release observations with actual, prior, consensus, and surprise metadata. |
+| `GET` | `/v1/macro/calendar` | Return the macro event calendar for supported official-source releases and central-bank events. |
+| `GET` | `/v1/macro/forecasts` | Return forecast baselines and scenario-aware macro projections with methodology metadata. |
+| `GET` | `/v1/macro/regimes` | Return the current macro regime classification for a country. |
+| `GET` | `/v1/macro/credit-ratings` | Return sovereign credit ratings for tracked countries and G20 members. |
+| `GET` | `/v1/macro/credit-ratings/{country}` | Return the sovereign credit rating for a single country by ISO country code. |
+| `GET` | `/v1/macro/high-signal-pack` | Return the launch-ring Tier-1 high-signal macro pack with explicit source, fallback, and release-calendar posture. |
+| `GET` | `/v1/macro/search` | Search supported macro indicators by keyword across all countries and high-signal packs. |
+| `GET` | `/v1/macro/all` | Return a bulk, filterable export of macro observations across countries and indicators, with cursor pagination and CSV or async export. |
+| `GET` | `/v1/macro/status` | Return macro runtime readiness, artifact freshness, source posture, and country support status. |
+
+Observations carry revision-aware provenance - keep the source and revision metadata with any stored value, and check `GET /v1/macro/status` before treating a country as fully supported.
+
+See the [Introduction](/api-reference) for authentication, pagination, and error behavior.

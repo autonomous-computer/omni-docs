@@ -1,0 +1,62 @@
+---
+title: "CLI"
+description: "Install the TUROS CLI, verify its configuration without exposing a key, and run one source-backed request from a terminal."
+---
+
+Learn how to install the TUROS CLI, authenticate from your shell environment, and run one source-backed request. The CLI calls the same API as the SDKs using environment-backed credentials.
+
+## Prerequisites
+
+- Node.js and npm.
+- An API key in your shell environment. Create one in the [TUROS dashboard](https://turos.app).
+
+```bash
+npm install -g @secapi/cli
+export SECAPI_API_KEY="secapi_..."
+secapi --version
+```
+
+The preferred command is `secapi`; `omni-sec` remains a compatibility alias.
+
+## Check local configuration
+
+Before making a request, confirm the CLI sees your environment:
+
+```bash
+secapi config show
+secapi doctor
+```
+
+`config show` is local-only and reports the configured origin and credential source names without printing secrets. `doctor` can call the API to check setup and account context; use it when authentication is uncertain.
+
+## Run one source-backed command
+
+Retrieve the latest 10-K for an issuer:
+
+```bash
+secapi filings latest --ticker AAPL --form 10-K
+```
+
+Expect JSON containing a current filing identity. Preserve `accessionNumber`, `filingDate`, `filingUrl`, and `requestId` if you use the result in a script or report. The filing identity is live and changes when a newer annual filing becomes available.
+
+To inspect a command before making a request:
+
+```bash
+secapi filings latest --help
+secapi help all
+```
+
+## Handle failures
+
+- A missing or invalid key returns an authentication failure. Check the environment variable rather than passing a secret as a command argument.
+- For `429`, wait for the returned retry interval before retrying a read.
+- For a persistent failure, rerun with `--request-summary` and retain the request ID, status, endpoint, and timestamp. The command response stays on stdout; the summary is written to stderr.
+
+## Production notes
+
+- In CI, inject keys through the runner's secret mechanism. Never write them into profiles, command history, or command output.
+- Use `--dry-run` only on supported mutating commands to inspect a request shape; it doesn't test account permission or delivery behavior.
+- Profiles store environment-variable names, not secret values. Use a separate profile and base URL only for an environment you control.
+- Parse JSON as a contract that can gain optional fields; pin application assumptions to the relevant [API reference](/api-reference) page.
+
+Next: [JavaScript SDK](/sdks/javascript) or [Python SDK](/sdks/python).

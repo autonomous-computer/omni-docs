@@ -1,0 +1,26 @@
+---
+title: "Notifications"
+description: "How monitor emails, webhook events, and in-band billing advisories reach you, and the limits that govern them."
+---
+
+TUROS notifies you through three channels: monitor emails for human inboxes, signed webhook events for application receivers, and in-band response headers for billing state. Each has its own cadence and limits.
+
+## Monitor emails
+
+A saved filing monitor can deliver matches to an email recipient. Active monitors run on an hourly sweep - a typical alert arrives about half a sweep after a new matching record becomes available, and the worst case is one hourly sweep plus delivery time. This is scheduled monitoring, not an instant EDGAR feed.
+
+- Transient email failures retry automatically.
+- Default delivery limits are 100 sends per monitor per hour and 1,000 per organization per day. Narrow a noisy query rather than absorbing the cap.
+- Monitor email recipients meter as `email_notifications`. Operational account emails don't use that meter.
+
+Configure monitors and their delivery destinations from the TUROS dashboard - monitor create, edit, pause, and delete are control-plane actions and require a signed-in session.
+
+## Webhook events
+
+For application receivers, subscribe a webhook endpoint to the event types you need - `monitor.match` for filing alerts, `intelligence.query.completed` and `export.completed` for job terminal states. Delivery is signed and at-least-once, so verify `x-secapi-signature` and deduplicate on the event ID. See [Configure and test](/events/configure).
+
+If a webhook did not arrive, inspect the delivery audit trail before changing anything - [Deliveries and retries](/events/deliveries) has the triage path.
+
+## Billing advisories
+
+Billing state warnings arrive in-band, on the responses you're already making. From 80% of the included-calls grant onward, billable responses carry `SECAPI-Grant-*` headers - status, consumed percent, remaining calls, and the action to take. Wire these into your own alerting so the first sign of an exhausted grant isn't a `402`. The header reference is on [Billing and pricing](/admin/billing).

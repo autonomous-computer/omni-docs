@@ -1,0 +1,48 @@
+---
+title: "Test intelligence workflows"
+description: "Run named intel jobs with a test key against fixture data. A 200 in test mode is not a production transaction."
+---
+
+Test keys let you wire named intel jobs end to end - submit, poll, parse - without spending the wallet. The key prefix is the mode: `secapi_test_…` keys are free and fixture-only, `secapi_live_…` keys bill successful work.
+
+| Prefix | `livemode` | What it does |
+| --- | --- | --- |
+| `secapi_test_…` | `false` | Fixture traffic. Not billed. Doesn't debit prepaid credits or consume the included monthly calls. |
+| `secapi_live_…` | `true` | Production traffic. Bills the published SKU on successful work. |
+
+Create either kind from the TUROS dashboard. The secret is shown once; the public `keyPrefix` is the first 20 characters.
+
+## Run a job in test mode
+
+Export a test key and submit the same job body you'll use in production:
+
+```bash
+export SECAPI_API_KEY="secapi_test_..."
+
+curl --fail-with-body -sS -X POST \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  -H "Idempotency-Key: filing-brief-aapl-test-1" \
+  -H "content-type: application/json" \
+  -d '{"job":"filing_brief","entities":["AAPL"]}' \
+  "https://api.secapi.ai/v1/intelligence/query"
+```
+
+The response contract is the same as production: `200` with a completed result or `202` with a job ID to poll on `GET /v1/intelligence/query/{jobId}`. Exercise both branches, plus the `Idempotency-Key` replay behavior, before you switch keys.
+
+A `200` in test mode is not a production transaction. Test responses carry `livemode: false`, and the request never entered the billable rail - it isn't a production call with the meter turned off after the fact.
+
+## What test traffic proves
+
+Use a test key to verify:
+
+- **Request shape:** your job type and identity fields pass validation. Prompt-only bodies are rejected in both modes.
+- **Polling:** your worker handles `200`, `202`, `404`, and `502` as distinct outcomes.
+- **Idempotency:** replays return the first response; a changed body returns `422`; an in-flight duplicate returns `409` with `Retry-After`.
+- **Parsing:** your code preserves `requestId`, sources, and trace fields from the completed result.
+
+Test traffic doesn't prove production data freshness, coverage for a specific issuer, or a gated store's availability. Those depend on the live stores.
+
+## Switch to production
+
+When the workflow is proven, swap in a live key. The first successful completion of a named job bills once - `$0.50` for a pack, `$1.50` for a report. Enqueue responses, polls, failures, and cache hits are not billed either way. See [What test mode covers](/test-mode) for the full non-billable list and [Billing and pricing](/admin/billing) for the price list.

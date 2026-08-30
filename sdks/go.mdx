@@ -1,0 +1,77 @@
+---
+title: "Go SDK"
+description: "Add the TUROS Go module, make one type-safe read, and keep the response identifiers needed for production support."
+---
+
+Learn how to add the TUROS Go module, authenticate, make one read, and handle errors. Typed helpers cover common paths; the map-based methods remain the direct path to the REST contract.
+
+## Prerequisites
+
+- Go 1.23 or newer.
+- An API key in `SECAPI_API_KEY`. Create one in the [TUROS dashboard](https://turos.app).
+
+```bash
+mkdir secapi-go-quickstart
+cd secapi-go-quickstart
+go mod init example.com/secapi-go-quickstart
+go get github.com/secapi-ai/secapi-go/v2
+export SECAPI_API_KEY="secapi_..."
+```
+
+The client sends the key in the `x-api-key` header. Create it with a key from a server-side secret source - don't ship a key in a binary or frontend.
+
+## Retrieve one filing
+
+Create `main.go`:
+
+```go
+package main
+
+import (
+  "fmt"
+  "log"
+  "os"
+
+  sdkgo "github.com/secapi-ai/secapi-go/v2"
+)
+
+func stringValue(value *string) string {
+  if value == nil {
+    return ""
+  }
+  return *value
+}
+
+func main() {
+  client := sdkgo.NewClient(os.Getenv("SECAPI_API_KEY"))
+  filing, err := client.LatestFilingAgent(map[string]string{
+    "ticker": "AAPL",
+    "form":   "10-K",
+  })
+  if err != nil {
+    log.Fatal(err)
+  }
+  fmt.Println(filing.AccessionNumber, filing.FilingDate, stringValue(filing.FilingURL))
+}
+```
+
+```bash
+go run .
+```
+
+Expect the current matching filing's accession number, date, and SEC URL. Those values are live - store them with any derived work, and don't use a latest-filing response as a permanent fixture.
+
+`LatestFilingAgent` requests the compact agent projection. Use the default endpoint shape when your use case needs fields the compact response omits, and check the [Filings API reference](/api-reference/filings) for accepted parameters before adding a query parameter.
+
+## Errors and retries
+
+The client returns an `APIError` for API failures. Capture its HTTP status, error code, and request ID in application logs. The retry layer is bounded and honors `Retry-After`; a `429` can be retried even after a mutating request, while treatment of other failures depends on the HTTP method.
+
+Before a mutation whose replay is unsafe, disable client retries with `client.RetryConfig.MaxRetries = 0` or ensure the operation is idempotent. Keep one bounded retry owner in the service.
+
+## Production notes
+
+- Use contexts, timeouts, and one retry owner in your service.
+- Log request identity and filing provenance separately from business output.
+
+Next: [Rust SDK](/sdks/rust), [CLI](/sdks/cli), or the [API reference](/api-reference).

@@ -1,0 +1,35 @@
+---
+title: "Trust Center"
+description: "Service status, health and readiness endpoints, and how to interpret data freshness evidence."
+---
+
+Use the status page and health endpoints to assess whether the service is reachable. They don't establish that a particular issuer, filing, route, or derived dataset can satisfy your request - the route response and its source fields remain the evidence for a data result.
+
+## Status and health
+
+| Surface | Address |
+| --- | --- |
+| Status | [status.secapi.ai](https://status.secapi.ai) |
+| API | `https://api.secapi.ai` |
+| Health | `https://api.secapi.ai/healthz` |
+| Readiness | `https://api.secapi.ai/readyz` |
+
+```bash
+curl -sS "https://api.secapi.ai/healthz"
+```
+
+`/healthz` reports service health; `/readyz` reports readiness. If health is successful but a route still fails, work from that route's error and request ID rather than assuming a general outage.
+
+## Freshness
+
+A healthy HTTP response is not proof of source recency. Routes return freshness evidence; interpret it in context:
+
+| Returned state | Practical treatment |
+| --- | --- |
+| `fresh` / `current` | Usable under that route's documented timing policy. |
+| `archival` | Historical source material can remain valid even though it's old. |
+| `stale` | Outside the route's freshness posture. Don't label it current. |
+| `degraded` | A stated limitation, fallback, or dependency issue. |
+| `unknown` | The route can't classify the condition. |
+
+A filing can be published before it appears in a route, and a route can return a filing before a derived representation is ready - treat those as separate facts. For material workflows, retain the endpoint, parameters, retrieval time in UTC, source identifiers, and any freshness or degradation fields returned, and escalate missing or stale evidence rather than presenting it as current.

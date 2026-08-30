@@ -1,0 +1,56 @@
+---
+title: "Retrieve artifacts"
+description: "List your artifact inventory, read manifests, download bundle bytes, and export stable envelopes."
+---
+
+Once a bundle exists, retrieve it through the inventory routes. Artifact state is organization-scoped - always inspect with the key for the correct organization.
+
+## List and filter the inventory
+
+Filter by artifact kind, current status, and result count:
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/artifacts?kind=section_compare&status=ready&limit=10"
+```
+
+Use the list to answer three questions: which artifacts exist for the organization, whether an artifact is still metadata-only or backed by object storage (`storageMode`), and which object key and download URL belong to a generated bundle.
+
+For a fleet view, `GET /v1/artifacts/summary` returns grouped counts by kind and status. Use it to confirm reconcile jobs are promoting artifacts into storage and to spot an accumulation of `pending` or `failed` artifacts.
+
+## Read one artifact and its manifest
+
+`GET /v1/artifacts/{artifact_id}` returns the persisted record. `GET /v1/artifacts/{artifact_id}/manifest` returns the deterministic inventory: byte length, line count, checksum, storage mode and object key, filing and section context, and supported export formats. Prefer the manifest when a downstream system needs to verify what it received.
+
+## Download versus export
+
+Two retrieval shapes, two jobs:
+
+- **`GET /v1/artifacts/{artifact_id}/download`** fetches the raw bundle bytes. `downloadUrl` is present on the record only when the bundle is ready to fetch.
+- **`GET /v1/artifacts/{artifact_id}/export?format=json|markdown`** returns a stable envelope. Use it when a downstream consumer wants a predictable wrapper rather than a raw download redirect.
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/artifacts/art_example_123/export?format=markdown"
+```
+
+Retrieval reads are not the billable event - creation is. Polling a completed artifact doesn't bill again.
+
+## Reconcile a stuck artifact
+
+If an artifact stays metadata-only when it should be object-backed, submit `POST /v1/artifacts/{artifact_id}/reconcile` to promote it into storage, then re-read the manifest to confirm `storageMode` changed.
+
+## CLI
+
+The CLI wraps the same routes:
+
+```bash
+secapi artifacts list --kind section_compare --status ready --limit 10
+secapi artifacts summary
+```
+
+Keep the manifest's filing and section context attached when artifact content is cited or reviewed - the bundle is derived output, and the filing remains the source of record.

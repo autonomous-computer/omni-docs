@@ -1,0 +1,97 @@
+---
+title: "Build with AI"
+description: "Use AI coding tools to build TUROS integrations with test keys, machine-readable docs, and the hosted MCP server."
+---
+
+You can use AI coding tools like Cursor and Claude Code to build TUROS integrations quickly. This page shows how to give a tool the right context, run its work against a test key, and connect it to the hosted MCP server so it can discover endpoints instead of guessing at them.
+
+## Give your AI tool TUROS context
+
+TUROS publishes machine-readable descriptions of the API so an AI tool doesn't have to work from training data:
+
+- **llms.txt** - a docs index built for language models, at [docs.secapi.ai/llms.txt](https://docs.secapi.ai/llms.txt).
+- **OpenAPI spec** - the full request and response contract, published with the docs as `openapi/sec-api-public.v1.json`.
+- **API catalog** - live discovery of available surfaces and store availability at [`/.well-known/api-catalog.json`](https://api.secapi.ai/.well-known/api-catalog.json).
+
+You can also copy any docs page as markdown from the page menu and paste it directly into a prompt.
+
+## Start with a test key
+
+Give the tool a `secapi_test_` key while it iterates. Test keys are free, run against fixture data, and never bill, so a runaway loop or a malformed retry costs nothing. See [Test mode](/test-mode).
+
+```bash
+export SECAPI_API_KEY="secapi_test_..."
+```
+
+Swap in a `secapi_live_` key only after the workflow does what you want, and check `GET /v1/limits` with that key before repeated work.
+
+## Give the tool a working example
+
+Hand your AI tool one working request so it starts from a verified shape instead of inventing one:
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/entities/resolve?ticker=AAPL&view=agent"
+```
+
+TUROS returns the matched identity and a request ID:
+
+```json
+{
+  "company": {
+    "name": "Apple Inc.",
+    "ticker": "AAPL",
+    "cik": "0000320193"
+  },
+  "requestId": "req_..."
+}
+```
+
+## Prompt your tool
+
+Paste a brief like this into Cursor or Claude Code after the key is in the runtime environment:
+
+```text
+You're building against the TUROS API.
+
+Context:
+- Docs index: https://docs.secapi.ai/llms.txt
+- REST base URL: https://api.secapi.ai
+- Hosted MCP: https://api.secapi.ai/mcp
+
+Rules:
+- Authenticate with the x-api-key header. Never send the API key as
+  Authorization: Bearer.
+- Send secapi-version: 2026-03-19 on every request.
+- Resolve an issuer with GET /v1/entities/resolve before issuer-specific
+  calls. Carry the returned CIK forward; don't guess one.
+- Retrieve a filing before making a filing-derived claim. Preserve
+  accessionNumber, form, filingDate, filingUrl, and requestId.
+- Check GET /v1/billing and GET /v1/limits before repeated work, and use
+  POST /v1/billing/quote for a cost estimate. A quote isn't a reservation.
+- Stop on 401, 402, and 403. On 429, honor Retry-After. Don't create
+  parallel retry loops.
+```
+
+## Connect through MCP
+
+For agentic tools, the hosted MCP server is usually better than raw REST because the client discovers current tool schemas at runtime:
+
+```bash
+claude mcp add --transport http secapi https://api.secapi.ai/mcp \
+  --header "x-api-key: $SECAPI_API_KEY"
+```
+
+The CLI can generate the configuration for other clients:
+
+```bash
+secapi mcp install --client <claude-code|claude-desktop|cursor|windsurf|project>
+```
+
+Tell the agent to use `tools.search` to find tools and `tools.describe` to inspect input schemas before calling them. See [Model Context Protocol (MCP)](/mcp) for the full workflow.
+
+## Test the workflow before production
+
+Run the finished workflow end to end on the test key and assert on the citation fields - `accessionNumber`, `filingDate`, `filingUrl`, and `requestId` - not just on HTTP status. Then switch to a live key, verify it with `GET /v1/limits`, and quote the real request path with `POST /v1/billing/quote` before you schedule anything. For unattended runs, read [TUROS Agent](/ai/agent) for credential bootstrap and stop conditions.

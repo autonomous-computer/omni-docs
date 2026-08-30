@@ -1,0 +1,19 @@
+---
+title: "Market"
+description: "Market calendars, security reference data, price history, and latest-price snapshots."
+---
+
+Market routes serve trading calendars, security reference metadata, daily price history, corporate actions, and stored latest-price snapshots. Market reads are metered as `market_data_reads`.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/v1/market/search` | Find candidate stock tickers from a company name or keyword. |
+| `GET` | `/v1/market/reference` | Retrieve reference metadata and identifiers for one security. |
+| `GET` | `/v1/market/bars` | Retrieve daily OHLCV history for one security. |
+| `GET` | `/v1/market/snapshots` | Retrieve stored latest-price snapshots for one or more symbols. |
+| `GET` | `/v1/market/corporate-actions` | Retrieve splits and dividends for one security. |
+| `GET` | `/v1/market/calendar` | Check scheduled trading sessions for a supported market. |
+
+Snapshots are stored latest prices, not a live quote stream. Record retrieval time with any snapshot you persist.
+
+See the [Introduction](/api-reference) for authentication, pagination, and error behavior.

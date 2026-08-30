@@ -1,0 +1,54 @@
+---
+title: "Special situations search"
+description: "Search filing-derived M&A, tender offers, spin-offs, and restructurings with the free public preview or the paid authenticated API"
+---
+
+Special situations are filing-derived corporate events: M&A, tender offers, going-private transactions, spin-offs, activist campaigns, restructurings, and bankruptcies. TUROS tracks each situation with its filing trail, so every term and date traces to an SEC filing you can open.
+
+There are two access paths, and they aren't interchangeable:
+
+| Use case | Route family | Access |
+| --- | --- | --- |
+| Public site or lightweight browser preview | `/v1/embed/situations` | Anonymous, CORS-enabled, cacheable preview. No key. |
+| Application, agent, or sustained monitoring | `/v1/situations` | Paid API with a server-held `x-api-key`. |
+
+## Free public preview
+
+The embed routes are a free, anonymous preview for public sites and browser embeds. Don't send `x-api-key` to them:
+
+```bash
+curl -sS "https://api.secapi.ai/v1/embed/situations?types=merger&limit=10"
+```
+
+Preview reads are CORS-enabled for browser use and return public cache headers. They're intentionally limited to a capped, recent public projection - a cached preview response is not a substitute for an authenticated research workflow. Never put a paid API key in browser-delivered code.
+
+## Paid authenticated search
+
+The authenticated `/v1/situations` routes are gated: they return `404` when the situations store is dark. Check `availability` on `/.well-known/api-catalog.json` before making them a first request. When the store is live:
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/situations?types=merger,tender_offer&statuses=announced,pending&limit=50"
+```
+
+Narrow list results by type, subtype, status, ticker, sector, market-cap bucket, country, announcement date, update time, and supported EDGAR forms. `limit` is 1 through 100; advance pagination only with the returned cursor and unchanged filters.
+
+Use `enrich=false` for a smaller list projection when scanning a wide set - it changes the returned projection, not the billed request class.
+
+## Start from a form, a feed, or a calendar
+
+| Route | Job |
+| --- | --- |
+| `GET /v1/situations/by-form/{form}` | Start from a triggering EDGAR form such as `SC 13D`, `SC TO-T`, `425`, or `DEFM14A`. |
+| `GET /v1/situations/feed` | Read reverse-chronological situation events as structured JSON - the right surface for agents and CLI workflows. |
+| `GET /v1/situations/feed.rss` | The authenticated event feed for RSS readers, distinct from the limited public preview feed. |
+| `GET /v1/situations/calendar` | Check disclosed record dates, votes, expiries, and expected closes. |
+| `GET /v1/situations/stats` | Count current situations by type and status for an optional lookback. |
+
+Once a search returns a candidate, use the situation ID to fetch current detail, its filing timeline, a summary, or an export - see [interpret the situation response](/situations/interpret).
+
+## Coverage boundary
+
+Coverage is limited to SEC filing-derived situations. A missing situation or timeline is not proof that no related event exists, and a listed situation doesn't confirm that a transaction will close. Record filing identities, source references, and `requestId` for any decision-critical result.

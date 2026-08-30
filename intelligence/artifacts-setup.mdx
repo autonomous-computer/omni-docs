@@ -1,0 +1,39 @@
+---
+title: "Setup"
+description: "Create an API key, set the required headers, and prove the artifact workflow with a test key before building billable bundles."
+---
+
+Artifact routes use the same credentials and conventions as the rest of the TUROS API. Set up once, prove the workflow in test mode, then switch to a live key.
+
+## Create an API key
+
+Go to the TUROS dashboard and create a key. The secret is shown once - store it in your secret manager, not in code. The prefix is the mode: `secapi_test_…` keys are free and fixture-only; `secapi_live_…` keys bill successful work.
+
+```bash
+export SECAPI_API_KEY="secapi_test_..."
+```
+
+Machine requests authenticate with the `x-api-key` header only. Don't send the key as `Authorization: Bearer`, in the URL, in the body, or from browser JavaScript.
+
+## Send the version header
+
+Pin the API version on every request and check the `SECAPI-Version` response header:
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/limits"
+```
+
+A `200` here confirms the key authenticates. `401 missing_api_key` means the header didn't arrive; `401 authentication_failed` means the credential is wrong. Don't switch to bearer auth to "fix" either.
+
+## Prove the loop in test mode
+
+Run the full create-track-retrieve loop with the test key first: submit a bundle, read its status, fetch the manifest, download the output. A `200` in test mode is not a production transaction - test traffic never enters the billable rail - but it proves your request shape, polling, and parsing before the first live debit.
+
+## Plan for idempotency
+
+Artifact creation is a billable POST. Generate a stable `Idempotency-Key` per logical bundle - for example, `aapl-10k-item1a-2026-08` - before you write the create call. The first response is replayed for 24 hours; reusing the key with a different body returns `422`, and an in-flight first call returns `409` with `Retry-After`.
+
+When the loop works end to end, swap in a live key and continue to [Create artifacts](/intelligence/artifacts-create).

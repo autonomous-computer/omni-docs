@@ -1,0 +1,37 @@
+---
+title: "Monitors"
+description: "Save a filing search in the TUROS dashboard and get alerts by email or signed webhook when new filings match."
+---
+
+Monitors are saved filing searches with a delivery destination - for example, 8-Ks for a five-issuer watchlist, or amendments to a specific form. When a new filing matches, TUROS sends an alert. A monitor match is a signal to inspect a filing, not an assertion that the filing is material.
+
+## Create a monitor
+
+Create, edit, pause, and delete monitors from the monitors section of the [TUROS dashboard](https://turos.app). These are organization control-plane actions and require your signed-in session - API keys and autonomous agents can't create or alter monitors.
+
+For one bounded alert job:
+
+1. Go to the monitors section and create a monitor.
+2. Enter a descriptive name.
+3. Enter the keyword query and choose ticker and form filters.
+4. Choose one delivery destination: email for a human inbox, or an organization webhook endpoint subscribed to `monitor.match` for an application receiver.
+5. Save the monitor.
+
+The monitor is active immediately and runs on the next sweep.
+
+## Preview matches before waiting for delivery
+
+After setup, you can read the monitor's current matches on demand with an API key - the read doesn't send an email or webhook. Preview the saved query before you rely on scheduled dispatch, and keep each match's accession number, filing date, ticker, form, source URL, and the response `requestId` with your alert record. See the monitor routes in the [Delivery API reference](/api-reference/delivery).
+
+## Delivery cadence and limits
+
+Active monitors run on an hourly sweep. A typical alert arrives about half a sweep after a new matching record becomes available; worst case is one hourly sweep plus delivery time. This is scheduled monitoring, not an instant EDGAR feed.
+
+Delivery limits are 100 sends per monitor per hour and 1,000 per organization per day. Monitor emails are metered as `email_notifications`. If a monitor is noisy, narrow the query and split unrelated jobs rather than assuming every event is unique - and make your webhook receiver idempotent.
+
+## Investigate a missing or duplicate alert
+
+- **No preview matches**: Check the query terms and the ticker and form filters, then compare against a bounded filing search.
+- **A webhook didn't arrive**: Review the delivery history for the endpoint and preserve the delivery ID, status, and attempt count. See [Webhooks](/product/webhooks).
+- **Duplicate alert**: Deduplicate on the filing accession number and your delivery ID.
+- **Late alert**: Check the hourly sweep cadence and source availability before changing the query.
