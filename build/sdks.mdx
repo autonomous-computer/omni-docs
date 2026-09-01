@@ -1,0 +1,30 @@
+---
+title: "TUROS SDKs | JavaScript, Python, Go, and Rust"
+description: "Install a supported TUROS client, configure test or live credentials, and call the same API from JavaScript, Python, Go, or Rust."
+sidebarTitle: "SDKs"
+---
+
+Use a supported client when you want typed request helpers, response models, retries, and idiomatic error handling without hand-writing HTTP. Every SDK calls the same TUROS API and uses the same pay-as-you-go wallet.
+
+<CardGroup cols={2}>
+  <Card title="JavaScript" href="/sdks/javascript">Build server-side JavaScript and TypeScript integrations.</Card>
+  <Card title="Python" href="/sdks/python">Use the Python client for research and data workflows.</Card>
+  <Card title="Go" href="/sdks/go">Build typed, concurrent production services.</Card>
+  <Card title="Rust" href="/sdks/rust">Use the asynchronous Rust client.</Card>
+  <Card title="CLI" href="/sdks/cli">Run the same API from a terminal or script.</Card>
+</CardGroup>
+
+## Compatibility names
+
+Current package names, environment variables, and the production base URL may still use `secapi`. Keep those identifiers exactly as documented; they are compatibility contracts, not stale branding. New examples continue to use `https://api.secapi.ai` until `api.turos.app` passes the parity gate.
+
+## Production checklist
+
+1. Build with a `secapi_test_…` key.
+2. Store keys outside source code and prompts.
+3. Pin the API version.
+4. Set bounded timeouts and retries.
+5. Preserve request and source identifiers.
+6. Quote expensive work and set a budget before switching to a live key.
+
+Start with the language guide above or use the [TUROS API directly](/build/api).

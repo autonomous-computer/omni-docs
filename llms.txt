@@ -1,82 +1,68 @@
-# TUROS
+# TUROS Developer Docs
 
-> SEC filing, company, ownership, market, and intelligence APIs for developers and agents.
+> TUROS is the AI-ready data layer for sophisticated investors. Query SEC filing data, macro data, factor data, and repeatable investment analysis through MCP or one API.
 
-## Docs
+Canonical docs: https://www.turos.app/docs
+Production API: https://api.secapi.ai
+Authentication: `x-api-key` header, not `Authorization: Bearer`
+Pricing: free test keys, 100 included live calls, then pay as you go for successful production work
 
-- https://docs.turos.app/changelog
-- https://docs.turos.app/
-- https://docs.turos.app/test-mode
-- https://docs.turos.app/account-setup
-- https://docs.turos.app/ai/build-with-ai
-- https://docs.turos.app/ai/agent
-- https://docs.turos.app/coverage/coverage
-- https://docs.turos.app/coverage/authentication
-- https://docs.turos.app/coverage/api-keys
-- https://docs.turos.app/coverage/identifiers
-- https://docs.turos.app/filings/overview
-- https://docs.turos.app/filings/fetch-overview
-- https://docs.turos.app/filings/api-submission
-- https://docs.turos.app/filings/dashboard-search
-- https://docs.turos.app/filings/batch
-- https://docs.turos.app/filings/accession-lookup
-- https://docs.turos.app/filings/views
-- https://docs.turos.app/filings/pdf
-- https://docs.turos.app/filings/company
-- https://docs.turos.app/filings/financials
-- https://docs.turos.app/filings/ownership
-- https://docs.turos.app/filings/sections
-- https://docs.turos.app/filings/troubleshooting
-- https://docs.turos.app/filings/form-types
-- https://docs.turos.app/filings/entity-resolution
-- https://docs.turos.app/situations/checks
-- https://docs.turos.app/situations/interpret
-- https://docs.turos.app/situations/troubleshooting
-- https://docs.turos.app/mcp
-- https://docs.turos.app/intelligence/overview
-- https://docs.turos.app/intelligence/test-workflows
-- https://docs.turos.app/intelligence/company
-- https://docs.turos.app/intelligence/letters
-- https://docs.turos.app/intelligence/factors
-- https://docs.turos.app/intelligence/macro
-- https://docs.turos.app/intelligence/market
-- https://docs.turos.app/intelligence/artifacts-overview
-- https://docs.turos.app/intelligence/artifacts-setup
-- https://docs.turos.app/intelligence/artifacts-create
-- https://docs.turos.app/intelligence/artifacts-retrieve
-- https://docs.turos.app/intelligence/status
-- https://docs.turos.app/intelligence/views
-- https://docs.turos.app/intelligence/event-types
-- https://docs.turos.app/events/configure
-- https://docs.turos.app/events/deliveries
-- https://docs.turos.app/events/events
-- https://docs.turos.app/organizations/overview
-- https://docs.turos.app/organizations/setup
-- https://docs.turos.app/admin/billing
-- https://docs.turos.app/admin/notifications
-- https://docs.turos.app/admin/trust-center
-- https://docs.turos.app/admin/support
-- https://docs.turos.app/sdks/javascript
-- https://docs.turos.app/sdks/python
-- https://docs.turos.app/sdks/go
-- https://docs.turos.app/sdks/rust
-- https://docs.turos.app/sdks/cli
-- https://docs.turos.app/api-reference
-- https://docs.turos.app/product
-- https://docs.turos.app/product/account-setup
-- https://docs.turos.app/product/filings
-- https://docs.turos.app/product/situations
-- https://docs.turos.app/product/monitors
-- https://docs.turos.app/product/webhooks
-- https://docs.turos.app/product/billing
-- https://docs.turos.app/product/support
-- https://docs.turos.app/openapi/sec-api-public.v1.json
+New organizations receive 100 included live calls each UTC calendar month; the allowance resets automatically on the first eligible request in a new month. `api.turos.app` is a future default and must not replace `api.secapi.ai` in production clients until TUROS publishes parity readiness.
 
-## API
+## Start Here
 
-- REST base URL: https://api.secapi.ai
-- Auth: x-api-key header (not Authorization: Bearer)
-- Version: secapi-version: 2026-03-19
-- OpenAPI: https://docs.turos.app/openapi/sec-api-public.v1.json
-- Catalog: https://docs.secapi.ai/.well-known/api-catalog.json
-- MCP: https://api.secapi.ai/mcp
+- Overview: https://www.turos.app/docs
+- Agent Setup: https://www.turos.app/agent-setup
+- AI Agents product: https://www.turos.app/agents
+- Switch to TUROS: https://www.turos.app/switch
+- Quickstart: https://www.turos.app/docs/account-setup
+- Free test mode: https://www.turos.app/docs/test-mode
+- Authentication: https://www.turos.app/docs/coverage/authentication
+- API keys: https://www.turos.app/docs/coverage/api-keys
+- Pricing and billing: https://www.turos.app/docs/pricing
+
+## Product
+
+- SEC Filing Data: https://www.turos.app/docs/filings/overview
+- Macro Data: https://www.turos.app/docs/intelligence/macro
+- Factor Data Beta: https://www.turos.app/docs/intelligence/factors
+- Investment Analysis: https://www.turos.app/docs/intelligence/overview
+- Identifiers and utilities: https://www.turos.app/docs/coverage/identifiers
+
+## Workflows
+
+- Research Companies: https://www.turos.app/docs/workflows/research-companies
+- Track Investors: https://www.turos.app/docs/workflows/track-investors
+- Track Company Events: https://www.turos.app/docs/workflows/track-company-events
+- Understand Macro: https://www.turos.app/docs/workflows/understand-macro
+- Analyze Portfolios: https://www.turos.app/docs/workflows/analyze-portfolios
+- Fund Letters Coming Soon: https://www.turos.app/docs/intelligence/letters
+
+## Build with TUROS
+
+- MCP guide: https://www.turos.app/docs/build/mcp
+- API overview: https://www.turos.app/docs/build/api
+- SDKs: https://www.turos.app/docs/build/sdks
+- CLI: https://www.turos.app/docs/sdks/cli
+- Excel Add-In Alpha: https://www.turos.app/docs/build/excel-add-in
+- API reference: https://www.turos.app/docs/api-reference
+- OpenAPI: https://www.turos.app/docs/openapi/sec-api-public.v1.json
+
+`https://www.turos.app/docs/mcp` is the JSON MCP transport, not a human documentation page.
+
+## Operations
+
+- Coverage: https://www.turos.app/docs/coverage/coverage
+- Events and webhooks: https://www.turos.app/docs/events/configure
+- Organizations: https://www.turos.app/docs/organizations/overview
+- Trust and status: https://www.turos.app/docs/admin/trust-center
+- Support: https://www.turos.app/docs/admin/support
+- SECAPI.ai migration: https://www.turos.app/docs/migration/secapi
+- API versioning: https://www.turos.app/docs/getting-started/client-api-versioning
+- Changelog: https://www.turos.app/docs/changelog
+
+## Machine Discovery
+
+- Public rates: https://api.secapi.ai/v1/billing/rates
+- API catalog: https://www.turos.app/docs/.well-known/api-catalog.json
+- MCP endpoint: https://api.secapi.ai/mcp

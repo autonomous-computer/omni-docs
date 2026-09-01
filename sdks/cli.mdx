@@ -1,9 +1,10 @@
 ---
-title: "CLI"
-description: "Install the TUROS CLI, verify its configuration without exposing a key, and run one source-backed request from a terminal."
+title: "TUROS CLI | Developer Docs"
+description: "Install the TUROS CLI, authenticate safely, inspect available commands, and run data and analysis workflows from the shell."
+sidebarTitle: "CLI"
 ---
 
-Learn how to install the TUROS CLI, authenticate from your shell environment, and run one source-backed request. The CLI calls the same API as the SDKs using environment-backed credentials.
+Learn how to install the TUROS CLI, authenticate from your shell environment, and run one request that retains the source identifiers you need to verify it. The CLI calls the same API as the SDKs using environment-backed credentials.
 
 ## Prerequisites
 
@@ -29,7 +30,7 @@ secapi doctor
 
 `config show` is local-only and reports the configured origin and credential source names without printing secrets. `doctor` can call the API to check setup and account context; use it when authentication is uncertain.
 
-## Run one source-backed command
+## Run one command
 
 Retrieve the latest 10-K for an issuer:
 

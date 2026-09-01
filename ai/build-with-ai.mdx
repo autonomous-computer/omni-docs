@@ -5,15 +5,19 @@ description: "Use AI coding tools to build TUROS integrations with test keys, ma
 
 You can use AI coding tools like Cursor and Claude Code to build TUROS integrations quickly. This page shows how to give a tool the right context, run its work against a test key, and connect it to the hosted MCP server so it can discover endpoints instead of guessing at them.
 
+For an interactive setup path, open [Agent Setup](https://www.turos.app/agent-setup). The [AI Agents](https://www.turos.app/agents) page explains the product; Agent Setup helps connect a specific client.
+
 ## Give your AI tool TUROS context
 
 TUROS publishes machine-readable descriptions of the API so an AI tool doesn't have to work from training data:
 
-- **llms.txt** - a docs index built for language models, at [docs.turos.app/llms.txt](https://docs.turos.app/llms.txt).
-- **OpenAPI spec** - the full request and response contract, at [docs.turos.app/openapi/sec-api-public.v1.json](https://docs.turos.app/openapi/sec-api-public.v1.json).
-- **API catalog** - live discovery of available surfaces and store availability at [`/.well-known/api-catalog.json`](https://docs.secapi.ai/.well-known/api-catalog.json).
+- **llms.txt** - a docs index built for language models, at [www.turos.app/docs/llms.txt](https://www.turos.app/docs/llms.txt).
+- **OpenAPI spec** - the full request and response contract, at [www.turos.app/docs/openapi/sec-api-public.v1.json](https://www.turos.app/docs/openapi/sec-api-public.v1.json).
+- **API catalog** - live discovery of available surfaces and store availability at [`/.well-known/api-catalog.json`](https://www.turos.app/docs/.well-known/api-catalog.json).
 
 You can also copy any docs page as markdown from the page menu and paste it directly into a prompt.
+
+The canonical product map is SEC Filing Data, Macro Data, Factor Data `Beta`, and Investment Analysis. For complete investor jobs, use the Research Companies, Track Investors, Track Company Events, Understand Macro, and Analyze Portfolios workflow guides. Do not advertise Fund Letters as available while it is marked Coming Soon.
 
 ## Start with a test key
 
@@ -24,6 +28,8 @@ export SECAPI_API_KEY="secapi_test_..."
 ```
 
 Swap in a `secapi_live_` key only after the workflow does what you want, and check `GET /v1/limits` with that key before repeated work.
+
+New organizations receive 100 included live calls each UTC calendar month, then can use pay-as-you-go production without a subscription. The allowance resets automatically on the first eligible request in a new month. See [pricing and billing](/pricing) before running an unattended or repeated workflow.
 
 ## Give the tool a working example
 
@@ -57,7 +63,7 @@ Paste a brief like this into Cursor or Claude Code after the key is in the runti
 You're building against the TUROS API.
 
 Context:
-- Docs index: https://docs.turos.app/llms.txt
+- Docs index: https://www.turos.app/docs/llms.txt
 - REST base URL: https://api.secapi.ai
 - Hosted MCP: https://api.secapi.ai/mcp
 
@@ -90,7 +96,9 @@ The CLI can generate the configuration for other clients:
 secapi mcp install --client <claude-code|claude-desktop|cursor|windsurf|project>
 ```
 
-Tell the agent to use `tools.search` to find tools and `tools.describe` to inspect input schemas before calling them. See [Model Context Protocol (MCP)](/mcp) for the full workflow.
+Tell the agent to use `tools.search` to find tools and `tools.describe` to inspect input schemas before calling them. See [TUROS MCP](/build/mcp) for the full workflow.
+
+Keep `api.secapi.ai` as the API and MCP host until TUROS announces `api.turos.app` as parity-ready. Package names, key prefixes, environment variables, and CLI commands that still use `secapi` are compatibility contracts.
 
 ## Test the workflow before production
 

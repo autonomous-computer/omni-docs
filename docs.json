@@ -2,7 +2,7 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
   "name": "TUROS",
-  "description": "SEC filing, company, ownership, market, and intelligence APIs for developers and agents.",
+  "description": "Build with SEC filing data, macro data, factors, and repeatable investment analysis through TUROS MCP or one API.",
   "logo": {
     "dark": "/logo/dark.svg",
     "light": "/logo/light.svg"
@@ -16,18 +16,22 @@
   "navbar": {
     "links": [
       {
-        "label": "App",
-        "href": "https://turos.app"
+        "label": "TUROS",
+        "href": "https://www.turos.app"
+      },
+      {
+        "label": "Pricing",
+        "href": "https://www.turos.app/pricing"
       },
       {
         "label": "Status",
-        "href": "https://status.secapi.ai/"
+        "href": "https://status.turos.app"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Get API key",
-      "href": "https://turos.app"
+      "label": "Start free",
+      "href": "https://www.turos.app/signup"
     }
   },
   "api": {
@@ -77,67 +81,118 @@
             "icon": "book-open",
             "groups": [
               {
-                "group": "Developer Docs",
+                "group": "Start Here",
                 "pages": [
                   "index",
+                  "account-setup",
                   "test-mode",
-                  "account-setup"
+                  "coverage/authentication",
+                  "coverage/api-keys",
+                  "pricing"
                 ]
               },
               {
-                "group": "AI tools",
+                "group": "Product",
                 "pages": [
+                  {
+                    "group": "SEC Filing Data",
+                    "pages": [
+                      "filings/overview",
+                      "filings/entity-resolution",
+                      "filings/fetch-overview",
+                      "filings/api-submission",
+                      "filings/dashboard-search",
+                      "filings/batch",
+                      "filings/accession-lookup",
+                      "filings/views",
+                      "filings/pdf",
+                      "filings/company",
+                      "filings/financials",
+                      "filings/ownership",
+                      "filings/sections",
+                      "filings/form-types",
+                      "filings/troubleshooting"
+                    ]
+                  },
+                  "intelligence/macro",
+                  "intelligence/factors",
+                  {
+                    "group": "Investment Analysis",
+                    "pages": [
+                      "intelligence/overview",
+                      "intelligence/company",
+                      "intelligence/test-workflows",
+                      "intelligence/artifacts-overview",
+                      "intelligence/artifacts-setup",
+                      "intelligence/artifacts-create",
+                      "intelligence/artifacts-retrieve",
+                      "intelligence/status",
+                      "intelligence/views",
+                      "intelligence/event-types"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Workflows",
+                "pages": [
+                  "workflows/research-companies",
+                  {
+                    "group": "Track Investors",
+                    "pages": [
+                      "workflows/track-investors",
+                      "intelligence/letters"
+                    ]
+                  },
+                  "workflows/track-company-events",
+                  "workflows/understand-macro",
+                  "workflows/analyze-portfolios"
+                ]
+              },
+              {
+                "group": "Build with TUROS",
+                "pages": [
+                  "build/mcp",
+                  "build/api",
+                  {
+                    "group": "SDKs",
+                    "pages": [
+                      "build/sdks",
+                      "sdks/javascript",
+                      "sdks/python",
+                      "sdks/go",
+                      "sdks/rust"
+                    ]
+                  },
+                  "sdks/cli",
+                  "build/excel-add-in",
                   "ai/build-with-ai",
                   "ai/agent"
                 ]
               },
               {
-                "group": "Coverage & access",
+                "group": "Coverage & Operations",
                 "pages": [
                   "coverage/coverage",
-                  "coverage/authentication",
-                  "coverage/api-keys",
-                  "coverage/identifiers"
-                ]
-              },
-              {
-                "group": "Filings & companies",
-                "pages": [
-                  "filings/overview",
+                  "coverage/identifiers",
                   {
-                    "group": "Fetch filings",
+                    "group": "Events & delivery",
                     "pages": [
-                      "filings/fetch-overview",
-                      {
-                        "group": "Real-time retrieval",
-                        "pages": [
-                          "filings/api-submission",
-                          "filings/dashboard-search"
-                        ]
-                      },
-                      "filings/batch",
-                      "filings/accession-lookup",
-                      "filings/views",
-                      {
-                        "group": "Read filing data",
-                        "pages": [
-                          "filings/pdf",
-                          {
-                            "group": "API responses",
-                            "pages": [
-                              "filings/company",
-                              "filings/financials",
-                              "filings/ownership"
-                            ]
-                          }
-                        ]
-                      },
-                      "filings/sections",
-                      "filings/troubleshooting",
-                      "filings/form-types"
+                      "events/configure",
+                      "events/deliveries",
+                      "events/events"
                     ]
                   },
-                  "filings/entity-resolution",
+                  {
+                    "group": "Organizations",
+                    "pages": [
+                      "organizations/overview",
+                      "organizations/setup"
+                    ]
+                  },
+                  "admin/notifications",
+                  "admin/trust-center",
+                  "admin/support",
                   {
                     "group": "Special situations",
                     "pages": [
@@ -149,84 +204,22 @@
                 ]
               },
               {
-                "group": "Model Context Protocol (MCP)",
+                "group": "Migration",
                 "pages": [
-                  "mcp"
-                ]
-              },
-              {
-                "group": "Intelligence & market data",
-                "pages": [
-                  "intelligence/overview",
-                  "intelligence/test-workflows",
-                  {
-                    "group": "Query intelligence",
-                    "pages": [
-                      "intelligence/company",
-                      "intelligence/letters",
-                      "intelligence/factors",
-                      "intelligence/macro",
-                      "intelligence/market"
-                    ]
-                  },
-                  {
-                    "group": "Artifacts",
-                    "pages": [
-                      "intelligence/artifacts-overview",
-                      "intelligence/artifacts-setup",
-                      "intelligence/artifacts-create",
-                      "intelligence/artifacts-retrieve"
-                    ]
-                  },
-                  "intelligence/status",
-                  "intelligence/views",
-                  "intelligence/event-types"
-                ]
-              },
-              {
-                "group": "Event destinations",
-                "pages": [
-                  "events/configure",
-                  "events/deliveries",
-                  "events/events"
-                ]
-              },
-              {
-                "group": "Organizations",
-                "pages": [
-                  "organizations/overview",
-                  "organizations/setup"
-                ]
-              },
-              {
-                "group": "Administrative",
-                "pages": [
-                  "admin/billing",
-                  "admin/notifications",
-                  "admin/trust-center",
-                  "admin/support"
-                ]
-              },
-              {
-                "group": "Libraries & SDKs",
-                "pages": [
-                  "sdks/javascript",
-                  "sdks/python",
-                  "sdks/go",
-                  "sdks/rust",
-                  "sdks/cli"
+                  "migration/secapi",
+                  "getting-started/client-api-versioning"
                 ]
               }
             ]
           },
           {
-                        "tab": "API Reference",
-                        "icon": "square-terminal",
-                        "openapi": {
-                          "source": "openapi/sec-api-public.v1.json",
-                          "directory": "api-reference"
-                        },
-                        "groups": [
+            "tab": "API Reference",
+            "icon": "square-terminal",
+            "openapi": {
+              "source": "openapi/sec-api-public.v1.json",
+              "directory": "api-reference"
+            },
+            "groups": [
               {
                 "group": "Introduction",
                 "pages": [
@@ -575,6 +568,17 @@
                   "GET /v1/embed/macro/countries/{iso2}",
                   "GET /v1/embed/macro/map",
                   "GET /v1/embed/macro/series/{iso2}/{indicator}",
+                  "GET /v1/embed/market/earnings-calendar",
+                  "GET /v1/embed/market/ipo-calendar",
+                  "GET /v1/embed/macro/calendar",
+                  "GET /v1/embed/macro/rates/us-curve",
+                  "GET /v1/embed/owners/13f/managers",
+                  "GET /v1/embed/owners/13f/manager/{cik}",
+                  "GET /v1/embed/owners/13f/manager/{cik}/holding/{securityKey}",
+                  "GET /v1/embed/owners/13f/filing/{id}",
+                  "GET /v1/embed/owners/13f/filing/{id}/compare/{otherId}",
+                  "GET /v1/embed/owners/13f/newest",
+                  "GET /v1/embed/owners/13f/screener",
                   "GET /v1/embed/situations",
                   "GET /v1/embed/situations/feed",
                   "GET /v1/embed/situations/feed.rss",
@@ -782,40 +786,6 @@
             ]
           }
         ]
-      },
-      {
-        "dropdown": "Product Docs",
-        "icon": "layout-dashboard",
-        "groups": [
-          {
-            "group": "Product Docs",
-            "pages": [
-              "product/index",
-              "product/account-setup"
-            ]
-          },
-          {
-            "group": "Filings & companies",
-            "pages": [
-              "product/filings",
-              "product/situations"
-            ]
-          },
-          {
-            "group": "Delivery",
-            "pages": [
-              "product/monitors",
-              "product/webhooks"
-            ]
-          },
-          {
-            "group": "Administrative",
-            "pages": [
-              "product/billing",
-              "product/support"
-            ]
-          }
-        ]
       }
     ]
   },
@@ -874,11 +844,11 @@
     },
     {
       "source": "/sources/mcp-servers",
-      "destination": "/mcp"
+      "destination": "/build/mcp"
     },
     {
       "source": "/sources/local-folders",
-      "destination": "/mcp"
+      "destination": "/build/mcp"
     },
     {
       "source": "/sources/client-api-webhooks",
@@ -894,7 +864,7 @@
     },
     {
       "source": "/sources/client-api-usage-billing",
-      "destination": "/admin/billing"
+      "destination": "/pricing"
     },
     {
       "source": "/sources/client-api-sdks",
@@ -918,15 +888,15 @@
     },
     {
       "source": "/sources/client-api-mcp",
-      "destination": "/mcp"
+      "destination": "/build/mcp"
     },
     {
       "source": "/sources/client-api-mcp-hosted",
-      "destination": "/mcp"
+      "destination": "/build/mcp"
     },
     {
       "source": "/sources/client-api-mcp-compatibility",
-      "destination": "/mcp"
+      "destination": "/build/mcp"
     },
     {
       "source": "/sources/client-api-keys",
@@ -1022,19 +992,19 @@
     },
     {
       "source": "/go-further/connect-to-anything",
-      "destination": "/mcp"
+      "destination": "/build/mcp"
     },
     {
       "source": "/customisation/themes",
-      "destination": "/product/index"
+      "destination": "/index"
     },
     {
       "source": "/customisation/icons",
-      "destination": "/product/index"
+      "destination": "/index"
     },
     {
       "source": "/customisation/colors",
-      "destination": "/product/index"
+      "destination": "/index"
     },
     {
       "source": "/core-concepts/working-directory",
@@ -1210,11 +1180,11 @@
     },
     {
       "source": "/mcp-install",
-      "destination": "/mcp"
+      "destination": "/build/mcp"
     },
     {
       "source": "/mcp-workflows",
-      "destination": "/mcp"
+      "destination": "/build/mcp"
     },
     {
       "source": "/javascript-sdk",
@@ -1258,19 +1228,19 @@
     },
     {
       "source": "/monitors",
-      "destination": "/product/monitors"
+      "destination": "/index"
     },
     {
       "source": "/billing-faq",
-      "destination": "/admin/billing"
+      "destination": "/pricing"
     },
     {
       "source": "/payg",
-      "destination": "/admin/billing"
+      "destination": "/pricing"
     },
     {
       "source": "/plans",
-      "destination": "/admin/billing"
+      "destination": "/pricing"
     },
     {
       "source": "/give-this-prompt-to-your-agent",
@@ -1334,7 +1304,7 @@
     },
     {
       "source": "/evaluate/sec-filings-mcp-server",
-      "destination": "/mcp"
+      "destination": "/build/mcp"
     },
     {
       "source": "/evaluate/sec-filing-rag",
@@ -1342,7 +1312,7 @@
     },
     {
       "source": "/evaluate/pricing-and-limits",
-      "destination": "/admin/billing"
+      "destination": "/pricing"
     },
     {
       "source": "/for-investment-managers",
@@ -1375,6 +1345,38 @@
     {
       "source": "/factors/methodology",
       "destination": "/intelligence/factors"
+    },
+    {
+      "source": "/product/index",
+      "destination": "/index"
+    },
+    {
+      "source": "/product/account-setup",
+      "destination": "/account-setup"
+    },
+    {
+      "source": "/product/filings",
+      "destination": "/filings/overview"
+    },
+    {
+      "source": "/product/situations",
+      "destination": "/situations/checks"
+    },
+    {
+      "source": "/product/monitors",
+      "destination": "/index"
+    },
+    {
+      "source": "/product/webhooks",
+      "destination": "/index"
+    },
+    {
+      "source": "/product/billing",
+      "destination": "/admin/billing"
+    },
+    {
+      "source": "/product/support",
+      "destination": "/admin/support"
     }
   ],
   "footer": {

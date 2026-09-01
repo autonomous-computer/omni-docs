@@ -1,41 +1,40 @@
 ---
-title: "Fund letters"
-description: "Search and retrieve investor letters from hedge funds, partnerships, and registered advisers, with page-anchored quotes."
+title: "Fund Letters Coming Soon | TUROS Developer Docs"
+description: "Review the planned fund-letter capability, coverage boundary, source and distribution rules, and its connection to Track Investors."
+sidebarTitle: "Fund Letters"
+tag: "COMING SOON"
 ---
 
-Fund letters are one of the four TUROS stores. Use them when the question is what a manager wrote, not what a filing disclosed. Hits carry page-anchored quotes so you can show the passage, not just a summary.
+Fund Letters will add manager commentary to [Track Investors](/workflows/track-investors): permitted investor letters, company mentions, theses, changes in stated views, and page-level citations alongside SEC-reported holdings and ownership disclosures.
 
-Letters can be gated. If a letters route returns `404`, check `availability` on [`/.well-known/api-catalog.json`](https://docs.secapi.ai/.well-known/api-catalog.json) before you treat the store as missing from the product.
+<Warning>
+Fund Letters is not publicly available today. The public API and MCP plane remains gated. Routes may appear in OpenAPI while the capability is unavailable; documentation is not an availability signal.
+</Warning>
 
-## List and search
+Check `availability` in the [API catalog](https://www.turos.app/docs/.well-known/api-catalog.json) before you treat a `404` as a missing record.
 
-| Research question | Call |
-| --- | --- |
-| Which letters exist for this manager or ticker? | `GET /v1/fund-letters` |
-| Where does this phrase appear in letter bodies? | `GET /v1/fund-letters/search` |
-| Which passages are nearest this meaning? | `GET /v1/fund-letters/semantic` |
+## Planned workflow
 
-```bash
-curl --fail-with-body -sS \
-  -H "x-api-key: $SECAPI_API_KEY" \
-  -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/fund-letters?ticker=BRK.A"
-```
+When access opens, the capability is intended to answer bounded questions such as:
 
-Keep the letter id, as-of date, and page-anchored quote with any claim you take from a hit. Don't paraphrase a letter as a filing fact.
+- Which permitted letters exist for a manager, fund, company, or period?
+- Where did a manager discuss a company or theme?
+- How did a stated thesis change between letters?
+- How does stated commentary compare with later reported 13F holdings?
 
-## Assemble a letter brief
+Results are designed to retain the letter identity, publication or as-of date, document location, and page-level citation needed to review the original passage.
 
-For a cited assembly rather than a raw letter list, submit the named job `letter_brief` with a ticker or manager ID. See [Intelligence overview](/intelligence/overview).
+## Coverage boundary
 
-```bash
-curl --fail-with-body -sS -X POST \
-  -H "x-api-key: $SECAPI_API_KEY" \
-  -H "secapi-version: 2026-03-19" \
-  -H "Idempotency-Key: letter-brief-brk-2026-08-30" \
-  -H "content-type: application/json" \
-  -d '{"job":"letter_brief","entities":["BRK.A"]}' \
-  "https://api.secapi.ai/v1/intelligence/query"
-```
+Initial documented coverage begins with Q1 2025 and is not a comprehensive historical archive. Coverage will depend on permitted documents, manager and fund identity resolution, extraction quality, and distribution rights. Do not assume that a missing result means a manager did not publish or discuss something.
 
-Use the **Fund letters** group in [API Reference](/api-reference) for parameters and response fields.
+## Availability
+
+When selected customers can use the capability, this page will change from **Coming Soon** to **Preview** and document the actual access path. Until then:
+
+- do not build a production dependency on fund-letter endpoints;
+- do not present letters as generally available through MCP;
+- check the live API catalog for current capability status; and
+- use 13F and 13D/13G data for the available Track Investors workflow.
+
+Continue to [Track Investors](/workflows/track-investors) or [SEC Filing Data](/filings/overview).

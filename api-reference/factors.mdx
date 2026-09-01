@@ -25,10 +25,10 @@ Factor routes serve return histories, exposures, correlations, regime-conditione
 | `POST` | `/v1/factors/custom` | Discover a custom thematic factor pack from factor-overlap peers plus deterministic filing/news signatures. |
 | `GET` | `/v1/factors/sparklines` | Return compact multi-factor sparkline series with 1D through MAX summary windows. |
 | `GET` | `/v1/factors/dashboard` | Return a one-call factor dashboard with intraday, regime, rotation, and spotlight-security sections. |
-| `GET` | `/v1/factors/bulk-download` | Return factor returns data in bulk with daily series. Commercial plans only. |
+| `GET` | `/v1/factors/bulk-download` | Return factor returns data in bulk with daily series. Custom terms only. |
 
 Add `include=trust` on history requests when you need freshness, methodology, and degraded-state metadata alongside the series - for example `GET /v1/factors/history/VALUE?include=series,trust`. Only send `include` values the route documents; an unknown value is a validation error.
 
-Bulk Factor Export requires a Commercial plan. Self-serve plans cover evaluation and internal use only and don't authorize redistribution.
+Bulk Factor Export requires Custom terms. Pay as you go covers evaluation and internal use only and does not authorize redistribution.
 
 See the [Introduction](/api-reference) for authentication, pagination, and error behavior.

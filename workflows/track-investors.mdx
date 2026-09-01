@@ -1,0 +1,35 @@
+---
+title: "Track Investors | TUROS Developer Docs"
+description: "Compare 13F reports and ownership disclosures, then add cited investor-letter research when the Fund Letters capability is available."
+sidebarTitle: "Track Investors"
+---
+
+Follow investment managers and activists through reported holdings, position changes, beneficial-ownership disclosures, and—when available—the ideas they explain in fund letters.
+
+## Available now: holdings and ownership disclosures
+
+1. Find a manager or issuer with the institutional-owner endpoints.
+2. Retrieve 13F filings and normalized holdings for the reporting periods you need.
+3. Use `POST /v1/owners/13f/compare` to identify additions, exits, and position changes.
+4. Add 13D and 13G disclosures when an investor crosses a beneficial-ownership threshold or reports activist intent.
+5. Keep the filing accession, reported period, filed date, issuer identity, and manager identity with every comparison.
+
+13F data is delayed and reports long U.S. holdings within its regulatory scope. It is not a live portfolio, complete exposure map, or proof of an investor's current thesis.
+
+## Fund Letters — Coming Soon
+
+Fund Letters will add cited manager commentary, theses, company mentions, and changes in stated views to the same investor workflow. It is not publicly available today. Routes may appear in the API contract while the underlying capability remains gated; a documented route is not proof of general availability.
+
+When access opens, use the [Fund Letters capability guide](/intelligence/letters) for the coverage boundary, permitted documents, source and distribution rules, and current availability. Do not treat letters as a comprehensive historical archive.
+
+## A combined investor record
+
+The useful comparison is not “what did the filing say?” or “what did the letter say?” in isolation. It is:
+
+- what the manager reported owning;
+- how that position changed between reporting periods;
+- what the manager publicly said about the company or theme;
+- when the reported holding and stated thesis diverged; and
+- which filing or permitted document supports each observation.
+
+Start with SEC ownership data in the free sandbox. Fund Letters remains Coming Soon until TUROS publishes access and coverage.
