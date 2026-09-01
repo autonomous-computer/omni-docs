@@ -8,7 +8,7 @@ import { spawnSync } from "node:child_process";
 
 const dir = fs.mkdtempSync(path.join(os.tmpdir(), "turos-operation-reference-"));
 fs.mkdirSync(path.join(dir, "api-reference"));
-fs.writeFileSync(path.join(dir, "api-reference", "example.mdx"), "---\ntitle: Example\n---\n");
+fs.writeFileSync(path.join(dir, "api-reference", "example.mdx"), "---\ntitle: Example\n---\n| `GET` | `/v1/example` | Returns an example. |\n");
 fs.writeFileSync(path.join(dir, "llms.txt"), "TUROS\n");
 fs.writeFileSync(path.join(dir, "discovery.json"), "{}\n");
 const openapi = { paths: { "/v1/example": { get: {
@@ -31,6 +31,8 @@ assert.notEqual(run({ ...baseRecord, docsPath: 42 }).status, 0, "non-string docs
 for (const docsPath of ["", "/tmp/example.mdx", "api-reference/../llms.txt", "api-reference/missing.mdx"]) {
   assert.notEqual(run({ ...baseRecord, docsPath }).status, 0, `invalid docsPath should fail: ${docsPath}`);
 }
+fs.writeFileSync(path.join(dir, "api-reference", "unrelated.mdx"), "| `GET` | `/v1/other` | Other route. |\n");
+assert.notEqual(run({ ...baseRecord, docsPath: "api-reference/unrelated.mdx" }).status, 0, "docsPath must document the exact operation");
 fs.symlinkSync(path.join(dir, "llms.txt"), path.join(dir, "api-reference", "escape.mdx"));
 assert.notEqual(run({ ...baseRecord, docsPath: "api-reference/escape.mdx" }).status, 0, "escaping docs symlink should fail");
 const outsideDiscovery = path.join(os.tmpdir(), `turos-discovery-outside-${process.pid}.json`);

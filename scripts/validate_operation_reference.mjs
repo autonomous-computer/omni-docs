@@ -69,6 +69,15 @@ if (catalogPath) {
         const docsPath = record.docsPath.replaceAll("\\", "/");
         if (docsPath.startsWith("/") || docsPath.includes("..") || !docsPath.startsWith("api-reference/")) failures.push(`${key}: docsPath must be a safe path under api-reference/`);
         validatePath(record.docsPath, pathModule.resolve(root, "api-reference"), `${key}: docsPath`, failures);
+        if (isSafeDocsPath(record.docsPath, root)) {
+          const docsBody = fs.readFileSync(pathModule.resolve(root, record.docsPath), "utf8");
+          // The generated page is an exact operation index: a file existing is
+          // not enough. Require the literal route and method in its endpoint
+          // table so docsPath cannot silently point at an unrelated family.
+          if (!docsBody.includes(`\`${path}\``) || !docsBody.match(new RegExp(`\\|\\s*\\\`${method.toUpperCase()}\\\`\\s*\\|`))) {
+            failures.push(`${key}: docsPath does not document the operation route and method: ${record.docsPath}`);
+          }
+        }
       }
       if (record.workflows !== undefined && !Array.isArray(record.workflows)) failures.push(`${key}: workflows must be an array`);
       for (const field of ["inputs", "examples", "responseFields"]) if (record[field] !== undefined && !Array.isArray(record[field]) && typeof record[field] !== "object") failures.push(`${key}: ${field} must be an array or object`);
@@ -117,6 +126,22 @@ if (process.argv[4]) {
 
 function recordValue(record, field) {
   return Object.prototype.hasOwnProperty.call(record, field);
+}
+
+function isSafeDocsPath(value, root) {
+  const normalized = value.replaceAll("\\\\", "/");
+  if (normalized.startsWith("/") || normalized.includes("..") || !normalized.startsWith("api-reference/")) return false;
+  const candidate = pathModule.resolve(root, value);
+  const apiRoot = pathModule.resolve(root, "api-reference");
+  if (candidate !== apiRoot && !candidate.startsWith(`${apiRoot}${pathModule.sep}`)) return false;
+  if (!fs.existsSync(candidate)) return false;
+  try {
+    const realCandidate = fs.realpathSync(candidate);
+    const realRoot = fs.realpathSync(apiRoot);
+    return realCandidate === realRoot || realCandidate.startsWith(`${realRoot}${pathModule.sep}`);
+  } catch {
+    return false;
+  }
 }
 
 function validatePath(value, allowedRoot, label, failures) {
