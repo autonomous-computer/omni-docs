@@ -78,5 +78,5 @@
 - Auth: x-api-key header (not Authorization: Bearer)
 - Version: secapi-version: 2026-03-19
 - OpenAPI: https://docs.turos.app/openapi/sec-api-public.v1.json
-- Catalog: https://api.secapi.ai/.well-known/api-catalog.json
+- Catalog: https://docs.secapi.ai/.well-known/api-catalog.json
 - MCP: https://api.secapi.ai/mcp

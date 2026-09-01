@@ -10,7 +10,7 @@ Most situations failures come from one of three places: the store is dark, the r
 The authenticated `/v1/situations` routes are gated. When the situations store is dark, they return `404` - and that `404` is availability, not a missing situation. Check the catalog before treating it as a data problem:
 
 ```bash
-curl -sS "https://api.secapi.ai/.well-known/api-catalog.json"
+curl -sS "https://docs.secapi.ai/.well-known/api-catalog.json"
 ```
 
 Read the `availability` field for situations. If it's `gated` and dark, the authenticated routes won't serve - the anonymous `/v1/embed/situations` preview stays up for public sites. Don't make a gated route your integration's first request, and don't retry a dark store in a loop; availability changes when the catalog says it does.

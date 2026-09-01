@@ -1310,7 +1310,11 @@
     },
     {
       "source": "/.well-known/api-catalog",
-      "destination": "/.well-known/api-catalog.json"
+      "destination": "https://docs.secapi.ai/.well-known/api-catalog.json"
+    },
+    {
+      "source": "/.well-known/api-catalog.json",
+      "destination": "https://docs.secapi.ai/.well-known/api-catalog.json"
     },
     {
       "source": "/evaluate/sec-filing-search-api",
