@@ -19,15 +19,23 @@ const publicMethods = new Set(["get", "post", "put", "patch", "delete", "head", 
 const catalogByKey = new Map();
 
 for (const [path, item] of Object.entries(paths)) {
+  if (!item || typeof item !== "object" || Array.isArray(item)) {
+    failures.push(`${path}: OpenAPI path item must be an object`);
+    continue;
+  }
   for (const [method, operation] of Object.entries(item)) {
     if (!publicMethods.has(method)) continue;
     operations += 1;
-    const extension = operation["x-turos"];
     const label = `${method.toUpperCase()} ${path}`;
-    if (!operation.summary?.trim()) failures.push(`${label}: missing summary`);
-    if (!operation.description?.trim()) failures.push(`${label}: missing description`);
+    if (!operation || typeof operation !== "object" || Array.isArray(operation)) {
+      failures.push(`${label}: OpenAPI operation must be an object`);
+      continue;
+    }
+    const extension = operation["x-turos"];
+    if (typeof operation.summary !== "string" || !operation.summary.trim()) failures.push(`${label}: missing summary`);
+    if (typeof operation.description !== "string" || !operation.description.trim()) failures.push(`${label}: missing description`);
     if (!Array.isArray(operation.tags) || operation.tags.length === 0) failures.push(`${label}: missing OpenAPI tag`);
-    if (!extension || typeof extension !== "object") {
+    if (!extension || typeof extension !== "object" || Array.isArray(extension)) {
       failures.push(`${label}: missing x-turos metadata`);
       continue;
     }
@@ -43,6 +51,10 @@ if (catalogPath) {
   if (!Array.isArray(records)) failures.push("catalog: expected an operations array");
   else {
     for (const record of records) {
+      if (!record || typeof record !== "object" || Array.isArray(record)) {
+        failures.push("catalog operation record must be an object");
+        continue;
+      }
       const method = String(record.method ?? "").toLowerCase();
       const path = String(record.path ?? "");
       const key = `${method.toUpperCase()} ${path}`;
@@ -64,8 +76,9 @@ if (catalogPath) {
     for (const [key, operation] of catalogByKey) {
       const [method, ...pathParts] = key.split(" ");
       const path = pathParts.join(" ");
-      if (!document.paths?.[path]?.[method.toLowerCase()]) failures.push(`${key}: catalog operation absent from OpenAPI`);
-      const metadata = document.paths?.[path]?.[method.toLowerCase()]?.["x-turos"];
+      const openapiOperation = document.paths?.[path]?.[method.toLowerCase()];
+      if (!openapiOperation || typeof openapiOperation !== "object" || Array.isArray(openapiOperation)) failures.push(`${key}: catalog operation absent from OpenAPI`);
+      const metadata = openapiOperation?.["x-turos"];
       if (!metadata) failures.push(`${key}: OpenAPI operation missing x-turos metadata`);
       else for (const field of ["domain", "availability", "access", "meterClass", "sourceFields", "freshnessFields"]) if (recordValue(metadata, field) && JSON.stringify(metadata[field]) !== JSON.stringify(operation[field])) failures.push(`${key}: ${field} differs between catalog and OpenAPI`);
     }
