@@ -6,13 +6,13 @@ sidebarTitle: "Introduction"
 
 The TUROS API gives you programmatic access to SEC filing data, macro data, factor data, repeatable investment analysis, and delivery infrastructure. The current production base URL is `https://api.secapi.ai`.
 
-Each resource family has its own reference page. The generated operation pages are the authority for an individual request: they state what the endpoint returns, what it does not establish, its accepted inputs, access and availability, meter class, coverage boundary, and the source and freshness fields available in its response. A registry entry or page in this reference does not, by itself, mean that the route is enabled for every account.
+Each resource family has its own reference page. This introduction describes the fields and boundaries that the generated operation contract is intended to expose. The current family pages and operation pages remain the authority for what a particular route returns; do not infer an availability, meter, source, freshness, or coverage field when that page or response does not provide it. A registry entry or page in this reference does not, by itself, mean that the route is enabled for every account.
 
 For a visual guide to the API's research jobs, endpoint families, filters, and availability, open the [TUROS API Map](https://www.turos.app/api#map). Use the [public rate catalog](/api-reference/billing) for current pricing and meter details; do not copy a price from an example.
 
 ## Reading an operation page
 
-Start with the request's method and path, then check these boundaries before using its output:
+Start with the request's method and path, then check these boundaries before using its output. Some rows apply only when the operation contract or response includes the relevant field:
 
 | Check | What to look for |
 | --- | --- |
@@ -28,7 +28,7 @@ Keep the source identifiers and relevant dates with values you store. A filing-d
 
 ## Authentication
 
-Every machine request is authenticated with an API key.
+Authentication depends on the operation. Data requests generally use an API key in `x-api-key`; the public rates catalog is intentionally readable without a key; and organization or dashboard control-plane operations may require a signed-in session with bearer authentication. Follow the authentication section on the operation page rather than applying one credential type to every route.
 
 ### API key types
 
@@ -47,7 +47,7 @@ Create keys in the [TUROS dashboard](https://turos.app). TUROS shows the full se
 export SECAPI_API_KEY="secapi_..."
 ```
 
-An API key can't create other keys or change billing - those are dashboard-session actions.
+An API key can't create other keys or change billing unless the operation contract explicitly says otherwise; those are dashboard-session actions in the current public surface.
 
 ### Passing the API key
 
@@ -89,9 +89,7 @@ Retain `Request-Id` and `traceparent` from both successes and failures, along wi
 
 Read your organization's effective plan, billing state, and route quota windows with `GET /v1/limits`. On `429`, honor `Retry-After` when present.
 
-Intelligence and enhanced-dilution routes draw from the `ai_queries` quota; quota-counted responses carry `SECAPI-AI-Quota-Limit`, `SECAPI-AI-Quota-Used`, `SECAPI-AI-Quota-Remaining`, and `SECAPI-AI-Quota-Reset`. Free-allowance accounts also receive `SECAPI-Grant-*` advisory headers from 80% consumption onward, so an integration can add a payment method before requests start failing.
-
-Health checks, quotes, limits reads, catalog reads, test-key traffic, and requests rejected with a `4xx` before work starts are never billed.
+Some operations return quota or meter headers. When present, preserve them with the response and use the [public rate catalog](/api-reference/billing) for current billing rules. Do not assume that a route is free, billable, quota-counted, or covered by a particular allowance unless its operation page and the current catalog say so.
 
 ## Idempotency
 
