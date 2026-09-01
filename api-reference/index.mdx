@@ -6,7 +6,25 @@ sidebarTitle: "Introduction"
 
 The TUROS API gives you programmatic access to SEC filing data, macro data, factor data, repeatable investment analysis, and delivery infrastructure. The current production base URL is `https://api.secapi.ai`.
 
-Each resource family has its own reference page listing the operations it supports. This page covers the behavior every request shares: authentication, pagination, errors, limits, idempotency, and versioning.
+Each resource family has its own reference page. The generated operation pages are the authority for an individual request: they state what the endpoint returns, what it does not establish, its accepted inputs, access and availability, meter class, coverage boundary, and the source and freshness fields available in its response. A registry entry or page in this reference does not, by itself, mean that the route is enabled for every account.
+
+For a visual guide to the API's research jobs, endpoint families, filters, and availability, open the [TUROS API Map](https://www.turos.app/api#map). Use the [public rate catalog](/api-reference/billing) for current pricing and meter details; do not copy a price from an example.
+
+## Reading an operation page
+
+Start with the request's method and path, then check these boundaries before using its output:
+
+| Check | What to look for |
+| --- | --- |
+| Result | The returned object, rows, or document—and fields that may be absent or `null`. |
+| Source | Filing URL and accession, series and publisher, or another source identifier when the route returns one. |
+| Time | Report, observation, event, publication, retrieval, or `as-of` dates. These are not interchangeable. |
+| Access | Whether the route is public, API-key authenticated, organization-scoped, or dashboard-session only. |
+| Availability | Whether the route is live, beta, alpha, preview, gated, or unavailable. A successful page build is not a runtime availability check. |
+| Meter | The runtime meter and whether the request is billable. Use the response and rate catalog as the current authority. |
+| Limits | Pagination, coverage, truncation, revisions, and cases where an empty result is not evidence that the underlying record does not exist. |
+
+Keep the source identifiers and relevant dates with values you store. A filing-derived classification, normalized value, search hit, or analytical output is not automatically proof of a completed event, current ownership, causation, or an investment recommendation.
 
 ## Authentication
 
