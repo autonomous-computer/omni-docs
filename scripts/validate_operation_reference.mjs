@@ -166,6 +166,17 @@ function validatePath(value, allowedRoot, label, failures) {
     failures.push(`${label} does not exist: ${value}`);
     return;
   }
+  let stat;
+  try {
+    stat = fs.lstatSync(candidate);
+  } catch {
+    failures.push(`${label} cannot be inspected: ${value}`);
+    return;
+  }
+  if (!stat.isFile() || stat.isSymbolicLink()) {
+    failures.push(`${label} must be a regular file: ${value}`);
+    return;
+  }
   let realCandidate;
   let realRoot;
   try {
@@ -176,4 +187,5 @@ function validatePath(value, allowedRoot, label, failures) {
     return;
   }
   if (realCandidate !== realRoot && !realCandidate.startsWith(`${realRoot}${pathModule.sep}`)) failures.push(`${label} escapes its allowed root through a symlink: ${value}`);
+  if (realCandidate !== candidate) failures.push(`${label} must not resolve through a symlink: ${value}`);
 }
