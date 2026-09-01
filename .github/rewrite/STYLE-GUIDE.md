@@ -37,13 +37,13 @@ Do not promise that every result has a citation. State the specific source field
 ## Pricing language
 
 - Free test keys and 100 included live calls.
-- The allowance is confirmed; automatic monthly renewal is not.
+- The allowance is 100 included live calls each UTC calendar month and resets automatically on the first eligible request in a new month.
 - Pay as you go from `$10`, with no self-serve subscription, monthly minimum, setup fee, or per-seat fee.
 - Pay only for successful production work; test traffic and failures before work begins are free.
 - Larger top-ups save up to 30%; paid credits do not expire under the current model.
 - Use **Custom** for redistribution, enterprise controls, committed volume, support, and contractual SLAs.
 
-Do not say the allowance is monthly, renews, or resets automatically. Do not market retired or grandfathered Pro, Team, or Commercial subscriptions as current public offers.
+Do not describe the allowance as a subscription or promise more than the confirmed 100-call monthly allowance. Do not market retired or grandfathered Pro, Team, or Commercial subscriptions as current public offers.
 
 ## Host policy
 

@@ -56,7 +56,7 @@ Preserve when present: `accessionNumber`, `form`, `filingDate`, `filingUrl`, `re
 
 ## Billing
 
-- Free test keys plus 100 included live calls. The allowance is confirmed; automatic monthly renewal is not. Do not say `monthly`, `each month`, or `renews` for the allowance until runtime and every public surface agree.
+- Free test keys plus 100 included live calls each UTC calendar month. The allowance resets automatically on the first eligible request in a new month. Do not describe the allowance as a subscription or promise more than the confirmed 100-call monthly allowance.
 - PAYG: prepaid credits from $10; enable in the dashboard. No self-serve subscription, monthly minimum, setup fee, or per-seat fee.
 - Top-up examples: fund $50 for $45 (10%); $250 for $200 (20%); $1,000 for $700 (30%). Paid credits do not expire under the current model. Auto top-up uses the same bands.
 - Custom: redistribution, embedding, white-label, resale, bulk exports, enterprise controls, committed volume, dedicated support, and contractual SLAs.
