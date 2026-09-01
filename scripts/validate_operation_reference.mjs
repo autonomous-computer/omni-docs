@@ -133,7 +133,7 @@ function recordValue(record, field) {
 function isSafeDocsPath(value, root) {
   const normalized = value.replaceAll("\\\\", "/");
   if (normalized.startsWith("/") || normalized.includes("..") || !normalized.startsWith("api-reference/")) return false;
-  const candidate = pathModule.resolve(root, value);
+  const candidate = pathModule.resolve(root, normalized);
   const apiRoot = pathModule.resolve(root, "api-reference");
   if (candidate !== apiRoot && !candidate.startsWith(`${apiRoot}${pathModule.sep}`)) return false;
   if (!fs.existsSync(candidate)) return false;
@@ -158,8 +158,16 @@ function isGeneratedDocsRoute(value, root) {
   if (!fs.existsSync(inventoryPath)) return false;
   try {
     const inventory = JSON.parse(fs.readFileSync(inventoryPath, "utf8"));
-    const serialized = JSON.stringify(inventory);
-    return serialized.includes(`\"${normalized}\"`) || serialized.includes(`/${normalized}\"`);
+    const routes = [];
+    const collect = (node) => {
+      if (typeof node === "string") routes.push(node.replaceAll("\\\\", "/").replace(/^\//, "").replace(/\.mdx$/, ""));
+      else if (Array.isArray(node)) node.forEach(collect);
+      else if (node && typeof node === "object") Object.values(node).forEach(collect);
+    };
+    // Mintlify routes are authoritative only when they occur in navigation;
+    // descriptions and arbitrary config strings must not create false routes.
+    collect(inventory.navigation);
+    return routes.includes(normalized);
   } catch {
     return false;
   }
@@ -177,7 +185,7 @@ function validatePath(value, allowedRoot, label, failures) {
     failures.push(`${label} must be a relative path without traversal: ${value}`);
     return;
   }
-  const candidate = pathModule.resolve(root, value);
+  const candidate = pathModule.resolve(root, normalized);
   const lexicalRoot = pathModule.resolve(allowedRoot);
   if (candidate !== lexicalRoot && !candidate.startsWith(`${lexicalRoot}${pathModule.sep}`)) {
     failures.push(`${label} escapes its allowed root: ${value}`);

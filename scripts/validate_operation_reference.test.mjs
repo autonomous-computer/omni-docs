@@ -11,7 +11,7 @@ fs.mkdirSync(path.join(dir, "api-reference"));
 fs.writeFileSync(path.join(dir, "api-reference", "example.mdx"), "---\ntitle: Example\n---\n| `GET` | `/v1/example` | Returns an example. |\n");
 fs.writeFileSync(path.join(dir, "llms.txt"), "TUROS\n");
 fs.writeFileSync(path.join(dir, "discovery.json"), "{}\n");
-fs.writeFileSync(path.join(dir, "docs.json"), JSON.stringify({ navigation: [{ pages: ["api-reference/example", "api-reference/generated-example"] }] }));
+fs.writeFileSync(path.join(dir, "docs.json"), JSON.stringify({ navigation: [{ pages: ["api-reference/example", "api-reference/generated-example"] }], note: "api-reference/decoy" }));
 const openapi = { paths: { "/v1/example": { get: {
   tags: ["Example"], summary: "Example", description: "Returns an example.",
   "x-turos": { domain: "example", availability: "live", access: "public", meterClass: "read", sourceFields: [], freshnessFields: [] },
@@ -26,9 +26,12 @@ const run = (catalog, discoveryPaths = []) => {
 };
 
 assert.equal(run(baseRecord).status, 0, "valid catalog should pass");
+assert.equal(run({ ...baseRecord, docsPath: "api-reference\\example" }).status, 0, "single-backslash local source path should pass");
 assert.equal(run({ ...baseRecord, docsPath: "api-reference/example" }).status, 0, "local family source without extension should pass");
 assert.equal(run({ ...baseRecord, docsPath: "api-reference/generated-example" }).status, 0, "listed generated route should pass without a physical source file");
 assert.notEqual(run({ ...baseRecord, docsPath: "api-reference/unlisted-generated" }).status, 0, "unlisted generated route should fail");
+fs.writeFileSync(path.join(dir, "decoy.json"), JSON.stringify({ note: "api-reference/decoy" }));
+assert.notEqual(run({ ...baseRecord, docsPath: "api-reference/decoy" }).status, 0, "route mentioned only in prose must fail");
 assert.equal(run(baseRecord, ["discovery.json"]).status, 0, "valid discovery path should pass");
 assert.notEqual(run(null).status, 0, "null catalog record should fail");
 assert.notEqual(run({ ...baseRecord, docsPath: 42 }).status, 0, "non-string docsPath should fail");
