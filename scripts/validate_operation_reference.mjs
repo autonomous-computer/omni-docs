@@ -74,7 +74,7 @@ if (catalogPath) {
           // The generated page is an exact operation index: a file existing is
           // not enough. Require the literal route and method in its endpoint
           // table so docsPath cannot silently point at an unrelated family.
-          if (!docsBody.includes(`\`${path}\``) || !docsBody.match(new RegExp(`\\|\\s*\\\`${method.toUpperCase()}\\\`\\s*\\|`))) {
+          if (!hasExactEndpointRow(docsBody, method.toUpperCase(), path)) {
             failures.push(`${key}: docsPath does not document the operation route and method: ${record.docsPath}`);
           }
         }
@@ -142,6 +142,12 @@ function isSafeDocsPath(value, root) {
   } catch {
     return false;
   }
+}
+
+function hasExactEndpointRow(body, method, route) {
+  const marker = `\`${route}\``;
+  const methodMarker = `\`${method}\``;
+  return body.split(/\r?\n/).some((line) => line.includes(marker) && line.includes(methodMarker) && line.includes("|"));
 }
 
 function validatePath(value, allowedRoot, label, failures) {

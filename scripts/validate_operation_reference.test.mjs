@@ -33,6 +33,8 @@ for (const docsPath of ["", "/tmp/example.mdx", "api-reference/../llms.txt", "ap
 }
 fs.writeFileSync(path.join(dir, "api-reference", "unrelated.mdx"), "| `GET` | `/v1/other` | Other route. |\n");
 assert.notEqual(run({ ...baseRecord, docsPath: "api-reference/unrelated.mdx" }).status, 0, "docsPath must document the exact operation");
+fs.writeFileSync(path.join(dir, "api-reference", "split.mdx"), "The `GET` operation can query `/v1/example`.\n| `POST` | `/v1/example` | Other method. |\n");
+assert.notEqual(run({ ...baseRecord, docsPath: "api-reference/split.mdx" }).status, 0, "method and route must share the endpoint row");
 fs.symlinkSync(path.join(dir, "llms.txt"), path.join(dir, "api-reference", "escape.mdx"));
 assert.notEqual(run({ ...baseRecord, docsPath: "api-reference/escape.mdx" }).status, 0, "escaping docs symlink should fail");
 const outsideDiscovery = path.join(os.tmpdir(), `turos-discovery-outside-${process.pid}.json`);
