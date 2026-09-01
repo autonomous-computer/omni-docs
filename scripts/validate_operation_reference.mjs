@@ -56,8 +56,7 @@ if (catalogPath) {
       else {
         const docsPath = record.docsPath.replaceAll("\\", "/");
         if (docsPath.startsWith("/") || docsPath.includes("..") || !docsPath.startsWith("api-reference/")) failures.push(`${key}: docsPath must be a safe path under api-reference/`);
-        const resolvedDocsPath = pathModule.resolve(root, docsPath);
-        if (!fs.existsSync(resolvedDocsPath)) failures.push(`${key}: docsPath does not exist: ${record.docsPath}`);
+        validatePath(record.docsPath, pathModule.resolve(root, "api-reference"), `${key}: docsPath`, failures);
       }
       if (record.workflows !== undefined && !Array.isArray(record.workflows)) failures.push(`${key}: workflows must be an array`);
       for (const field of ["inputs", "examples", "responseFields"]) if (record[field] !== undefined && !Array.isArray(record[field]) && typeof record[field] !== "object") failures.push(`${key}: ${field} must be an array or object`);
@@ -73,11 +72,17 @@ if (catalogPath) {
     const openapiKeys = new Set();
     for (const [path, item] of Object.entries(paths)) for (const method of Object.keys(item)) if (publicMethods.has(method)) openapiKeys.add(`${method.toUpperCase()} ${path}`);
     for (const key of openapiKeys) if (!catalogByKey.has(key)) failures.push(`${key}: public OpenAPI operation absent from catalog`);
-    if (catalog.llmsPath) {
-      const llmsPath = pathModule.resolve(root, catalog.llmsPath);
-      if (!fs.existsSync(llmsPath)) failures.push(`catalog.llmsPath does not exist: ${catalog.llmsPath}`);
+    if (catalog.llmsPath !== undefined) {
+      if (typeof catalog.llmsPath !== "string" || !catalog.llmsPath.trim()) failures.push("catalog.llmsPath must be a non-empty string");
+      else validatePath(catalog.llmsPath, root, "catalog.llmsPath", failures);
     }
-    if (catalog.discoveryPaths) for (const discoveryPath of catalog.discoveryPaths) if (!fs.existsSync(pathModule.resolve(root, discoveryPath))) failures.push(`catalog discovery output does not exist: ${discoveryPath}`);
+    if (catalog.discoveryPaths !== undefined) {
+      if (!Array.isArray(catalog.discoveryPaths)) failures.push("catalog.discoveryPaths must be an array");
+      else for (const discoveryPath of catalog.discoveryPaths) {
+        if (typeof discoveryPath !== "string" || !discoveryPath.trim()) failures.push("catalog.discoveryPaths contains an empty or non-string path");
+        else validatePath(discoveryPath, root, "catalog discovery output", failures);
+      }
+    }
   }
 }
 
@@ -99,4 +104,32 @@ if (process.argv[4]) {
 
 function recordValue(record, field) {
   return Object.prototype.hasOwnProperty.call(record, field);
+}
+
+function validatePath(value, allowedRoot, label, failures) {
+  const normalized = value.replaceAll("\\", "/");
+  if (normalized.startsWith("/") || pathModule.isAbsolute(value) || normalized.split("/").includes("..")) {
+    failures.push(`${label} must be a relative path without traversal: ${value}`);
+    return;
+  }
+  const candidate = pathModule.resolve(root, value);
+  const lexicalRoot = pathModule.resolve(allowedRoot);
+  if (candidate !== lexicalRoot && !candidate.startsWith(`${lexicalRoot}${pathModule.sep}`)) {
+    failures.push(`${label} escapes its allowed root: ${value}`);
+    return;
+  }
+  if (!fs.existsSync(candidate)) {
+    failures.push(`${label} does not exist: ${value}`);
+    return;
+  }
+  let realCandidate;
+  let realRoot;
+  try {
+    realCandidate = fs.realpathSync(candidate);
+    realRoot = fs.realpathSync(lexicalRoot);
+  } catch {
+    failures.push(`${label} cannot be resolved: ${value}`);
+    return;
+  }
+  if (realCandidate !== realRoot && !realCandidate.startsWith(`${realRoot}${pathModule.sep}`)) failures.push(`${label} escapes its allowed root through a symlink: ${value}`);
 }
