@@ -21,11 +21,18 @@ if (![datastreamPath, docsPath, catalogPath, renderedPath].every(Boolean)) {
 
 const methods = new Set(["get", "post", "put", "patch", "delete", "head", "options"]);
 const read = (path) => JSON.parse(fs.readFileSync(path, "utf8"));
+const isPublicOperation = (value) => {
+  const extension = value?.["x-turos"] ?? value;
+  return value?.internal !== true && value?.public !== false && value?.["x-internal"] !== true
+    && extension?.public !== false && extension?.visibility !== "private" && extension?.visibility !== "internal";
+};
 const openapiKeys = (document) => {
+  if (!document || !document.paths || typeof document.paths !== "object" || Array.isArray(document.paths)) throw new Error("OpenAPI: paths must be an object");
   const keys = new Set();
   for (const [path, item] of Object.entries(document.paths ?? {})) {
+    if (!path.startsWith("/") || !item || typeof item !== "object" || Array.isArray(item)) throw new Error(`OpenAPI: malformed path item ${path}`);
     for (const method of Object.keys(item ?? {})) {
-      if (methods.has(method.toLowerCase())) keys.add(`${method.toUpperCase()} ${path}`);
+      if (methods.has(method.toLowerCase()) && isPublicOperation(item[method])) keys.add(`${method.toUpperCase()} ${path}`);
     }
   }
   return keys;
@@ -41,9 +48,11 @@ const recordsKeys = (value, label) => {
   const keys = new Set();
   const duplicates = [];
   for (const record of records) {
+    if (!record || typeof record !== "object" || Array.isArray(record)) throw new Error(`${label}: malformed operation record`);
     const key = recordKey(record);
     if (!key || !methods.has(key.split(" ", 1)[0].toLowerCase())) throw new Error(`${label}: invalid operation record ${JSON.stringify(record)}`);
     if (keys.has(key)) duplicates.push(key);
+    if (!isPublicOperation(record)) continue;
     keys.add(key);
   }
   if (duplicates.length) throw new Error(`${label}: duplicate operation(s): ${duplicates.join(", ")}`);
@@ -55,9 +64,15 @@ const allowlistKeys = (value) => {
   if (!paths || typeof paths !== "object") throw new Error("catalog/allowlist: expected operations, items, or paths");
   const keys = new Set();
   for (const [path, entry] of Object.entries(paths)) {
-    for (const method of Array.isArray(entry) ? entry : Object.keys(entry ?? {})) {
+    if (!path.startsWith("/") || (!Array.isArray(entry) && (!entry || typeof entry !== "object"))) throw new Error(`catalog/allowlist: malformed path map ${path}`);
+    const seen = new Set();
+    for (const method of Array.isArray(entry) ? entry : Object.keys(entry)) {
       const normalized = String(method).toUpperCase();
-      if (methods.has(normalized.toLowerCase())) keys.add(`${normalized} ${path}`);
+      if (!methods.has(normalized.toLowerCase())) continue;
+      if (seen.has(normalized)) throw new Error(`catalog/allowlist: duplicate operation ${normalized} ${path}`);
+      seen.add(normalized);
+      const metadata = Array.isArray(entry) ? {} : entry[method];
+      if (isPublicOperation(metadata)) keys.add(`${normalized} ${path}`);
     }
   }
   return keys;
