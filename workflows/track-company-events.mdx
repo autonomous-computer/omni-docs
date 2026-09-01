@@ -1,0 +1,25 @@
+---
+title: "Track Company Events | TUROS Developer Docs"
+description: "Monitor filing-derived events, assemble a dated timeline, and deliver changes through polling, webhooks, or agent workflows."
+sidebarTitle: "Track Company Events"
+---
+
+Turn filing changes into a dated event stream for a company or watchlist. TUROS exposes structured events for areas such as M&A, offerings, auditor and officer changes, restatements, voting results, dilution, and corporate actions.
+
+## Workflow
+
+1. Resolve each company to a canonical entity.
+2. Choose the event families and forms relevant to the investment question.
+3. Backfill recent events and preserve their filing accessions and event dates.
+4. Poll for changes or configure a monitor and delivery destination.
+5. Reconcile every event with its source filing before taking action.
+
+## Polling or delivery
+
+Use polling for a small list or a worker that cannot receive public webhooks. Use [webhooks and streams](/events/configure) for durable delivery, retries, replay, and multiple event types. Monitor and delivery controls require a signed-in dashboard session; data reads use an API key.
+
+## Keep time semantics explicit
+
+Filed date, effective date, announced date, reporting period, and delivery time can differ. Preserve the date fields returned for the specific event instead of collapsing them into one timestamp.
+
+Start this workflow free; pay only for successful production work. See [events and deliveries](/events/deliveries) and the [API reference](/api-reference).

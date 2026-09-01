@@ -1,16 +1,24 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "SEC API",
+    "title": "TUROS API",
     "version": "2026-03-19",
-    "description": "SEC API for investor agents spanning SEC filings, market, macro, factor, portfolio, and intelligence-query workloads."
+    "description": "The TUROS API provides SEC filing data, macro data, factor data, and repeatable investment analysis for investor software and AI agents. Production requests currently use api.secapi.ai, which will remain supported when a TUROS hostname becomes the default.",
+    "contact": {
+      "name": "TUROS Support",
+      "url": "https://www.turos.app/docs/admin/support"
+    }
   },
   "servers": [
     {
       "url": "https://api.secapi.ai",
-      "description": "Production"
+      "description": "Current production host"
     }
   ],
+  "externalDocs": {
+    "description": "TUROS Developer Docs",
+    "url": "https://www.turos.app/docs"
+  },
   "paths": {
     "/.well-known/oauth-protected-resource": {
       "get": {

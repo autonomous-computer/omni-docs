@@ -1,0 +1,36 @@
+---
+title: "Migrate from SECAPI.ai to TUROS | Developer Docs"
+description: "Adopt TUROS naming and the future canonical API host without breaking existing api.secapi.ai credentials, paths, or integrations."
+sidebarTitle: "SECAPI.ai to TUROS"
+---
+
+SECAPI.ai is becoming TUROS API and TUROS MCP. This is a brand and product-layer migration, not permission to break working integrations.
+
+## What stays compatible
+
+- `https://api.secapi.ai` remains the current production API and MCP host.
+- Existing API keys, paths, request bodies, headers, and pinned versions continue to work.
+- Current SDK package names, CLI commands, and environment variables remain valid until a separately versioned migration is available.
+- API requests are not redirected between hosts.
+
+## What changes now
+
+- Documentation and product language use **TUROS API** and **TUROS MCP**.
+- Canonical documentation lives at `https://www.turos.app/docs`.
+- Marketing and documentation links on the retired SECAPI.ai site should deep-link or redirect to the closest TUROS equivalent.
+
+## The future API host
+
+`api.turos.app` becomes the default only after it matches `api.secapi.ai` for methods, bodies, authentication, errors, streaming, CORS, billing, discovery, and operation availability. Until TUROS publishes that proof, keep production clients on `api.secapi.ai`.
+
+After the gate passes, new examples and newly released SDK defaults may prefer `api.turos.app`. The legacy host will remain backward compatible so customers can migrate on their own schedule.
+
+## A safe migration sequence
+
+1. Create a free account and test key.
+2. Reproduce a representative workflow against `api.secapi.ai`.
+3. Pin an API version and record request, entity, filing, and source identifiers.
+4. When `api.turos.app` is announced as parity-ready, run the same contract tests against both hosts.
+5. Change the base URL only after outputs, errors, billing, and discovery behavior match for your workload.
+
+Do not rename environment variables or SDK imports merely to make the branding look newer. Compatibility identifiers are part of the integration contract.

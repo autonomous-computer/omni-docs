@@ -1,42 +1,80 @@
 ---
-title: "Developer Docs"
-description: "Build source-backed SEC filing and market intelligence workflows with the TUROS API."
+title: "TUROS Developer Docs | API, MCP, SDKs, and CLI"
+description: "Build with SEC filing data, macro data, factors, and repeatable investment analysis through TUROS MCP or one API."
+sidebarTitle: "Overview"
 ---
 
-TUROS turns SEC filings into APIs you can build on. Resolve a company, retrieve the filing behind a claim, and query intelligence with the same API key.
+**Build with the AI-ready data layer for investors.**
 
-New to TUROS? Start in [test mode](/test-mode) with a free test key, or [set up your account](/account-setup) and send your first request in a couple of minutes.
+Query SEC filing data, economic data from official institutions, factor data, and repeatable investment analysis through [MCP](/build/mcp) or [one API](/build/api). TUROS returns granular facts and compact answers designed for investor software and AI agents.
 
-## Filings & companies
-
-<CardGroup cols={2}>
-  <Card title="Overview" href="/filings/overview">
-    Learn how TUROS structures entities, filings, facts, and statements, and how to keep the identifiers that make results reviewable.
+<CardGroup cols={3}>
+  <Card title="Create a free sandbox" href="/account-setup" icon="key">
+    Sign up without a card, create test and live keys, and make your first request.
   </Card>
-  <Card title="Fetch filings" href="/filings/fetch-overview">
-    Retrieve filings by issuer, form, date, accession number, or full-text query, then read sections and exhibits.
+  <Card title="Connect MCP" href="/build/mcp" icon="plug">
+    Give a compatible AI client focused investor tools through one hosted server.
   </Card>
-  <Card title="Special situations" href="/situations/checks">
-    Search live deal and event coverage backed by the filings that disclosed them.
-  </Card>
-  <Card title="Filings API reference" href="/api-reference/filings">
-    Confirm parameters, response fields, and route-specific limits for the filings endpoints.
+  <Card title="Make an API request" href="/build/api" icon="code">
+    Authenticate with `x-api-key` and query the production API at `api.secapi.ai`.
   </Card>
 </CardGroup>
 
-## Intelligence & market data
+<Info>
+Free sandbox keys. 100 included live calls. No card required. Pay only for successful production work beyond the allowance. The allowance is confirmed; automatic renewal is not.
+</Info>
+
+## Explore the data layer
 
 <CardGroup cols={2}>
-  <Card title="Overview" href="/intelligence/overview">
-    Run named intelligence jobs that assemble cited briefs and reports from filings, factors, and macro data.
+  <Card title="SEC Filing Data" href="/filings/overview">
+    Search and retrieve filings, sections, exhibits, facts, statements, ownership, insiders, company events, and source identifiers.
   </Card>
-  <Card title="Market data" href="/intelligence/market">
-    Retrieve market snapshots and calendar data alongside filing-backed results.
+  <Card title="Macro Data" href="/intelligence/macro">
+    Query indicators, observations, releases, forecasts, regimes, and country context from supported official sources.
   </Card>
-  <Card title="Model Context Protocol (MCP)" href="/mcp">
-    Connect an MCP client to the hosted TUROS server and discover tools at runtime.
+  <Card title="Factor Data — Beta" href="/intelligence/factors">
+    Work with factor returns, exposures, correlations, regimes, related stocks, macro sensitivity, and portfolio decomposition.
   </Card>
-  <Card title="Intelligence API reference" href="/api-reference/intelligence">
-    Confirm request shapes, billing behavior, and job status polling for the intelligence endpoints.
+  <Card title="Investment Analysis" href="/intelligence/overview">
+    Run repeatable company, filing, event, country, and portfolio analysis with explicit inputs, methods, and citations.
+  </Card>
+  <Card title="Identifiers & Utilities" href="/coverage/identifiers">
+    Resolve companies, securities, filings, and funds across ticker, CIK, FIGI, and supported entitled identifiers.
   </Card>
 </CardGroup>
+
+## Start with a workflow
+
+<CardGroup cols={2}>
+  <Card title="Research Companies" href="/workflows/research-companies">
+    Build a company view from filings, financials, segments, ownership, risks, compensation, and events.
+  </Card>
+  <Card title="Track Investors" href="/workflows/track-investors">
+    Follow managers and activists across reported holdings and ownership disclosures. Fund Letters is Coming Soon.
+  </Card>
+  <Card title="Track Company Events" href="/workflows/track-company-events">
+    Monitor filing-derived events and deliver changes through polling, webhooks, or agent workflows.
+  </Card>
+  <Card title="Understand Macro" href="/workflows/understand-macro">
+    Track releases, revisions, policy events, and regimes, then connect them to investments.
+  </Card>
+  <Card title="Analyze Portfolios" href="/workflows/analyze-portfolios">
+    Attribute returns, measure factor exposures, test scenarios, and review risks.
+  </Card>
+</CardGroup>
+
+## Build with TUROS
+
+<CardGroup cols={2}>
+  <Card title="MCP" href="/build/mcp">Connect a compatible AI client.</Card>
+  <Card title="API" href="/build/api">Authenticate and make a first request.</Card>
+  <Card title="SDKs" href="/build/sdks">Use supported JavaScript, Python, Go, and Rust clients.</Card>
+  <Card title="CLI" href="/sdks/cli">Run data and analysis workflows from the shell.</Card>
+  <Card title="Excel Add-In — Alpha" href="/build/excel-add-in">Bring supported workflows into investor workbooks.</Card>
+  <Card title="Pricing & billing" href="/pricing">Understand free test mode, pay as you go, top-up savings, and budget controls.</Card>
+</CardGroup>
+
+## One production contract
+
+REST, MCP, SDKs, and the CLI use the same data layer, credentials, response conventions, and pay-as-you-go wallet. Production requests currently use `https://api.secapi.ai`. The `api.turos.app` host will become the default only after it passes the documented parity gate; existing integrations will continue to work.

@@ -15,6 +15,8 @@ TUROS publishes machine-readable descriptions of the API so an AI tool doesn't h
 
 You can also copy any docs page as markdown from the page menu and paste it directly into a prompt.
 
+The canonical product map is SEC Filing Data, Macro Data, Factor Data `Beta`, and Investment Analysis. For complete investor jobs, use the Research Companies, Track Investors, Track Company Events, Understand Macro, and Analyze Portfolios workflow guides. Do not advertise Fund Letters as available while it is marked Coming Soon.
+
 ## Start with a test key
 
 Give the tool a `secapi_test_` key while it iterates. Test keys are free, run against fixture data, and never bill, so a runaway loop or a malformed retry costs nothing. See [Test mode](/test-mode).
@@ -24,6 +26,8 @@ export SECAPI_API_KEY="secapi_test_..."
 ```
 
 Swap in a `secapi_live_` key only after the workflow does what you want, and check `GET /v1/limits` with that key before repeated work.
+
+New organizations receive 100 included live calls, then can use pay-as-you-go production without a subscription. The allowance is confirmed; automatic monthly renewal is not. See [pricing and billing](/pricing) before running an unattended or repeated workflow.
 
 ## Give the tool a working example
 
@@ -90,7 +94,9 @@ The CLI can generate the configuration for other clients:
 secapi mcp install --client <claude-code|claude-desktop|cursor|windsurf|project>
 ```
 
-Tell the agent to use `tools.search` to find tools and `tools.describe` to inspect input schemas before calling them. See [Model Context Protocol (MCP)](/mcp) for the full workflow.
+Tell the agent to use `tools.search` to find tools and `tools.describe` to inspect input schemas before calling them. See [TUROS MCP](/build/mcp) for the full workflow.
+
+Keep `api.secapi.ai` as the API and MCP host until TUROS announces `api.turos.app` as parity-ready. Package names, key prefixes, environment variables, and CLI commands that still use `secapi` are compatibility contracts.
 
 ## Test the workflow before production
 

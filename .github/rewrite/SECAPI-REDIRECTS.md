@@ -1,16 +1,16 @@
-# docs.secapi.ai → docs.turos.app path map
+# docs.secapi.ai → www.turos.app/docs path map
 
-Apply these **after** omni-docs PR #36 is merged and live on docs.turos.app.
-Do not flip DNS or Cloudflare bulk redirects while this rewrite is still a draft.
+Apply these only after the matching pages are live at `www.turos.app/docs`.
+Do not flip DNS or bulk redirects while the coordinated release is still a draft.
 
-Host rule: `docs.secapi.ai` 301 → `https://docs.turos.app` + mapped path.
-Unmapped paths: 301 to `https://docs.turos.app/`.
+Host rule: `docs.secapi.ai` 301 → `https://www.turos.app/docs` + mapped path.
+Unmapped paths: 301 to `https://www.turos.app/docs`.
 
 API host stays `https://api.secapi.ai` until a separate API hostname cutover.
 
 | Source path | Destination |
 | --- | --- |
-| `/overview` | `/index` |
+| `/overview` | `/` |
 | `/api-overview` | `/api-reference` |
 | `/getting-started` | `/account-setup` |
 | `/test-keys` | `/test-mode` |
@@ -19,7 +19,7 @@ API host stays `https://api.secapi.ai` until a separate API hostname cutover.
 | `/api-playground` | `/test-mode` |
 | `/auth-and-pricing` | `/coverage/authentication` |
 | `/api-conventions` | `/api-reference` |
-| `/api-versioning` | `/api-reference` |
+| `/api-versioning` | `/getting-started/client-api-versioning` |
 | `/enterprise` | `/organizations/overview` |
 | `/enterprise-commercial` | `/organizations/overview` |
 | `/coverage-and-depth` | `/coverage/coverage` |
@@ -47,8 +47,8 @@ API host stays `https://api.secapi.ai` until a separate API hostname cutover.
 | `/market-data` | `/intelligence/market` |
 | `/market-calendar` | `/intelligence/market` |
 | `/artifact-operations` | `/intelligence/artifacts-overview` |
-| `/mcp-install` | `/mcp` |
-| `/mcp-workflows` | `/mcp` |
+| `/mcp-install` | `/build/mcp` |
+| `/mcp-workflows` | `/build/mcp` |
 | `/javascript-sdk` | `/sdks/javascript` |
 | `/python-sdk` | `/sdks/python` |
 | `/go-sdk` | `/sdks/go` |
@@ -59,10 +59,10 @@ API host stays `https://api.secapi.ai` until a separate API hostname cutover.
 | `/webhook-delivery-audit` | `/events/deliveries` |
 | `/webhook-sla` | `/events/deliveries` |
 | `/stream-polling` | `/events/deliveries` |
-| `/monitors` | `/product/monitors` |
-| `/billing-faq` | `/admin/billing` |
-| `/payg` | `/admin/billing` |
-| `/plans` | `/admin/billing` |
+| `/monitors` | `/` |
+| `/billing-faq` | `/pricing` |
+| `/payg` | `/pricing` |
+| `/plans` | `/pricing` |
 | `/give-this-prompt-to-your-agent` | `/ai/build-with-ai` |
 | `/agent-operating-layer` | `/ai/agent` |
 | `/custom-skills` | `/ai/build-with-ai` |
@@ -77,13 +77,13 @@ API host stays `https://api.secapi.ai` until a separate API hostname cutover.
 | `/evaluate/xbrl-facts-api` | `/filings/financials` |
 | `/evaluate/13f-api` | `/filings/ownership` |
 | `/evaluate/insider-trading-api` | `/filings/ownership` |
-| `/evaluate/sec-filings-mcp-server` | `/mcp` |
+| `/evaluate/sec-filings-mcp-server` | `/build/mcp` |
 | `/evaluate/sec-filing-rag` | `/ai/build-with-ai` |
-| `/evaluate/pricing-and-limits` | `/admin/billing` |
-| `/for-investment-managers` | `/index` |
-| `/for-hedge-funds` | `/index` |
-| `/compare-sec-api` | `/index` |
-| `/benchmark-sec-api` | `/index` |
+| `/evaluate/pricing-and-limits` | `/pricing` |
+| `/for-investment-managers` | `/` |
+| `/for-hedge-funds` | `/` |
+| `/compare-sec-api` | `/migration/secapi` |
+| `/benchmark-sec-api` | `/migration/secapi` |
 | `/seo/sec-pdf-download-api` | `/filings/pdf` |
 | `/seo/sec-edgar-api` | `/filings/overview` |
 | `/seo/13f-data-api` | `/filings/ownership` |

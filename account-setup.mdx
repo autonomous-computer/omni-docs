@@ -1,19 +1,20 @@
 ---
-title: "Account setup"
-description: "Create a TUROS account, create an API key, and send your first authenticated request."
+title: "Get Started with TUROS | Developer Docs"
+description: "Create a free account, get sandbox and live API keys, connect MCP or make your first API request, and understand production billing."
+sidebarTitle: "Quickstart"
 ---
 
 Learn how to create a TUROS account, create the API key your code will use, and understand which actions need a dashboard session instead of a key. By the end of this page you'll have sent one authenticated request and kept the identifiers that make it reviewable.
 
 ## Accounts
 
-A TUROS account belongs to an organization. Members sign in to the [TUROS dashboard](https://turos.app) through WorkOS, and refresh-backed sessions keep you signed in for 30 days, or 90 days with remember-me. Signing in with a verified email joins your existing organization instead of creating a duplicate.
+A TUROS account belongs to an organization. Members sign in to [TUROS](https://www.turos.app/login) through WorkOS. Signing in with a verified email joins an existing organization instead of creating a duplicate.
 
-Enterprise plans can federate dashboard sign-in to a corporate identity provider - SAML and OIDC via WorkOS, including Okta, Azure AD, and Google Workspace.
+Custom organizations can federate dashboard sign-in to a corporate identity provider through SAML or OIDC via WorkOS, including Okta, Azure AD, and Google Workspace.
 
 ### Create an account
 
-1. Go to [turos.app](https://turos.app) and click **Sign up**.
+1. Go to [Start free](https://www.turos.app/signup).
 2. Verify your email address.
 3. Sign in to the dashboard.
 
@@ -23,7 +24,7 @@ Machine requests authenticate with an API key. The prefix is the mode: `secapi_t
 
 ### Create an API key
 
-1. In the [TUROS dashboard](https://turos.app), go to **API keys**.
+1. In [TUROS](https://www.turos.app/account), go to **API keys**.
 2. Click **Create key**, name it, and choose test or live.
 3. Copy the secret and store it in the environment that will make requests.
 

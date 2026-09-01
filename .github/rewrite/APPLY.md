@@ -1,25 +1,24 @@
-# Apply / staging notes (omni-docs)
+# TUROS docs release notes
 
-This branch is the Stedi-shaped TUROS docs rewrite, staged in **this repo** because Mintlify deploys `docs.turos.app` from `autonomous-computer/omni-docs`.
+This repository deploys the developer documentation at `https://www.turos.app/docs`.
 
-Theme, colors, and logo still belong in the Mintlify dashboard (and `logo/`, `favicon.svg`, `style.css` here). This PR changes content and navigation, not the live theme tokens.
+## Release contents
 
-## What landed
+- One Developer Docs experience with **Guides** and **API Reference** tabs.
+- Guides organized as Start Here, Product, Workflows, Build with TUROS, Coverage & Operations, and Migration.
+- Four Product front doors and five investor Workflow guides.
+- Dedicated MCP, API, SDK, Excel `Alpha`, pricing, and SECAPI.ai migration guides.
+- MCP human-guide aliases point to `/build/mcp`; `/docs/mcp` remains the JSON transport.
+- `llms.txt` and Mintlify Markdown page representations use the same names, status labels, pricing boundary, and host policy.
+- Generated endpoint pages remain OpenAPI-owned. The core docs release owns global API identity and validates the generated output; it does not rewrite endpoint pages individually.
 
-- Sidebar hub toggle: **Developer Docs** | **Product Docs** (Mintlify dropdowns). Header tabs under Developer Docs: **Guides** | **API Reference**.
-- Changelog as the first global sidebar anchor (`/changelog`)
-- API Reference wired to `openapi/sec-api-public.v1.json` (METHOD + path endpoint pages, grouped by resource). Family overview MDX stays as the first page in each shipped group.
-- Compressed SEC API docs rewritten in Stedi voice
-- Existing OMNI agent/platform MDX is **left on disk** but removed from nav. Redirects cover old omni-docs paths and distilled secapi.ai paths.
-- `llms.txt` at the repo root. OpenAPI served at `/openapi/sec-api-public.v1.json`.
-- Cutover map (do not apply until this PR is live): `.github/rewrite/SECAPI-REDIRECTS.md`
-- Rewrite notes: `.github/rewrite/` (`STYLE-GUIDE.md`, `FACTS.md`, `SITEMAP.md`)
+## Coordinated release gate
 
-## After merge
+1. Merge human and machine-readable docs together.
+2. Verify navigation, links, redirects, Markdown page variants, `llms.txt`, and OpenAPI rendering in preview.
+3. Confirm `api.secapi.ai` remains the base URL in working examples.
+4. Deploy the linked marketing, docs, and API-contract changes as one coordinated release.
+5. Verify production at `www.turos.app/docs`, including `/docs/build/mcp` as HTML and `/docs/mcp` as JSON.
+6. Apply legacy SECAPI.ai documentation redirects only after the destination pages are live.
 
-1. Confirm Mintlify is still connected to this repo (not `autonomous-computer/docs` — that site is `docs.secapi.ai`).
-2. Apply dashboard theme updates.
-3. Point `docs.secapi.ai` redirects at `docs.turos.app` when you are ready to deprecate secapi.ai docs.
-4. Curl samples still use `https://api.secapi.ai` until the API hostname cutover.
-
-The OpenAPI copy at `openapi/sec-api-public.v1.json` is the public spec plus Mintlify-only patches: path-based `operationId`s, summaries capped at 72 characters (full text moved into `description`), and `x-mint.href` so endpoint URLs stay `/api-reference/{family}/{method}-{path}`. Do not treat those patches as API contract changes.
+Do not switch examples or discovery defaults to `api.turos.app` until the cross-host parity gate passes.

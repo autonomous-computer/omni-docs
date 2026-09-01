@@ -1,6 +1,7 @@
 ---
-title: "Test mode"
-description: "Use free, fixture-only test keys to build and validate TUROS workflows before sending billable production traffic."
+title: "Free Test Mode | TUROS Developer Docs"
+description: "Build against deterministic test data without a card, wallet debit, or production side effects before moving a workflow to live usage."
+sidebarTitle: "Test mode"
 ---
 
 Test mode provides a separate test environment where you can wire up entity resolution, filing retrieval, intelligence jobs, and artifacts without spending money. Test keys are free, run against fixture data, and never enter the billable rail - a `200` in test mode isn't a production transaction.
@@ -14,7 +15,7 @@ The key prefix is the mode. There's no third prefix.
 
 ## Generate test API keys
 
-1. Go to the [TUROS dashboard](https://turos.app) and sign in.
+1. Go to [TUROS](https://www.turos.app/login) and sign in.
 2. Go to **API keys**.
 3. Click **Create key** and choose the test environment.
 4. Copy the secret and store it where the calling process runs.
@@ -69,7 +70,7 @@ claude mcp add --transport http secapi https://api.secapi.ai/mcp \
   --header "x-api-key: $SECAPI_API_KEY"
 ```
 
-Tool calls made with a test key stay on the non-billable rail, so you can let an agent explore `tools.search` and `tools.describe` freely before you hand it a live credential. See [Model Context Protocol (MCP)](/mcp) for the full setup.
+Tool calls made with a test key stay on the non-billable rail, so you can let an agent explore `tools.search` and `tools.describe` freely before you hand it a live credential. See [TUROS MCP](/build/mcp) for the full setup.
 
 ## What test mode doesn't bill
 

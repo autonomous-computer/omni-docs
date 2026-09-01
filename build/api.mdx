@@ -1,0 +1,39 @@
+---
+title: "TUROS API Overview | Developer Docs"
+description: "Authenticate, make a first request, understand response and billing conventions, and move from evaluation to production."
+sidebarTitle: "API"
+---
+
+Build investor software on one JSON-first API for SEC filing data, macro data, factors, and repeatable investment analysis. Production requests currently use `https://api.secapi.ai`.
+
+## Make a first request
+
+Create a free test key, then resolve a company:
+
+```bash
+export SECAPI_API_KEY="secapi_test_..."
+
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/entities/resolve?ticker=AAPL&view=agent"
+```
+
+Use `x-api-key`, not `Authorization: Bearer`. Pin `secapi-version` in production, preserve `requestId` and source identifiers, and tolerate additive response fields.
+
+## Built for software and agents
+
+- Granular facts and compact response modes instead of entire filings when a workflow needs specific data.
+- Stable identifiers and filing URLs that let readers open the underlying source.
+- OpenAPI schemas, supported SDKs, a CLI, and the same capabilities through MCP.
+- Test and live keys, public rates, quotes, budgets, and idempotent billable POSTs.
+
+## Evaluate, then move to production
+
+Start with deterministic test data. Reproduce a representative workflow, compare fields, source links, latency, response size, and cost, then switch only that workflow to a live key. [Pay-as-you-go pricing](/pricing) lets you validate production without a subscription.
+
+<Note>
+`api.turos.app` is the future default, not the current production default. Do not change an existing client until TUROS publishes that host as parity-ready. `api.secapi.ai` remains the working and backward-compatible host.
+</Note>
+
+Continue to [authentication](/coverage/authentication), the [API reference](/api-reference), or [SDKs](/build/sdks).
