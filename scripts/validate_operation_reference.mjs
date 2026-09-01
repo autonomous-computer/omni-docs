@@ -2,6 +2,7 @@
 
 /** Validate the minimum metadata contract required by generated API references. */
 import fs from "node:fs";
+import pathModule from "node:path";
 
 const input = process.argv[2] ?? "openapi/sec-api-public.v1.json";
 const catalogPath = process.argv[3];
@@ -10,6 +11,7 @@ if (!catalogPath) {
   process.exit(2);
 }
 const document = JSON.parse(fs.readFileSync(input, "utf8"));
+const root = process.cwd();
 const paths = document.paths ?? {};
 const failures = [];
 let operations = 0;
@@ -50,8 +52,13 @@ if (catalogPath) {
       for (const field of ["tag", "docsPath", "summary", "description", "availability", "access", "meterClass", "sourceFields", "freshnessFields", "workflows", "inputs", "examples", "responseFields"]) {
         if (!(field in record)) failures.push(`${key}: missing catalog.${field}`);
       }
-      if (record.docsPath && !String(record.docsPath).startsWith("api-reference/")) failures.push(`${key}: docsPath must be under api-reference/`);
-      if (record.docsPath && !fs.existsSync(record.docsPath)) failures.push(`${key}: docsPath does not exist: ${record.docsPath}`);
+      if (typeof record.docsPath !== "string" || !record.docsPath.trim()) failures.push(`${key}: docsPath must be a non-empty string`);
+      else {
+        const docsPath = record.docsPath.replaceAll("\\", "/");
+        if (docsPath.startsWith("/") || docsPath.includes("..") || !docsPath.startsWith("api-reference/")) failures.push(`${key}: docsPath must be a safe path under api-reference/`);
+        const resolvedDocsPath = pathModule.resolve(root, docsPath);
+        if (!fs.existsSync(resolvedDocsPath)) failures.push(`${key}: docsPath does not exist: ${record.docsPath}`);
+      }
       if (record.workflows !== undefined && !Array.isArray(record.workflows)) failures.push(`${key}: workflows must be an array`);
       for (const field of ["inputs", "examples", "responseFields"]) if (record[field] !== undefined && !Array.isArray(record[field]) && typeof record[field] !== "object") failures.push(`${key}: ${field} must be an array or object`);
     }
@@ -66,8 +73,11 @@ if (catalogPath) {
     const openapiKeys = new Set();
     for (const [path, item] of Object.entries(paths)) for (const method of Object.keys(item)) if (publicMethods.has(method)) openapiKeys.add(`${method.toUpperCase()} ${path}`);
     for (const key of openapiKeys) if (!catalogByKey.has(key)) failures.push(`${key}: public OpenAPI operation absent from catalog`);
-    if (catalog.llmsPath && !fs.existsSync(catalog.llmsPath)) failures.push(`catalog.llmsPath does not exist: ${catalog.llmsPath}`);
-    if (catalog.discoveryPaths) for (const path of catalog.discoveryPaths) if (!fs.existsSync(path)) failures.push(`catalog discovery output does not exist: ${path}`);
+    if (catalog.llmsPath) {
+      const llmsPath = pathModule.resolve(root, catalog.llmsPath);
+      if (!fs.existsSync(llmsPath)) failures.push(`catalog.llmsPath does not exist: ${catalog.llmsPath}`);
+    }
+    if (catalog.discoveryPaths) for (const discoveryPath of catalog.discoveryPaths) if (!fs.existsSync(pathModule.resolve(root, discoveryPath))) failures.push(`catalog discovery output does not exist: ${discoveryPath}`);
   }
 }
 
