@@ -7,7 +7,7 @@ Production API: https://api.secapi.ai
 Authentication: `x-api-key` header, not `Authorization: Bearer`
 Pricing: free test keys, 100 included live calls, then pay as you go for successful production work
 
-The 100-call allowance is confirmed; automatic monthly renewal is not. `api.turos.app` is a future default and must not replace `api.secapi.ai` in production clients until TUROS publishes parity readiness.
+New organizations receive 100 included live calls each UTC calendar month; the allowance resets automatically on the first eligible request in a new month. `api.turos.app` is a future default and must not replace `api.secapi.ai` in production clients until TUROS publishes parity readiness.
 
 ## Start Here
 
