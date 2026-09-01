@@ -33,7 +33,9 @@ for (const docsPath of ["", "/tmp/example.mdx", "api-reference/../llms.txt", "ap
 }
 fs.symlinkSync(path.join(dir, "llms.txt"), path.join(dir, "api-reference", "escape.mdx"));
 assert.notEqual(run({ ...baseRecord, docsPath: "api-reference/escape.mdx" }).status, 0, "escaping docs symlink should fail");
-fs.symlinkSync(path.join(dir, "llms.txt"), path.join(dir, "discovery-escape.json"));
+const outsideDiscovery = path.join(os.tmpdir(), `turos-discovery-outside-${process.pid}.json`);
+fs.writeFileSync(outsideDiscovery, "{}\n");
+fs.symlinkSync(outsideDiscovery, path.join(dir, "discovery-escape.json"));
 assert.notEqual(run(baseRecord, ["discovery-escape.json"]).status, 0, "escaping discovery symlink should fail");
 for (const [field, value] of [["llmsPath", ""], ["llmsPath", "/tmp/llms.txt"], ["llmsPath", "../llms.txt"], ["discoveryPaths", "not-an-array"]]) {
   const openapiFile = path.join(dir, "openapi.json");
