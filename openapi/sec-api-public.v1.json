@@ -3,7 +3,7 @@
   "info": {
     "title": "TUROS API",
     "version": "2026-03-19",
-    "description": "The TUROS API provides SEC filing data, macro data, factor data, and repeatable investment analysis for investor software and AI agents. Production requests currently use api.secapi.ai, which will remain supported when a TUROS hostname becomes the default.",
+    "description": "The TUROS API provides SEC filing data, macro data, factor data, and repeatable investment analysis for investor software and AI agents. Production requests currently use https://api.secapi.ai. The intended future default, https://api.turos.app, will not replace it until the documented parity gate passes; https://api.secapi.ai will remain supported afterward.",
     "contact": {
       "name": "TUROS Support",
       "url": "https://www.turos.app/docs/admin/support"
