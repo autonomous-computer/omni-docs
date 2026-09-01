@@ -68,14 +68,16 @@ if (catalogPath) {
       else {
         const docsPath = record.docsPath.replaceAll("\\", "/");
         if (docsPath.startsWith("/") || docsPath.includes("..") || !docsPath.startsWith("api-reference/")) failures.push(`${key}: docsPath must be a safe path under api-reference/`);
-        validatePath(record.docsPath, pathModule.resolve(root, "api-reference"), `${key}: docsPath`, failures);
-        if (isSafeDocsPath(record.docsPath, root)) {
-          const docsBody = fs.readFileSync(pathModule.resolve(root, record.docsPath), "utf8");
+        const sourcePath = resolveDocsSource(record.docsPath, root);
+        if (!sourcePath && !isGeneratedDocsRoute(record.docsPath, root)) failures.push(`${key}: docsPath is neither a local source file nor a generated docs route: ${record.docsPath}`);
+        if (sourcePath) {
+          validatePath(sourcePath, pathModule.resolve(root, "api-reference"), `${key}: docs source`, failures);
+          const docsBody = fs.readFileSync(pathModule.resolve(root, sourcePath), "utf8");
           // The generated page is an exact operation index: a file existing is
           // not enough. Require the literal route and method in its endpoint
           // table so docsPath cannot silently point at an unrelated family.
           if (!hasExactEndpointRow(docsBody, method.toUpperCase(), path)) {
-            failures.push(`${key}: docsPath does not document the operation route and method: ${record.docsPath}`);
+            failures.push(`${key}: docs source does not document the operation route and method: ${sourcePath}`);
           }
         }
       }
@@ -139,6 +141,25 @@ function isSafeDocsPath(value, root) {
     const realCandidate = fs.realpathSync(candidate);
     const realRoot = fs.realpathSync(apiRoot);
     return realCandidate === realRoot || realCandidate.startsWith(`${realRoot}${pathModule.sep}`);
+  } catch {
+    return false;
+  }
+}
+
+function resolveDocsSource(value, root) {
+  const candidates = [value, value.endsWith(".mdx") ? value : `${value}.mdx`];
+  return candidates.find((candidate) => isSafeDocsPath(candidate, root)) ?? null;
+}
+
+function isGeneratedDocsRoute(value, root) {
+  const normalized = value.replaceAll("\\", "/").replace(/^\//, "").replace(/\.mdx$/, "");
+  if (!normalized.startsWith("api-reference/") || normalized.includes("..")) return false;
+  const inventoryPath = pathModule.resolve(root, "docs.json");
+  if (!fs.existsSync(inventoryPath)) return false;
+  try {
+    const inventory = JSON.parse(fs.readFileSync(inventoryPath, "utf8"));
+    const serialized = JSON.stringify(inventory);
+    return serialized.includes(`\"${normalized}\"`) || serialized.includes(`/${normalized}\"`);
   } catch {
     return false;
   }
