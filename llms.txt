@@ -64,5 +64,5 @@ New organizations receive 100 included live calls each UTC calendar month; the a
 ## Machine Discovery
 
 - Public rates: https://api.secapi.ai/v1/billing/rates
-- API catalog: https://api.secapi.ai/.well-known/api-catalog.json
+- API catalog: https://www.turos.app/docs/.well-known/api-catalog.json
 - MCP endpoint: https://api.secapi.ai/mcp

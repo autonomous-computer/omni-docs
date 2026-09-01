@@ -24,7 +24,7 @@ Preview reads are CORS-enabled for browser use and return public cache headers. 
 
 ## Paid authenticated search
 
-The authenticated `/v1/situations` routes are gated: they return `404` when the situations store is dark. Check `availability` on `/.well-known/api-catalog.json` before making them a first request. When the store is live:
+The authenticated `/v1/situations` routes are gated: they return `404` when the situations store is dark. Check `availability` in the [API catalog](https://www.turos.app/docs/.well-known/api-catalog.json) before making them a first request. When the store is live:
 
 ```bash
 curl --fail-with-body -sS \

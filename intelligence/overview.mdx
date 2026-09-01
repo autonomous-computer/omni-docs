@@ -36,7 +36,7 @@ Submit `job` plus the required identity fields. Prompt-only bodies are rejected.
 | `strategy` | report | documented strategy body |
 | `underwriting_pack` | report | ticker or CIK |
 
-Fund Letters and authenticated situations can be gated. Jobs that depend on an unavailable capability return `404`. Check `availability` on `/.well-known/api-catalog.json` before you depend on them; a route in OpenAPI does not prove that its underlying data is publicly available.
+Fund Letters and authenticated situations can be gated. Jobs that depend on an unavailable capability return `404`. Check `availability` in the [API catalog](https://www.turos.app/docs/.well-known/api-catalog.json) before you depend on them; a route in OpenAPI does not prove that its underlying data is publicly available.
 
 ## Submit, then poll
 
