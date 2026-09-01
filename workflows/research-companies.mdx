@@ -1,0 +1,29 @@
+---
+title: "Research Companies | TUROS Developer Docs"
+description: "Combine filings, financials, segments, ownership, risks, compensation, and events into a repeatable company-research workflow."
+sidebarTitle: "Research Companies"
+---
+
+Build a repeatable company view from the disclosures a company files, the structured data derived from them, and named analysis packages. Keep the accession number, filing URL, and request ID so every important result can be checked against its source.
+
+## Workflow
+
+1. **Resolve the company.** Use `GET /v1/entities/resolve` with a ticker, name, CIK, or supported identifier.
+2. **Establish the filing set.** Search `GET /v1/filings` by entity, form, and date, then retrieve named sections or exhibits.
+3. **Read the operating record.** Query company overview, financial statements, ratios, segments, subsidiaries, audit fees, and compensation as needed.
+4. **Map ownership and activity.** Add 13F, 13D/13G, insider, and fund holdings relevant to the question.
+5. **Assemble analysis.** Use a named company or filing analysis when you need a bounded, repeatable answer rather than raw records.
+
+## Start with compact output
+
+Use compact or agent views when available. Expand only the records or sections the next step requires. This reduces transfer size and agent context without removing the identifiers needed to retrieve the original filing.
+
+## Review checklist
+
+- Confirm the canonical entity and CIK.
+- Distinguish filing period, filed date, and event date.
+- Preserve accession numbers and filing URLs.
+- Treat missing data as a retrieval result, not proof that no disclosure exists.
+- Record method and assumptions for derived analysis.
+
+Start this workflow free; pay only when you move successful work to production. Continue to [SEC Filing Data](/filings/overview), [Investment Analysis](/intelligence/overview), or [pricing](/pricing).

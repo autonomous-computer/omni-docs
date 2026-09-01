@@ -1,9 +1,12 @@
 ---
-title: "Overview"
-description: "Intelligence is a packer over the four TUROS stores. You submit a named job and receive a cited assembly or a priced report - there is no open prompt."
+title: "Investment Analysis | TUROS Developer Docs"
+description: "Run named company, filing, event, country, and portfolio analysis packages with explicit inputs, outputs, methods, and citations."
+sidebarTitle: "Investment Analysis"
 ---
 
-TUROS intelligence is a packer, not a fifth store. The platform has four stores - filings, letters, factors, and macro - and every other route is a view over them. An intelligence job assembles cited output from those stores; it doesn't hold data of its own.
+Complex investment analysis, packaged into repeatable workflows. Submit explicit company, filing, event, country, or portfolio inputs and receive a bounded output with methods, assumptions, and citations to the filings and data behind it.
+
+Investment Analysis is not a fifth dataset. It assembles results from available TUROS data products and returns named packages that can be rerun with the same inputs.
 
 You buy intelligence as a named job. You do not send a free-text prompt. Submit a job type plus the identity fields that job requires, and TUROS returns a completed result or a job ID to poll.
 
@@ -33,7 +36,7 @@ Submit `job` plus the required identity fields. Prompt-only bodies are rejected.
 | `strategy` | report | documented strategy body |
 | `underwriting_pack` | report | ticker or CIK |
 
-Letters and authenticated situations are gated stores. Jobs that depend on them return `404` when that store is dark. Check `availability` on `/.well-known/api-catalog.json` before you depend on them.
+Fund Letters and authenticated situations can be gated. Jobs that depend on an unavailable capability return `404`. Check `availability` on `/.well-known/api-catalog.json` before you depend on them; a route in OpenAPI does not prove that its underlying data is publicly available.
 
 ## Submit, then poll
 

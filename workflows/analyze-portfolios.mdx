@@ -1,0 +1,30 @@
+---
+title: "Analyze Portfolios | TUROS Developer Docs"
+description: "Attribute returns, measure factor exposures, test scenarios, and review portfolio risks with explicit methods and assumptions."
+sidebarTitle: "Analyze Portfolios"
+---
+
+Explain what drove returns, measure factor exposures, test scenarios, and review risks through repeatable portfolio analysis. TUROS packages multi-step calculations behind explicit holdings, period, benchmark, and method inputs.
+
+## Choose the job
+
+- `POST /v1/portfolio/analyze` for a broad portfolio view.
+- `POST /v1/portfolio/attribution` to explain returns by supported dimensions.
+- `POST /v1/portfolio/risk` to review portfolio risk measures.
+- `POST /v1/portfolio/stress-test` to apply a documented scenario.
+- `POST /v1/portfolio/hedge` or `POST /v1/portfolio/optimize` for supported construction workflows.
+- `POST /v1/factors/decomposition` and exposure endpoints for factor-specific questions.
+
+## Make the analysis repeatable
+
+1. Resolve holdings to stable security and company identities.
+2. Record weights, effective date, currency, benchmark, and portfolio constraints.
+3. Select a named analysis and inspect its required input schema.
+4. Preserve methodology, assumptions, warnings, and missing-coverage fields.
+5. Compare results only when the input and method definitions match.
+
+## Review the boundary
+
+Analysis is a model output, not a guarantee of performance or investment advice. A scenario is conditional, factor exposure is model-dependent, and attribution depends on the chosen benchmark and period. Keep those assumptions with the result.
+
+Start this workflow free; pay only when you run successful production work. See [Factor Data](/intelligence/factors), [Investment Analysis](/intelligence/overview), and [pricing](/pricing).

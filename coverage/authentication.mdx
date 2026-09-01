@@ -1,6 +1,7 @@
 ---
-title: "Authentication"
-description: "Authenticate TUROS machine requests with the x-api-key header, pin an API version, and use dashboard sessions for account actions."
+title: "Authentication and API Keys | TUROS Docs"
+description: "Authenticate TUROS API and MCP requests with an API key, separate test and live credentials, and handle keys safely."
+sidebarTitle: "Authentication"
 ---
 
 TUROS uses two credentials with different jobs: an API key for machine data requests, and a signed-in dashboard session for people-driven account actions. Every REST, SDK, CLI, and server-to-server MCP request authenticates with an API key in the `x-api-key` header.
@@ -40,11 +41,11 @@ TUROS distinguishes the two ways a request can fail authentication:
 - `401 missing_api_key` - the request didn't include `x-api-key`. Check the header name and that the client actually sends it.
 - `401 authentication_failed` - the supplied key wasn't accepted. Check for a revoked, truncated, or wrong-environment key.
 
-Don't switch to a bearer header to fix either error. `403` means the credential is valid but isn't authorized for the resource - check the plan and entitlement rather than the key format.
+Don't switch to a bearer header to fix either error. `403` means the credential is valid but isn't authorized for the resource—check the account entitlement rather than the key format.
 
 ## SSO
 
-Enterprise plans can federate dashboard sign-in to a corporate identity provider through WorkOS, with SAML and OIDC support for Okta, Azure AD, Google Workspace, and other SAML 2.0 and OIDC providers. SSO covers human dashboard access - machine requests still authenticate with API keys.
+Custom organizations can federate dashboard sign-in to a corporate identity provider through WorkOS, with SAML and OIDC support for Okta, Azure AD, Google Workspace, and other SAML 2.0 and OIDC providers. SSO covers human dashboard access; machine requests still authenticate with API keys.
 
 Enterprise key management also supports scoped keys: `read:sec`, `write:sec`, and `admin:operator`.
 
@@ -57,7 +58,7 @@ https://api.secapi.ai/.well-known/oauth-protected-resource
 https://api.secapi.ai/.well-known/oauth-authorization-server
 ```
 
-Server-to-server MCP calls still authenticate with `x-api-key`. See [Model Context Protocol (MCP)](/mcp) for setup.
+Server-to-server MCP calls still authenticate with `x-api-key`. See [TUROS MCP](/build/mcp) for setup.
 
 ## Next steps
 

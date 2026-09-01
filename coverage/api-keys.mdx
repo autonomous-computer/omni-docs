@@ -1,6 +1,7 @@
 ---
-title: "API keys"
-description: "Create, store, rotate, and revoke TUROS API keys, and understand test and live key modes."
+title: "Manage TUROS API Keys | Developer Docs"
+description: "Create, identify, rotate, and revoke TUROS test and live API keys without exposing credentials in code, logs, or agent prompts."
+sidebarTitle: "API keys"
 ---
 
 An API key is the credential for every TUROS machine request - REST, SDKs, the CLI, and server-to-server MCP. Keys are created in the TUROS dashboard, scoped to your organization, and sent in the `x-api-key` header.
@@ -18,7 +19,7 @@ TUROS shows the full secret once, at creation. Afterward the dashboard and API d
 
 ## Create a key
 
-1. Go to the [TUROS dashboard](https://turos.app) and sign in.
+1. Go to [TUROS](https://www.turos.app/login) and sign in.
 2. Go to **API keys**.
 3. Click **Create key**, name it for the workload that will use it, and choose test or live.
 4. Copy the secret into the secret store of the environment that will make requests.
@@ -54,4 +55,4 @@ For a suspected leak, revoke the exposed key first, then create and deploy its r
 
 ## Key limits
 
-Each plan has a key limit. The Team plan includes up to 10 keys, and the Commercial plan includes up to 25. If key creation fails at the limit, revoke an unused key or upgrade the plan - don't share one key across unrelated workloads to work around it.
+Key limits are returned by the current account and can vary for Custom agreements. If key creation fails at the limit, revoke an unused key or contact TUROS—do not share one key across unrelated workloads to work around it.

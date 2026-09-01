@@ -1,91 +1,58 @@
 ---
-title: "Billing and pricing"
-description: "Account modes, plans, pay as you go, meters, grant advisory headers, and the rights boundary for TUROS usage."
+title: "Manage Billing | TUROS Developer Docs"
+description: "Inspect billing state, rates, wallet credits, top-ups, budgets, and billing errors for a TUROS organization."
 ---
 
-TUROS bills successful production work. Test traffic, health checks, quotes, and requests that fail before work starts are free. This page is the account-level contract; `GET /v1/billing` and `GET /v1/limits` describe the specific account that will run the work, and `GET /v1/billing/rates` is the public rate catalog.
+TUROS bills successful production work. Test traffic, health checks, quotes, public discovery, and requests that fail before work starts are free. [Pricing and billing](/pricing) explains the commercial model; this page covers account operations and response behavior.
 
-## Account modes
+## Inspect the account
 
-The API key prefix is the mode:
-
-- **Test (`secapi_test_…`, `livemode: false`):** free, fixture-only. Doesn't debit credits or consume the included monthly calls.
-- **Live (`secapi_live_…`, `livemode: true`):** bills the published SKU on successful work.
-
-Every new organization receives 100 included calls each month, renewing automatically.
-
-## Plans
-
-| Plan key | Plan | What you get |
-| --- | --- | --- |
-| `sandbox_grant` | Sandbox | Free. 100 included calls each month. Test keys stay free. |
-| `payg` | Pay as you go | Prepaid credits at published list prices. |
-| `personal` | Pro - `$49`/mo | `$10` in included credits plus 15% discounted overages. |
-| `team` | Team - `$199`/mo | `$50` in included credits plus 25% discounted overages. 5 seats, 10 keys. |
-| `commercial` | Commercial - from `$18,000`/yr | Redistribution, embedding, white-label, resale, Bulk Factor Export. 25 keys. |
-
-Named intel jobs have two list prices everywhere: an intel pack is `$0.50` and an intel report is `$1.50`, billed once on successful completion. Entity resolve is `$0.01`. REST, MCP, SDK, and CLI use the same SKU - the channel is not a discount.
-
-## Pay as you go
-
-PAYG uses prepaid credits. Enable it from the TUROS dashboard - `POST /v1/billing/payg/enable` is a session-authenticated control-plane action, not an API-key call. Once payment is confirmed, the organization moves to `payg_active`. Until then, a billable request can return `402 billing_required`.
-
-Preflight a workload before running it:
+Use a live API key for the current organization's billing and limit state:
 
 ```bash
-curl --fail-with-body -sS -H "x-api-key: $SECAPI_API_KEY" \
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
   "https://api.secapi.ai/v1/billing"
 
 curl --fail-with-body -sS \
-  "https://api.secapi.ai/v1/billing/rates"
+  -H "x-api-key: $SECAPI_API_KEY" \
+  "https://api.secapi.ai/v1/limits"
 ```
 
-`POST /v1/billing/quote` estimates the cost of a request - it is an estimate, not a reservation. `PUT /v1/billing/budget` sets spend caps and alert thresholds, and `GET /v1/usage` reports metered usage for the current period.
+`GET /v1/billing/rates` returns the public rate catalog. `POST /v1/billing/quote` estimates a request but does not reserve credits or capacity.
+
+## Included allowance
+
+New organizations receive 100 included live calls each UTC calendar month. For Sandbox and PAYG-pending organizations, the allowance resets automatically on the first eligible request in a new month. Inspect the live billing response for the current balance and renewal state.
+
+From 80% consumption onward, billable responses can return grant advisory headers including `SECAPI-Grant-Status`, `SECAPI-Grant-Consumed-Percent`, `SECAPI-Grant-Remaining`, and a next action. When the allowance is spent, `402 billing_required` identifies the cause in `details.reason`, such as `starter_grant_exhausted`.
+
+## Wallet and top-ups
+
+Pay as you go uses prepaid credits. The dashboard is the supported place to add a payment method, enable PAYG, buy credits, configure auto top-up, request an eligible refund, and set budget controls. These mutations require a signed-in dashboard session; an API key cannot change billing.
+
+| Endpoint family | Purpose |
+| --- | --- |
+| `/v1/billing/credits` | Read the credit balance, low-balance state, and configured auto top-up. |
+| `/v1/billing/credits/transactions` | Review top-ups, debits, refunds, grants, and adjustments. |
+| `/v1/billing/budget` | Read or set spend caps and alert thresholds. |
+| `/v1/billing/payment-methods` | Manage organization payment methods with a dashboard session. |
+
+Paid credits do not expire under the current pricing model. Larger top-ups save up to 30%; see [pricing](/pricing) for the bands.
 
 ## Meters
 
-Usage is grouped into meter families. Retain `SECAPI-Meter-Class` and `SECAPI-Estimated-Cost` when a response supplies them.
+Work is grouped into meter families such as light reads, standard reads, heavy extracts, artifact jobs, delivery events, intelligence queries, market-data reads, and semantic search. Preserve `SECAPI-Meter-Class` and `SECAPI-Estimated-Cost` when returned.
 
-| Meter | Covers |
-| --- | --- |
-| `light_reads` | Light store reads. |
-| `standard_reads` | Standard store reads. |
-| `heavy_extracts` | Heavy extraction work. |
-| `artifact_jobs` | Artifact creation. |
-| `delivery_events` | Webhook and stream delivery. |
-| `email_notifications` | Monitor email recipients. |
-| `intelligence_queries` | Named intel jobs. |
-| `market_data_reads` | Market data reads. |
-| `semantic_search` | Semantic search. |
+Named analysis jobs are billed once on successful completion. Enqueue responses, in-flight polls, failures, cancellations, and later reads of an already billed result do not create a second charge.
 
-Separately, an `ai_queries` quota applies to intelligence routes; the sandbox trial is 10 per UTC month, and quota-counted responses carry `SECAPI-AI-Quota-*` headers.
+## Idempotency and billing errors
 
-## Grant advisory headers
+Send `Idempotency-Key` on billable POST requests. Reusing a key with a different body is rejected; an in-flight first call can return `409` with `Retry-After`.
 
-The included-calls grant warns before it stops you. From 80% consumption onward, billable responses carry an advisory:
-
-| Header | Meaning |
-| --- | --- |
-| `SECAPI-Grant-Status` | `approaching`, then `exhausted`. |
-| `SECAPI-Grant-Consumed-Percent` | Share of the grant consumed, as an integer percent. |
-| `SECAPI-Grant-Remaining` | Included calls still available. |
-| `SECAPI-Grant-Warning` | Human-readable warning while the status is `approaching`. |
-| `SECAPI-Grant-Action` | `add_payment_method_soon`, then `add_payment_method`. |
-| `SECAPI-Grant-Action-Url` | Where to add a card or buy credits. |
-
-When the grant is spent, `402 billing_required` identifies the cause in `details.reason` - for example, `starter_grant_exhausted`. Branch on `details.reason`, not the message text; other `402` conditions carry their own reasons and resolution paths.
-
-## Idempotency on billable POSTs
-
-Send `Idempotency-Key` on billable POSTs. The first response is replayed for 24 hours. Reusing the key with a different body returns `422`; an in-flight first call returns `409` with `Retry-After`.
-
-## What is not billed
-
-Health, quote, limits, catalog, test-key traffic, and `4xx` that fail before work starts. Failed, cancelled, or in-flight intel and artifact jobs are free, and polling a completed job doesn't bill again.
+For `402 billing_required`, branch on `details.reason`, not the human-readable message. Resolve the stated account condition before retrying.
 
 ## Rights boundary
 
-Self-serve plans cover evaluation and internal use only. Redistribution, embedding, white-labeling, resale, and Bulk Factor Export require the Commercial plan. A `200` from the API is not a redistribution license - don't infer rights from a successful request.
-
-Billing mutations - checkout, payment methods, top-ups, budgets - are dashboard-session actions. An API key cannot create keys or change billing.
+Pay as you go covers evaluation and internal use. Redistribution, embedding, white-labeling, resale, bulk export, committed volume, and contractual service terms require Custom terms. A `200` response does not grant redistribution rights.

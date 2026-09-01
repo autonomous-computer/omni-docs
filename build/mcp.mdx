@@ -1,0 +1,71 @@
+---
+title: "TUROS MCP Server | Developer Docs"
+description: "Connect a compatible AI client to focused investor tools for SEC filing data, macro data, factors, and repeatable analysis."
+sidebarTitle: "MCP"
+---
+
+Connect a compatible AI client to the TUROS data layer without writing an integration. The hosted server gives agents focused tools for SEC filing data, macro data, factor data, and repeatable investment analysis, with compact schemas and links or identifiers for the underlying sources.
+
+The current production endpoint is `https://api.secapi.ai/mcp`. Public discovery uses `GET /mcp`; authenticated JSON-RPC tool calls use `POST /mcp` with an API key in `x-api-key`.
+
+Want a guided path for your client? Start with [Agent Setup](https://www.turos.app/agent-setup). To compare TUROS with an existing provider before migrating, see [Switch to TUROS](https://www.turos.app/switch).
+
+<Warning>
+The public URL `/docs/mcp` is reserved for the MCP transport and returns JSON. This human guide lives at `/docs/build/mcp`.
+</Warning>
+
+## Connect a client
+
+Create a key in the [TUROS dashboard](https://www.turos.app/signup), then expose it to the client process:
+
+```bash
+export SECAPI_API_KEY="secapi_test_..."
+```
+
+### Claude Code
+
+```bash
+claude mcp add --transport http turos https://api.secapi.ai/mcp \
+  --header "x-api-key: $SECAPI_API_KEY"
+```
+
+### Portable remote HTTP configuration
+
+Use the environment-variable syntax supported by your client:
+
+```json
+{
+  "mcpServers": {
+    "turos": {
+      "type": "http",
+      "url": "https://api.secapi.ai/mcp",
+      "headers": {
+        "x-api-key": "${SECAPI_API_KEY}"
+      }
+    }
+  }
+}
+```
+
+Restart the client after changing its environment or configuration. Never place the secret in a prompt, URL, repository, or shared configuration file.
+
+## Discover before calling
+
+1. Use `tools.search` with the investor job you need.
+2. Use `tools.describe` to load the exact input schema for a candidate tool.
+3. Call one focused tool with explicit identifiers and bounded inputs.
+4. Preserve returned source identifiers, URLs, freshness fields, and request IDs.
+
+This search-first pattern keeps context smaller than loading every possible schema up front.
+
+## Test and production usage
+
+Test keys let an agent discover and exercise deterministic fixture workflows without billing. Live keys use the same pay-as-you-go prices as the API; the channel does not change the SKU. Start free, then pay only for successful production work. See [pricing and billing](/pricing).
+
+## Move from MCP to the API
+
+MCP and the REST API share the same data layer and core conventions. Prototype a workflow with an agent, then move repeatable production execution to the [API](/build/api) or a supported [SDK](/build/sdks) without adopting a separate data product.
+
+<Note>
+Keep `api.secapi.ai` in configuration until `api.turos.app` passes the published parity gate. Existing host and package names remain compatibility contracts.
+</Note>

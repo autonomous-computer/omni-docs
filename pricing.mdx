@@ -1,0 +1,62 @@
+---
+title: "TUROS API Pricing and Billing | Developer Docs"
+description: "Understand free test mode, included live calls, pay-as-you-go job prices, top-up savings, non-billable work, and budget controls."
+sidebarTitle: "Pricing and billing"
+---
+
+**Start free. Pay only for what you use.**
+
+Create an account without a card, build with free test keys, and receive 100 included live calls. When you are ready for production, fund your wallet from `$10`. Self-serve production has no subscription, monthly minimum, setup fee, or per-seat fee.
+
+<Warning>
+New organizations receive 100 included live calls each UTC calendar month. The allowance resets automatically on the first eligible request in a new month. Check `GET /v1/billing` and `GET /v1/limits` for the current account state.
+</Warning>
+
+## Test and live keys
+
+| Key | Cost | Data |
+| --- | --- | --- |
+| `secapi_test_…` | Free | Deterministic fixture data with no wallet debit or production side effects. |
+| `secapi_live_…` | Published price on successful work after the included allowance | Production data and analysis. |
+
+Test traffic, health checks, quotes, public discovery, and requests that fail before work starts are not billed. In-flight, failed, or cancelled asynchronous jobs are not billed; a completed job is billed once.
+
+## Pay as you go
+
+PAYG uses prepaid credits. Paid credits do not expire under the current pricing model, and auto top-up uses the same savings schedule as manual top-ups.
+
+| Fund your wallet | You pay | Savings |
+| ---: | ---: | ---: |
+| `$50` | `$45` | 10% |
+| `$250` | `$200` | 20% |
+| `$1,000` | `$700` | 30% |
+
+Other amounts from `$10` to `$5,000` use the applicable savings band. See the [TUROS pricing page](https://www.turos.app/pricing) for the public rate table and calculator.
+
+## Inspect cost before production work
+
+```bash
+curl --fail-with-body -sS \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  "https://api.secapi.ai/v1/billing"
+
+curl --fail-with-body -sS \
+  "https://api.secapi.ai/v1/billing/rates"
+```
+
+Use `POST /v1/billing/quote` to estimate a request. A quote is not a reservation. Use `PUT /v1/billing/budget` for spend caps and alerts, and retain returned meter and estimated-cost headers when present.
+
+## Billing failures
+
+A billable request can return `402 billing_required`. Branch on `details.reason`, not the message text. For example, `starter_grant_exhausted` means the included allowance is spent and the account needs a payment method or credits before more billable work can run.
+
+Send an `Idempotency-Key` on billable POST requests so a safe retry cannot buy the same work twice.
+
+## Custom terms
+
+Pay as you go covers evaluation and internal use. Contact TUROS for Custom terms when you need committed volume, consolidated billing, SSO or SCIM, redistribution or embedding rights, dedicated support, or a contractual SLA. A successful API response does not grant redistribution rights.
+
+## Account operations
+
+Billing mutations—including payment methods, top-ups, refunds, budgets, and auto top-up—require a signed-in dashboard session. An API key cannot change billing. Continue to [account billing operations](/admin/billing) for response fields, meter families, and error handling.

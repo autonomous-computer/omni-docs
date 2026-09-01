@@ -1,15 +1,15 @@
 # Facts that must survive (do not invent)
 
-Source: `autonomous-computer/docs` `origin/main` (`f1066d0`) plus omni-datastream mintlify sync. If a fact is not here, do not add a capability.
+Source: the live TUROS contract, `omni-datastream`, and the approved TUROS Data & Intelligence positioning plan. If a fact is not here or in the current OpenAPI/catalog, do not add a capability.
 
 ## Hosts (cutover)
 
-- Product / dashboard: `https://turos.app` (signup, login, keys, billing, monitors, webhooks).
+- Product / dashboard: `https://www.turos.app` (signup, login, keys, billing, monitors, webhooks).
 - Docs destination: TUROS docs (this tree). `docs.secapi.ai` and secapi.ai docs URLs will redirect here.
 - Live HTTP API today: `https://api.secapi.ai` — keep this in every curl until an API hostname cutover exists. Do not write `api.turos.app` (that is a different service).
 - MCP: `https://api.secapi.ai/mcp`
 - Health: `https://api.secapi.ai/healthz`, `/readyz`
-- Status: `https://status.secapi.ai`
+- Status: `https://status.turos.app`
 - OpenAPI: `openapi/sec-api-public.v1.json`
 - Discovery: `/.well-known/api-catalog.json`, `agent-card.json`, `mcp-server-card.json`, `llms.txt`
 
@@ -56,22 +56,21 @@ Preserve when present: `accessionNumber`, `form`, `filingDate`, `filingUrl`, `re
 
 ## Billing
 
-- 100 included calls/month, renews automatically.
-- PAYG: prepaid credits; enable in dashboard (`POST /v1/billing/payg/enable` is session-auth). State `payg_active`.
-- Pro $49/mo + $10 credits + 15% discounted overages.
-- Team $199/mo + $50 credits + 25% discounted overages. 5 seats, 10 keys.
-- Commercial from $18,000/yr: redistribution, embedding, white-label, resale, Bulk Factor Export. 25 keys.
-- Plan keys: `sandbox_grant`, `payg`, `personal`, `team`, `commercial`.
+- Free test keys plus 100 included live calls each UTC calendar month. The allowance resets automatically on the first eligible request in a new month. Do not describe the allowance as a subscription or promise more than the confirmed 100-call monthly allowance.
+- PAYG: prepaid credits from $10; enable in the dashboard. No self-serve subscription, monthly minimum, setup fee, or per-seat fee.
+- Top-up examples: fund $50 for $45 (10%); $250 for $200 (20%); $1,000 for $700 (30%). Paid credits do not expire under the current model. Auto top-up uses the same bands.
+- Custom: redistribution, embedding, white-label, resale, bulk exports, enterprise controls, committed volume, dedicated support, and contractual SLAs.
+- Legacy or grandfathered plan keys may still appear in runtime schemas. They are compatibility facts, not public self-serve offers.
 - Resolve = `$0.01`.
 - Intel pack `$0.50` (`deal_brief`, `letter_brief`, `filing_brief`, `move_brief`). Intel report `$1.50` (`country_report`, `portfolio_review`, `strategy`, `underwriting_pack`). Channel is not a discount. Billed once on successful named-job completion. `202`/polls/failures/cache hits not billed.
 - Meters: `light_reads`, `standard_reads`, `heavy_extracts`, `artifact_jobs`, `delivery_events`, `email_notifications`, `intelligence_queries`, `market_data_reads`, `semantic_search`.
 - `ai_queries` quota; sandbox trial 10/mo. Headers `SECAPI-AI-Quota-*`.
 - Grant advisory from 80%: `SECAPI-Grant-Status/Consumed-Percent/Remaining/Warning/Action/Action-Url`.
-- `GET /v1/billing`, `/v1/limits`, `/v1/billing/rates` (public), `POST /v1/billing/quote` (not a reservation), `PUT /v1/billing/budget`, `GET /v1/usage`.
+- `GET /v1/billing`, `/v1/limits`, `/v1/billing/rates` (public), `POST /v1/billing/quote` (not a reservation), and `PUT /v1/billing/budget`.
 - `Idempotency-Key` on billable POSTs: 24h replay, `422` body mismatch, `409` + `Retry-After` in flight.
 - Non-billable: health, quote, limits, catalog, test-key traffic, 4xx before work starts.
 - `402 billing_required` with `details.reason` (e.g. `starter_grant_exhausted`). Branch on reason, not message text.
-- Self-serve = evaluation and internal use only.
+- Pay as you go = evaluation and internal use only. Custom terms govern redistribution and embedding.
 
 ## Coverage
 
@@ -82,9 +81,13 @@ Preserve when present: `accessionNumber`, `form`, `filingDate`, `filingUrl`, `re
 - Dilution and `GET /v1/companies/segments` are beta (`SECAPI-Maturity: beta`).
 - Do not claim equal data density across EDGAR.
 
-## Object graph
+## Product and workflow map
 
-Entity → filing → fact/statement/events; letter → thesis; factor; situation; position; snapshot; observation. Four stores: filings, letters, factors, macro. Other routes are views. Intel is a packer, not a fifth store.
+- Product: SEC Filing Data; Macro Data; Factor Data `Beta`; Investment Analysis.
+- Workflows: Research Companies; Track Investors; Track Company Events; Understand Macro; Analyze Portfolios.
+- Build with TUROS: MCP; API; SDKs; CLI; Excel Add-In `Alpha`.
+- Fund Letters is Coming Soon and publicly gated. Initial documented coverage begins with Q1 2025 and is not a comprehensive historical archive.
+- Entity → filing → fact/statement/event; factor; position; snapshot; observation. Investment Analysis packages available data into repeatable workflows; it is not another dataset.
 
 ## MCP
 

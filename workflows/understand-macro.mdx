@@ -1,0 +1,25 @@
+---
+title: "Understand Macro | TUROS Developer Docs"
+description: "Track releases, revisions, policy events, and regimes, then connect macro changes to countries, companies, sectors, and portfolios."
+sidebarTitle: "Understand Macro"
+---
+
+Move from a macro question to a bounded set of indicators, releases, forecasts, and regimes, then connect those changes to companies and portfolios.
+
+## Workflow
+
+1. Search for the canonical indicator key with `GET /v1/macro/search`.
+2. Retrieve observations and preserve their source, release, revision, and freshness fields.
+3. Separate upcoming calendar events from already released data.
+4. Use the country high-signal pack or country report when you need a repeatable summary.
+5. Connect macro changes to company exposure, factor behavior, or portfolio scenarios.
+
+## Released data is not the calendar
+
+`GET /v1/macro/calendar` answers what is scheduled. `GET /v1/macro/releases` answers what was released. Observations may be revised after their first publication, so preserve vintage and revision fields when supplied.
+
+## Supported sources only
+
+Registry presence does not prove a source is connected or current. Build on providers and series returned as available by the live status and catalog surfaces, and check freshness for the exact country and indicator your workflow needs.
+
+Start in the free sandbox, then use the same API or MCP workflow in production. Continue to [Macro Data](/intelligence/macro) or [Analyze Portfolios](/workflows/analyze-portfolios).
