@@ -23,6 +23,22 @@ const duplicate = spawnSync(process.execPath, [args[0], args[1], args[2], write(
 assert.equal(duplicate.status, 1);
 assert.match(duplicate.stderr, /duplicate/);
 
+const privateDuplicate = spawnSync(process.execPath, [args[0], args[1], args[2], write("private-duplicate.json", { operations: [
+  { method: "GET", path: "/v1/filings", public: false },
+  { method: "GET", path: "/v1/filings", internal: true },
+  ...catalog.operations.slice(0, 2),
+] }), args[4]], { encoding: "utf8" });
+assert.equal(privateDuplicate.status, 1);
+assert.match(privateDuplicate.stderr, /duplicate/);
+
+const privateFirstPublicSecond = spawnSync(process.execPath, [args[0], args[1], args[2], write("private-first.json", { operations: [
+  { method: "GET", path: "/v1/filings", public: false },
+  { method: "GET", path: "/v1/filings" },
+  { method: "POST", path: "/v1/facts" },
+] }), args[4]], { encoding: "utf8" });
+assert.equal(privateFirstPublicSecond.status, 1);
+assert.match(privateFirstPublicSecond.stderr, /duplicate/);
+
 const malformed = spawnSync(process.execPath, [args[0], write("malformed.json", { paths: { "/v1/filings": null } }), args[2], args[3], args[4]], { encoding: "utf8" });
 assert.equal(malformed.status, 1);
 assert.match(malformed.stderr, /malformed/);

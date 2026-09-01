@@ -46,17 +46,18 @@ const recordsKeys = (value, label) => {
   const records = Array.isArray(value) ? value : value?.operations ?? value?.items;
   if (!Array.isArray(records)) throw new Error(`${label}: expected an operations or items array`);
   const keys = new Set();
+  const publicKeys = new Set();
   const duplicates = [];
   for (const record of records) {
     if (!record || typeof record !== "object" || Array.isArray(record)) throw new Error(`${label}: malformed operation record`);
     const key = recordKey(record);
     if (!key || !methods.has(key.split(" ", 1)[0].toLowerCase())) throw new Error(`${label}: invalid operation record ${JSON.stringify(record)}`);
     if (keys.has(key)) duplicates.push(key);
-    if (!isPublicOperation(record)) continue;
     keys.add(key);
+    if (isPublicOperation(record)) publicKeys.add(key);
   }
   if (duplicates.length) throw new Error(`${label}: duplicate operation(s): ${duplicates.join(", ")}`);
-  return keys;
+  return publicKeys;
 };
 const allowlistKeys = (value) => {
   if (value?.operations || value?.items || Array.isArray(value)) return recordsKeys(value, "catalog/allowlist");
