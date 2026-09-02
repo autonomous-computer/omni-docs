@@ -14348,7 +14348,7 @@
                       "id": "macro_high_signal_pack_US",
                       "asOf": "2026-06-09T22:15:00.000Z",
                       "country": "US",
-                      "ring": "launch_ring_1",
+                      "coverageTier": "core",
                       "responseMode": "compact",
                       "seriesCount": 32,
                       "series": [
@@ -19792,7 +19792,7 @@
                           "specificVol": 0.35,
                           "ctevShare": 0.04,
                           "ctev": 0.0016,
-                          "note": "Outside the ~4k US factor plane — beta-only / specific-risk-floor treatment."
+                          "note": "Outside the ~4k US factor model universe — beta-only / specific-risk-floor treatment."
                         }
                       ],
                       "coverage": {
@@ -19808,8 +19808,8 @@
                         "covarianceEstimable": true
                       },
                       "disclosures": [
-                        "Ex-ante risk uses an EWMA factor covariance (~2y half-life, weekly) over the style/sector/industry factor plane (2015→).",
-                        "Model coverage: 94% of portfolio NAV is inside the ~4k US factor plane. Unmodelled names use a beta-only / specific-risk-floor treatment.",
+                        "Ex-ante risk uses an EWMA factor covariance (~2y half-life, weekly) over the style/sector/industry factor universe (2015→).",
+                        "Model coverage: 94% of portfolio NAV is inside the ~4k US factor model universe. Unmodelled names use a beta-only / specific-risk-floor treatment.",
                         "Macro-factor covariance only reaches 2022; macro figures are labelled shorter-history and excluded from the P0 covariance basis."
                       ],
                       "summaryMd": "Ex-ante tracking error is 4.12% (annualised active risk); 71% factor / 29% specific.",
@@ -22715,7 +22715,7 @@
     "/v1/intelligence/macro-exposure": {
       "post": {
         "summary": "Portfolio macro exposure",
-        "description": "Return revenue-weighted macro sensitivities for a portfolio: geographic revenue segments crossed with the country macro plane, with per-holding contributions and a coverage percentage.",
+        "description": "Return revenue-weighted macro sensitivities for a portfolio: geographic revenue segments crossed with country macro indicators, with per-holding contributions and a coverage percentage.",
         "requestBody": {
           "required": true,
           "content": {
@@ -29086,7 +29086,7 @@
         ],
         "responses": {
           "404": {
-            "description": "The filings-intelligence plane is currently disabled (filings_intelligence_not_available).",
+            "description": "The filings-intelligence API is currently disabled (filings_intelligence_not_available).",
             "content": {
               "application/json": {
                 "schema": {
@@ -29100,7 +29100,7 @@
                       "id": "err_example",
                       "code": "filings_intelligence_not_available",
                       "type": "invalid_request_error",
-                      "message": "The filings-intelligence plane is not enabled.",
+                      "message": "The filings-intelligence API is not enabled.",
                       "requestId": "req_example",
                       "details": {}
                     }
@@ -29210,7 +29210,7 @@
         ],
         "responses": {
           "404": {
-            "description": "The filings-intelligence plane is currently disabled (filings_intelligence_not_available).",
+            "description": "The filings-intelligence API is currently disabled (filings_intelligence_not_available).",
             "content": {
               "application/json": {
                 "schema": {
@@ -29224,7 +29224,7 @@
                       "id": "err_example",
                       "code": "filings_intelligence_not_available",
                       "type": "invalid_request_error",
-                      "message": "The filings-intelligence plane is not enabled.",
+                      "message": "The filings-intelligence API is not enabled.",
                       "requestId": "req_example",
                       "details": {}
                     }
@@ -29341,7 +29341,7 @@
         ],
         "responses": {
           "404": {
-            "description": "The filings-intelligence plane is currently disabled (filings_intelligence_not_available).",
+            "description": "The filings-intelligence API is currently disabled (filings_intelligence_not_available).",
             "content": {
               "application/json": {
                 "schema": {
@@ -29355,7 +29355,7 @@
                       "id": "err_example",
                       "code": "filings_intelligence_not_available",
                       "type": "invalid_request_error",
-                      "message": "The filings-intelligence plane is not enabled.",
+                      "message": "The filings-intelligence API is not enabled.",
                       "requestId": "req_example",
                       "details": {}
                     }
@@ -29495,7 +29495,7 @@
         ],
         "responses": {
           "404": {
-            "description": "The filings-intelligence plane is currently disabled (filings_intelligence_not_available).",
+            "description": "The filings-intelligence API is currently disabled (filings_intelligence_not_available).",
             "content": {
               "application/json": {
                 "schema": {
@@ -29509,7 +29509,7 @@
                       "id": "err_example",
                       "code": "filings_intelligence_not_available",
                       "type": "invalid_request_error",
-                      "message": "The filings-intelligence plane is not enabled.",
+                      "message": "The filings-intelligence API is not enabled.",
                       "requestId": "req_example",
                       "details": {}
                     }
@@ -29595,7 +29595,7 @@
         ],
         "responses": {
           "404": {
-            "description": "The filings-intelligence plane is currently disabled (filings_intelligence_not_available).",
+            "description": "The filings-intelligence API is currently disabled (filings_intelligence_not_available).",
             "content": {
               "application/json": {
                 "schema": {
@@ -29609,7 +29609,7 @@
                       "id": "err_example",
                       "code": "filings_intelligence_not_available",
                       "type": "invalid_request_error",
-                      "message": "The filings-intelligence plane is not enabled.",
+                      "message": "The filings-intelligence API is not enabled.",
                       "requestId": "req_example",
                       "details": {}
                     }
@@ -47610,7 +47610,6 @@
           "id",
           "asOf",
           "country",
-          "ring",
           "series",
           "summaryMd"
         ],
@@ -47648,13 +47647,18 @@
           "country": {
             "type": "string"
           },
-          "ring": {
+          "coverageTier": {
             "type": "string",
             "enum": [
-              "launch_ring_1",
-              "tier_1_expansion"
+              "core",
+              "extended"
             ],
-            "description": "Coverage group this country pack belongs to. `launch_ring_1` is the core coverage group; `tier_1_expansion` is the extended coverage group. Both groups return the same pack shape."
+            "description": "Coverage group this country pack belongs to. `core` is the core coverage group; `extended` is the extended coverage group. Both groups return the same pack shape. Always present on responses from this API version; declared optional so older clients and cached payloads still validate."
+          },
+          "ring": {
+            "type": "string",
+            "deprecated": true,
+            "description": "Deprecated legacy coverage identifier, still emitted for backwards compatibility. Use `coverageTier` instead."
           },
           "responseMode": {
             "type": "string",
