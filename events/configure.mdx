@@ -32,8 +32,8 @@ Never log the signing secret, and never treat an unsigned body as a trusted even
 1. Verify the signature, then parse.
 2. Store the event or delivery ID in a durable idempotency table - delivery is at-least-once, so a retry can repeat a valid event.
 3. Queue the work and return a fast `2xx`. Slow filing retrieval belongs outside the request handler.
-4. For an unknown event type, verify the signature, record it, and return success if appropriate - add support deliberately rather than failing every future delivery.
+4. For an unknown event type, verify the signature, record it, and return success if appropriate - add support explicitly rather than failing every future delivery.
 
 ## Test before relying on it
 
-Send a test event from the dashboard and confirm your receiver verifies, records, and returns `2xx`. Then trigger a real event - for a monitor, that means a matching filing during the hourly sweep - and confirm the same path. When a delivery fails, work from the delivery audit trail in [Deliveries and retries](/events/deliveries) rather than guessing.
+Send a test event from the dashboard and confirm your receiver verifies, records, and returns `2xx`. Then trigger a real event - for a monitor, that means a matching filing during the hourly monitor run - and confirm the same path. When a delivery fails, work from the delivery audit trail in [Deliveries and retries](/events/deliveries) rather than guessing.

@@ -22,7 +22,7 @@ Keep this minimum record:
 | --- | --- |
 | HTTP method and endpoint path | Identifies the operation without disclosing credentials. |
 | UTC timestamp, HTTP status, and error `code` | Places the event and identifies the recovery class. |
-| `Request-Id` and `traceparent` | Correlates the request on our side. |
+| `Request-Id` and `traceparent` | Identifies the request in TUROS logs. |
 | `Retry-After` plus relevant quota or billing headers | Shows whether a retry is appropriate. |
 | SDK, CLI, or MCP client name and version | Makes client behavior reproducible. |
 
@@ -34,4 +34,4 @@ Redact before sharing. Remove `x-api-key` values, bearer tokens, and cookies fro
 
 ## Contact us
 
-Contact us from the TUROS dashboard with the record above. Include the `Request-Id` - it's the identifier that makes your request findable on our side. For a suspected outage, reference the status page incident if one is posted.
+Contact us from the TUROS dashboard with the record above. Include the `Request-Id` - it's the identifier that makes your request findable in TUROS support tooling. For a suspected outage, reference the status page incident if one is posted.

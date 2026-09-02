@@ -27,7 +27,7 @@ curl --fail-with-body -sS \
   "https://api.secapi.ai/v1/filings/0000320193-25-000079"
 ```
 
-TUROS returns the materialized manifest for that one filing - `accessionNumber`, `ticker`, `cik`, `form`, `filingDate`, `primaryDocument`, and provenance. Preserve the provenance and `requestId` before rendering or extracting sections from the filing.
+TUROS returns the filing manifest for that one filing - `accessionNumber`, `ticker`, `cik`, `form`, `filingDate`, `primaryDocument`, and provenance. Preserve the provenance and `requestId` before rendering or extracting sections from the filing.
 
 Optional `ticker`, `cik`, and `form` query values are resolution hints, not substitutes for the accession number. Don't let conflicting hints select a different filing.
 

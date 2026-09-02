@@ -21,7 +21,7 @@ Supported endpoints accept `view=default`, `view=compact`, or `view=agent`.
 | `compact` | A smaller endpoint-specific projection. |
 | `agent` | An endpoint-specific projection for retrieval and citation. |
 
-`view=agent` keeps identity and citation fields on supported routes - accession number, filing URL, section key. It can omit provenance, freshness, materialization, pagination, or other envelope fields the default response carries. Compare both shapes before you store an agent view as a compliance record.
+`view=agent` keeps identity and citation fields on supported routes - accession number, filing URL, section key. It can omit provenance, freshness, pagination, or other envelope fields the default response carries. Compare both shapes before you store an agent view as a compliance record.
 
 Views aren't a universal schema. A field present on filings `view=agent` isn't promised on facts `view=agent`. Confirm support and fields in the route's reference before depending on one.
 

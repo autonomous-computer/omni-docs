@@ -50,16 +50,16 @@ curl --fail-with-body -sS \
   "https://api.secapi.ai/v1/macro/calendar?country=US&indicator=CPIAUCSL&days=45&limit=12&response_mode=compact"
 ```
 
-Add `GET /v1/macro/forecasts` and `GET /v1/macro/regimes` when the workflow needs forward context, and check `GET /v1/macro/status` before citing freshness-sensitive conclusions. When runtime validation artifacts are missing, status returns an explicit degraded `runtime_registry_fallback` response - treat that as a caution flag, cite the degraded status, and avoid freshness-sensitive claims.
+Add `GET /v1/macro/forecasts` and `GET /v1/macro/regimes` when the workflow needs forward context, and check `GET /v1/macro/status` before citing freshness-sensitive conclusions. When TUROS can't confirm source freshness, `GET /v1/macro/status` returns an explicitly degraded response (`runtime_registry_fallback`) - treat that as a caution flag, cite the degraded status, and avoid freshness-sensitive claims.
 
-## Country rings
+## Country coverage depth
 
-Coverage ships in two rings. Don't claim equal depth across them.
+Coverage depth differs by country. Don't claim equal depth across them.
 
-| Ring | Countries | Posture |
+| Coverage | Countries | What to expect |
 | --- | --- | --- |
-| Launch ring | `US`, `CN`, `JP`, `TW`, `IL` | Curated official-source coverage, deepest launch validation. |
-| Expansion ring | `CA`, `GB`, `EZ`, `KR`, `BR`, `IN`, `SA` | Smaller high-signal packs, explicit source and fallback posture. |
+| Core | `US`, `CN`, `JP`, `TW`, `IL` | Curated official-source coverage with the deepest indicator set. |
+| Extended | `CA`, `GB`, `EZ`, `KR`, `BR`, `IN`, `SA` | Smaller high-signal packs, with explicit source and fallback metadata. |
 
 Observations carry source provenance: the official agency, revision status, and whether the row was fetched directly from the official source or via a documented fallback bridge. A fallback is always annotated in metadata, never presented as primary provenance.
 
@@ -74,7 +74,7 @@ curl --fail-with-body -sS \
   "https://api.secapi.ai/v1/macro/all?country=US&indicator_type=inflation&limit=250"
 ```
 
-The route is cursor-paginated - follow `nextCursor` until it is absent. It accepts `country` (single or comma-separated), `indicator_type`, `indicator`, `frequency`, `date_from`, `date_to`, and `limit` (max `1000`). Pass `format=csv` for an attachment; an oversized export is materialized asynchronously and returned as an export job whose signed download URL arrives via the `export.completed` webhook event. See [Event types](/intelligence/event-types).
+The route is cursor-paginated - follow `nextCursor` until it is absent. It accepts `country` (single or comma-separated), `indicator_type`, `indicator`, `frequency`, `date_from`, `date_to`, and `limit` (max `1000`). Pass `format=csv` for an attachment; an oversized export is generated asynchronously and returned as an export job whose signed download URL arrives via the `export.completed` webhook event. See [Event types](/intelligence/event-types).
 
 ## One dense country briefing
 

@@ -8,9 +8,9 @@ Billing routes let an integration read the account it's running against before d
 | Method | Endpoint | Description |
 | --- | --- | --- |
 | `GET` | `/v1/billing` | Return the current organization's billing snapshot, including pricing posture, budget controls, and monthly quotas. |
-| `GET` | `/v1/limits` | Return the current organization's effective plan, billing state, and route quota windows. |
+| `GET` | `/v1/limits` | Plan limits and quotas. |
 | `GET` | `/v1/billing/rates` | Return the public pricing catalog, free-allowance metadata, plan metadata, and meter-family rates. No key required. |
-| `POST` | `/v1/billing/quote` | Quote a billable workflow or meter class against the current billing plan and budget gates. |
+| `POST` | `/v1/billing/quote` | Quote request cost. |
 | `PUT` | `/v1/billing/budget` | Update organization-level spend caps, soft caps, and approval thresholds. |
 | `GET` | `/v1/billing/credits` | Return the prepaid credit balance, auto-top-up settings, lifetime totals, and low-balance status. |
 | `GET` | `/v1/billing/credits/transactions` | List prepaid credit ledger entries - top-ups, debits, refunds, grants, adjustments - newest first. |

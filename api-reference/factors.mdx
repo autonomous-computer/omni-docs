@@ -8,10 +8,10 @@ Factor routes serve return histories, exposures, correlations, regime-conditione
 | Method | Endpoint | Description |
 | --- | --- | --- |
 | `GET` | `/v1/factors/catalog` | Return compact factor definitions, with trust and methodology metadata available on request. |
-| `GET` | `/v1/factors/returns` | Return factor return history, z-scores, and volatility-scaled series for supported factor families. |
+| `GET` | `/v1/factors/returns` | Factor returns. |
 | `GET` | `/v1/factors/returns/intraday` | Return intraday factor snapshots with the current benchmark proxy surface and freshness metadata. |
 | `GET` | `/v1/factors/history/{factorKey}` | Return a single factor's daily return history with 1D through MAX summary windows. |
-| `GET` | `/v1/factors/exposures` | Return factor exposures for securities, portfolios, or watchlists. |
+| `GET` | `/v1/factors/exposures` | Factor exposures |
 | `GET` | `/v1/factors/decomposition` | Return factor-attribution decomposition for a security over a bounded lookback window. |
 | `GET` | `/v1/factors/correlations` | Return factor-to-factor and factor-to-security correlation surfaces. |
 | `GET` | `/v1/factors/pairs` | Return pairwise factor spread data including cumulative spread, average, volatility, and daily series. |
@@ -19,10 +19,10 @@ Factor routes serve return histories, exposures, correlations, regime-conditione
 | `GET` | `/v1/factors/extreme-moves` | Return factor moves ranked by unusual z-score or absolute return. |
 | `GET` | `/v1/factors/extreme-pairs` | Return factor pairs ranked by unusual rolling spread divergence. |
 | `GET` | `/v1/factors/regime-performance` | Return regime-conditioned factor rankings blending the active macro backdrop with current factor state. |
-| `GET` | `/v1/factors/macro-sensitivity` | Return factor sensitivity to a named macro stress scenario using the current macro-regime overlay. |
-| `GET` | `/v1/factors/related-stocks` | Return related stocks ranked by factor-overlap similarity for peer discovery and hedge ideation. |
+| `GET` | `/v1/factors/macro-sensitivity` | Factor macro sensitivity. |
+| `GET` | `/v1/factors/related-stocks` | Related stocks by factor. |
 | `GET` | `/v1/factors/similarity-pack` | Return a custom thematic similarity pack combining factor-overlap peers with deterministic filing/news signatures. |
-| `POST` | `/v1/factors/custom` | Discover a custom thematic factor pack from factor-overlap peers plus deterministic filing/news signatures. |
+| `POST` | `/v1/factors/custom` | Custom thematic factor. |
 | `GET` | `/v1/factors/sparklines` | Return compact multi-factor sparkline series with 1D through MAX summary windows. |
 | `GET` | `/v1/factors/dashboard` | Return a one-call factor dashboard with intraday, regime, rotation, and spotlight-security sections. |
 | `GET` | `/v1/factors/bulk-download` | Return factor returns data in bulk with daily series. Custom terms only. |

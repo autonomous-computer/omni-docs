@@ -9,15 +9,15 @@ Endpoint CRUD, secret rotation, and monitor creation are control-plane actions a
 
 ## Webhook endpoints
 
-Verify `x-secapi-signature` against the exact raw body on every delivery and reject stale timestamps. Replay is manual; automatic retry and endpoint auto-pause are rollout-gated.
+Verify `x-secapi-signature` against the exact raw body on every delivery and reject stale timestamps. Replay is manual. Automatic retry and endpoint auto-pause are not available yet - build your receiver around manual replay.
 
 | Method | Endpoint | Description |
 | --- | --- | --- |
-| `GET` | `/v1/webhook_endpoints` | List webhook endpoints for the current organization. |
+| `GET` | `/v1/webhook_endpoints` | List webhook endpoints. |
 | `POST` | `/v1/webhook_endpoints` | Create a signed webhook endpoint for delivery events. |
 | `PATCH` | `/v1/webhook_endpoints/{webhook_id}` | Update an endpoint's URL, description, subscribed event types, or active status. |
 | `DELETE` | `/v1/webhook_endpoints/{webhook_id}` | Delete an endpoint while preserving delivery audit history. |
-| `POST` | `/v1/webhook_endpoints/{webhook_id}/enable` | Enable a webhook endpoint. |
+| `POST` | `/v1/webhook_endpoints/{webhook_id}/enable` | Enable webhook endpoint. |
 | `POST` | `/v1/webhook_endpoints/{webhook_id}/disable` | Disable an endpoint without deleting delivery history. |
 | `POST` | `/v1/webhook_endpoints/{webhook_id}/rotate_secret` | Rotate the signing secret for an endpoint. |
 | `POST` | `/v1/webhook_endpoints/{webhook_id}/test` | Send a signed `webhook.test` event to an endpoint. This is a test send, not a subscription type - it does not appear in the event-types catalog. |
@@ -38,27 +38,27 @@ The response returns `data`, `nextCursor`, and `replayCursor`.
 
 | Method | Endpoint | Description |
 | --- | --- | --- |
-| `GET` | `/v1/stream_subscriptions` | List stream subscriptions for the current organization. |
-| `POST` | `/v1/stream_subscriptions` | Create a stream subscription for event polling and replay. |
+| `GET` | `/v1/stream_subscriptions` | List stream subscriptions. |
+| `POST` | `/v1/stream_subscriptions` | Create stream subscription. |
 | `PATCH` | `/v1/stream_subscriptions/{stream_id}` | Update a subscription's description, event types, transport, or status. |
 | `DELETE` | `/v1/stream_subscriptions/{stream_id}` | Delete a subscription while preserving delivery records. |
-| `POST` | `/v1/stream_subscriptions/{stream_id}/enable` | Enable a stream subscription. |
+| `POST` | `/v1/stream_subscriptions/{stream_id}/enable` | Enable stream subscription. |
 | `POST` | `/v1/stream_subscriptions/{stream_id}/disable` | Disable a subscription without deleting its delivery records. |
-| `GET` | `/v1/stream_subscriptions/{stream_id}/events` | Poll canonical stream events for a subscription with cursor semantics. |
+| `GET` | `/v1/stream_subscriptions/{stream_id}/events` | Poll stream events. |
 
 ## Monitors
 
-Monitors are saved filing searches that sweep hourly and deliver `monitor.match` events. Delivery limits are 100 sends per monitor per hour and 1,000 per organization per day.
+Monitors are saved filing searches that run hourly and deliver `monitor.match` events. Delivery limits are 100 sends per monitor per hour and 1,000 per organization per day.
 
 | Method | Endpoint | Description |
 | --- | --- | --- |
-| `GET` | `/v1/monitors` | List saved-search monitors for the current organization. |
+| `GET` | `/v1/monitors` | List monitors. |
 | `POST` | `/v1/monitors` | Create a saved-search monitor with an optional webhook or email delivery destination. |
 | `GET` | `/v1/monitors/{monitor_id}` | Retrieve a single monitor by ID. |
 | `DELETE` | `/v1/monitors/{monitor_id}` | Deactivate a monitor (idempotent; sets `is_active` to `false`). |
 | `POST` | `/v1/monitors/{monitor_id}/delivery` | Update or replace the monitor's delivery destination. |
 | `GET` | `/v1/monitors/{monitor_id}/matches` | Run the monitor's saved query and return new matches since the last check. |
-| `POST` | `/v1/monitors/compile` | Compile a natural-language alert request into a structured monitor spec. |
+| `POST` | `/v1/monitors/compile` | Compile monitor from prompt. |
 
 Reading matches with an API key doesn't send an email or webhook - use it to preview a saved query before relying on scheduled dispatch.
 
@@ -68,7 +68,7 @@ Reading matches with an API key doesn't send an email or webhook - use it to pre
 | --- | --- | --- |
 | `GET` | `/v1/delivery/events` | List durable delivery ledger, webhook delivery, and stream records for the current organization. |
 | `GET` | `/v1/delivery/events/export` | Export durable delivery ledger records as JSON or NDJSON. |
-| `GET` | `/v1/delivery/unsubscribe` | Render an unsubscribe confirmation page for a signed token. |
-| `POST` | `/v1/delivery/unsubscribe` | Unsubscribe from monitor email delivery (RFC 8058 one-click compatible). |
+| `GET` | `/v1/delivery/unsubscribe` | Unsubscribe confirmation page. |
+| `POST` | `/v1/delivery/unsubscribe` | Confirm email unsubscribe. |
 
 See the [Introduction](/api-reference) for authentication, pagination, and error behavior.

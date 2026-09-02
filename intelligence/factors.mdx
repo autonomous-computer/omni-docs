@@ -22,7 +22,7 @@ curl --fail-with-body -sS \
   "https://api.secapi.ai/v1/factors/catalog?response_mode=compact&include=trust"
 ```
 
-The catalog query accepts `response_mode` and `include`. Category is a field on each returned entry (`market`, `style`, `sector`, or `industry`), not a filter argument. Launch factors target a `2015-01-01` public history floor - a target is not row-level proof, so use the returned history and freshness metadata for the individual factor and period.
+The catalog query accepts `response_mode` and `include`. Category is a field on each returned entry (`market`, `style`, `sector`, or `industry`), not a filter argument. Factors carry public history back to a `2015-01-01` floor - the floor is not row-level proof, so use the returned history and freshness metadata for the individual factor and period.
 
 Then request returns with the same compact/trust envelope:
 
@@ -52,7 +52,7 @@ Compact responses omit heavier metadata; `include=trust` requests it explicitly.
 | --- | --- |
 | `requestId` and `traceparent` | Correlate the result with request and downstream tracing evidence. |
 | `freshness` | Evaluate recency - `freshness.status`, `freshness.asOf`, `freshness.lagMs`. |
-| `materialization` | The returned read-model or computation version. Treat it as opaque and store it - a change can accompany a data or methodology revision. |
+| `materialization` | The computation version behind the returned values. Treat it as opaque and store it - a change can accompany a data or methodology revision. |
 | `methodology` | Model family, inputs, and construction notes when returned. |
 | `sourceRights` | The returned source-rights posture. |
 | `degradedState` | A partial result, fallback, or missing dependency. Show it downstream; don't rewrite it as success. |

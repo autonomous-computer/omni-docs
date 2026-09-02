@@ -1,9 +1,9 @@
 ---
 title: "Deliveries and retries"
-description: "Delivery is at-least-once with manual replay. Audit attempts with an API key, commit stream cursors only after durable writes, and size receivers for the hourly monitor sweep."
+description: "Delivery is at-least-once with manual replay. Audit attempts with an API key, commit stream cursors only after durable writes, and size receivers for the hourly monitor run."
 ---
 
-TUROS webhook delivery is signed, logged, and at-least-once, with manual replay for retained delivery attempts. Automatic retry and endpoint auto-pause are rollout-gated operational features - build your receiver for the shipped contract, not the roadmap.
+TUROS webhook delivery is signed, logged, and at-least-once, with manual replay for retained delivery attempts. Automatic retry and endpoint auto-pause are not available yet - build your receiver for the shipped contract, not the roadmap.
 
 ## At-least-once, so receivers deduplicate
 
@@ -52,8 +52,8 @@ The response carries ordered `data`, `nextCursor` for the next read, and `replay
 
 If a worker falls behind, reduce the batch size and drain progressively rather than skipping to a newer cursor. Re-reading the same cursor window doesn't create new billable delivery units.
 
-## The monitor sweep and limits
+## Monitor runs and limits
 
-Active monitors run on an hourly cadence. A typical alert arrives about half a sweep after a new matching record becomes available; worst case is one hourly sweep plus delivery time. This is scheduled monitoring, not an instant EDGAR feed - check the sweep cadence before concluding an alert is late.
+Active monitors run on an hourly cadence. A typical alert arrives about 30 minutes after a new matching record becomes available; worst case is one hour plus delivery time. This is scheduled monitoring, not an instant EDGAR feed - account for the hourly cadence before concluding an alert is late.
 
 Default delivery limits are 100 sends per monitor per hour and 1,000 per organization per day. Narrow a noisy query and split unrelated jobs rather than absorbing the cap. Webhook and stream delivery meter as `delivery_events`; monitor email recipients meter as `email_notifications`.

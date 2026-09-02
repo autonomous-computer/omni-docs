@@ -54,7 +54,7 @@ Derived from live handlers in `webapp/client_api.py`.
 | --- | --- | --- | --- | --- |
 | `auth_error` | `missing_api_key` | 401 | No | Missing/malformed bearer token |
 | `auth_error` | `invalid_api_key` | 401 | No | Invalid format, revoked key, or unauthorized key resolution |
-| `auth_error` | `auth_rejected` | 403 | No | Key rejected by control plane |
+| `auth_error` | `auth_rejected` | 403 | No | Key rejected during authentication |
 | `permission_error` | `insufficient_scope` | 403 | No | Required scope missing |
 | `rate_limit_error` | `rate_limit_exceeded` | 429 | Yes | Burst or sustained per-key limit exceeded |
 | `invalid_request` | `invalid_parameter` | 400 | No | Invalid integer/parameter coercion |
@@ -153,4 +153,4 @@ Notes:
 - `/sources/client-api-reference`
 - `/sources/client-api-endpoints`
 - `/sources/client-api-retries`
-- `/sources/client-api-mcp-hosted`
+- `/build/mcp`

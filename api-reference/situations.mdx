@@ -17,7 +17,7 @@ There are two route families with different access models. Choose by audience, n
 | Method | Endpoint | Description |
 | --- | --- | --- |
 | `GET` | `/v1/situations` | List current situations with lifecycle status, deal terms, and market snapshot, filtered and paginated. |
-| `GET` | `/v1/situations/{situation_id}` | Retrieve a single situation with its full per-filing timeline (oldest first). |
+| `GET` | `/v1/situations/{situation_id}` | Get situation. |
 | `GET` | `/v1/situations/{situation_id}/filings` | Retrieve a situation's filing timeline as a paginated sub-resource. |
 | `GET` | `/v1/situations/{situation_id}/summary` | Retrieve a compact summary: rendered markdown, deal terms, and the latest timeline event. |
 | `GET` | `/v1/situations/{situation_id}/export` | Render a source-cited Markdown brief for one situation. |
@@ -30,10 +30,10 @@ There are two route families with different access models. Choose by audience, n
 | `GET` | `/v1/situations/performance` | Return closed-situation outcome cohorts: completion rate, median days to close, average premium. |
 | `GET` | `/v1/situations/issues` | List immutable, numbered weekly digest issues. |
 | `GET` | `/v1/situations/issues/{issue}` | Retrieve one immutable weekly digest issue by number or slug. |
-| `GET` | `/v1/situations/watchlists` | List situation-scoped watchlist monitors for the current organization. |
-| `POST` | `/v1/situations/watchlists` | Create a situation-scoped watchlist monitor. |
+| `GET` | `/v1/situations/watchlists` | List situation watchlists. |
+| `POST` | `/v1/situations/watchlists` | Create situation watchlist. |
 | `GET` | `/v1/situations/watchlists/{monitor_id}` | Retrieve a situation-scoped watchlist monitor by ID. |
-| `DELETE` | `/v1/situations/watchlists/{monitor_id}` | Deactivate a situation-scoped watchlist monitor. |
+| `DELETE` | `/v1/situations/watchlists/{monitor_id}` | Deactivate situation watchlist. |
 
 An API key can create a filter-only watchlist. Activating email or webhook delivery requires a signed-in organization session - configure it in the [TUROS dashboard](https://turos.app).
 

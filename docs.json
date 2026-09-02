@@ -1377,6 +1377,1154 @@
     {
       "source": "/product/support",
       "destination": "/admin/support"
+    },
+    {
+      "source": "/api-reference/batch-resolve-shared-trace-records-by-trace-identifier-across-filing-derived-and-supported-non-filing-datasets",
+      "destination": "/api-reference/batch-resolve-traces"
+    },
+    {
+      "source": "/api-reference/build-and-persist-a-filing-derived-artifact-bundle",
+      "destination": "/api-reference/create-artifact-bundle"
+    },
+    {
+      "source": "/api-reference/calculate-the-current-per-issuer-dilution-score-from-available-inputs",
+      "destination": "/api-reference/calculate-dilution-score"
+    },
+    {
+      "source": "/api-reference/check-scheduled-trading-sessions-for-a-supported-market",
+      "destination": "/api-reference/market-trading-calendar"
+    },
+    {
+      "source": "/api-reference/classify-item-1a-risk-categories-in-a-selected-issuer-filing",
+      "destination": "/api-reference/risk-factor-categories"
+    },
+    {
+      "source": "/api-reference/compare-the-latest-two-executive-compensation-disclosures-for-an-issuer",
+      "destination": "/api-reference/compare-compensation-years"
+    },
+    {
+      "source": "/api-reference/compare-the-latest-two-parsable-form-13f-reports-for-one-institutional-manager",
+      "destination": "/api-reference/compare-13f-quarters"
+    },
+    {
+      "source": "/api-reference/compile-a-natural-language-alert-request-into-a-structured-monitor-spec",
+      "destination": "/api-reference/compile-monitor-from-prompt"
+    },
+    {
+      "source": "/api-reference/compile-an-allocator-prompt-into-a-deterministic-one-call-intelligence-workload-with-compact-traced-output",
+      "destination": "/api-reference/run-intelligence-query"
+    },
+    {
+      "source": "/api-reference/create-a-new-api-key-for-the-current-organization-and-reveal-its-secret-exactly-once",
+      "destination": "/api-reference/create-api-key"
+    },
+    {
+      "source": "/api-reference/create-a-saved-search-monitor-with-optional-webhook-or-email-delivery-destination",
+      "destination": "/api-reference/create-monitor"
+    },
+    {
+      "source": "/api-reference/create-a-signed-webhook-endpoint-for-delivery-events",
+      "destination": "/api-reference/create-webhook-endpoint"
+    },
+    {
+      "source": "/api-reference/create-a-stream-subscription-for-event-polling-and-replay",
+      "destination": "/api-reference/create-stream-subscription"
+    },
+    {
+      "source": "/api-reference/create-a-stripe-billing-portal-session-for-the-current-organization",
+      "destination": "/api-reference/open-billing-portal"
+    },
+    {
+      "source": "/api-reference/create-a-stripe-checkout-session-for-a-self-serve-pro-or-team-sec-api-plan",
+      "destination": "/api-reference/create-checkout-session"
+    },
+    {
+      "source": "/api-reference/create-a-stripe-paymentintent-to-purchase-prepaid-credits-returning-the-client-secret-and-the-discountfee-charge-breakdown",
+      "destination": "/api-reference/buy-prepaid-credits"
+    },
+    {
+      "source": "/api-reference/create-a-stripe-setupintent-to-save-a-payment-method-off-session-for-top-ups-and-auto-top-up-max-3-per-organization",
+      "destination": "/api-reference/save-a-payment-method"
+    },
+    {
+      "source": "/api-reference/deactivate-a-monitor-idempotent;-sets-is_active=false",
+      "destination": "/api-reference/deactivate-monitor"
+    },
+    {
+      "source": "/api-reference/delete-a-stream-subscription-while-preserving-delivery-records",
+      "destination": "/api-reference/delete-stream-subscription"
+    },
+    {
+      "source": "/api-reference/delete-a-webhook-endpoint-while-preserving-delivery-audit-history",
+      "destination": "/api-reference/delete-webhook-endpoint"
+    },
+    {
+      "source": "/api-reference/disable-a-stream-subscription-without-deleting-its-delivery-records",
+      "destination": "/api-reference/disable-stream-subscription"
+    },
+    {
+      "source": "/api-reference/disable-a-webhook-endpoint-without-deleting-delivery-history",
+      "destination": "/api-reference/disable-webhook-endpoint"
+    },
+    {
+      "source": "/api-reference/discover-a-custom-thematic-factor-pack-from-factor-overlap-peers-plus-deterministic-filingnews-signatures",
+      "destination": "/api-reference/custom-thematic-factor"
+    },
+    {
+      "source": "/api-reference/discover-filing-derived-merger-and-acquisition-signals-from-public-company-disclosures",
+      "destination": "/api-reference/mergers-and-acquisitions"
+    },
+    {
+      "source": "/api-reference/download-one-persisted-artifact-payload",
+      "destination": "/api-reference/download-artifact"
+    },
+    {
+      "source": "/api-reference/embed/public-13f-filer-directory-a-z-search-curated-subset",
+      "destination": "/api-reference/embed/13f-manager-directory"
+    },
+    {
+      "source": "/api-reference/embed/public-13f-filing-detail-with-paged-holdings-table",
+      "destination": "/api-reference/embed/13f-filing-detail"
+    },
+    {
+      "source": "/api-reference/embed/public-13f-manager-profile-with-quarterly-filings-list",
+      "destination": "/api-reference/embed/13f-manager-profile"
+    },
+    {
+      "source": "/api-reference/embed/public-13f-position-history-for-one-manager-and-security",
+      "destination": "/api-reference/embed/13f-position-history"
+    },
+    {
+      "source": "/api-reference/embed/public-capped-special-situations-digest-issue-archive",
+      "destination": "/api-reference/embed/situations-digest-archive"
+    },
+    {
+      "source": "/api-reference/embed/public-capped-special-situations-event-feed-with-safe-filing-provenance",
+      "destination": "/api-reference/embed/public-situations-event-feed"
+    },
+    {
+      "source": "/api-reference/embed/public-capped-special-situations-list-for-logged-out-experiences",
+      "destination": "/api-reference/embed/public-situations-list"
+    },
+    {
+      "source": "/api-reference/embed/public-country×period-matrix-for-one-macro-map-indicator",
+      "destination": "/api-reference/embed/macro-indicator-map"
+    },
+    {
+      "source": "/api-reference/embed/public-earnings-calendar-symbol-company-date-session-only",
+      "destination": "/api-reference/embed/earnings-calendar"
+    },
+    {
+      "source": "/api-reference/embed/public-economic-calendar-with-the-turos-in-house-forecast",
+      "destination": "/api-reference/embed/economic-calendar"
+    },
+    {
+      "source": "/api-reference/embed/public-full-history-series-and-stats-for-one-country-indicator",
+      "destination": "/api-reference/embed/country-indicator-history"
+    },
+    {
+      "source": "/api-reference/embed/public-ipo-calendar-from-sec-derived-registrationpricing-filings",
+      "destination": "/api-reference/embed/ipo-calendar"
+    },
+    {
+      "source": "/api-reference/embed/public-latest-13f-filings-feed",
+      "destination": "/api-reference/embed/latest-13f-filings"
+    },
+    {
+      "source": "/api-reference/embed/public-latest-quarter-cross-manager-13f-screener",
+      "destination": "/api-reference/embed/13f-cross-manager-screener"
+    },
+    {
+      "source": "/api-reference/embed/public-latest-values-across-the-macro-map-indicators-for-one-country",
+      "destination": "/api-reference/embed/country-macro-indicators"
+    },
+    {
+      "source": "/api-reference/embed/public-quarter-over-quarter-diff-of-two-13f-filings",
+      "destination": "/api-reference/embed/compare-two-13f-filings"
+    },
+    {
+      "source": "/api-reference/embed/public-recent-window-special-situations-counts-with-persisted-column-coverage-scope",
+      "destination": "/api-reference/embed/public-situations-statistics"
+    },
+    {
+      "source": "/api-reference/embed/public-rss-feed-of-recent-special-situations-events",
+      "destination": "/api-reference/embed/situations-rss-feed"
+    },
+    {
+      "source": "/api-reference/embed/public-situation-detail-used-by-secapiai-situation-permalinks-and-embeddable-discovery-surfaces",
+      "destination": "/api-reference/embed/public-situation-detail"
+    },
+    {
+      "source": "/api-reference/embed/public-snapshot-export-for-one-recent-special-situation-json-csv-or-llm-binary-pdfexcel-require-the-authenticated-async-path",
+      "destination": "/api-reference/embed/export-public-situation"
+    },
+    {
+      "source": "/api-reference/embed/public-snippet-only-featured-letter-by-slug",
+      "destination": "/api-reference/embed/featured-letter-by-slug"
+    },
+    {
+      "source": "/api-reference/embed/public-snippet-only-featured-shareholder-letters",
+      "destination": "/api-reference/embed/featured-shareholder-letters"
+    },
+    {
+      "source": "/api-reference/embed/public-special-situations-digest-issue-detail-by-number-or-slug",
+      "destination": "/api-reference/embed/situations-digest-issue"
+    },
+    {
+      "source": "/api-reference/embed/public-us-treasury-yield-curve-with-inversion-spreads",
+      "destination": "/api-reference/embed/us-treasury-yield-curve"
+    },
+    {
+      "source": "/api-reference/enable-a-stream-subscription",
+      "destination": "/api-reference/enable-stream-subscription"
+    },
+    {
+      "source": "/api-reference/enable-a-webhook-endpoint",
+      "destination": "/api-reference/enable-webhook-endpoint"
+    },
+    {
+      "source": "/api-reference/enable-or-disable-automatic-prepaid-credit-top-ups-and-set-the-low-balance-threshold-and-refill-amount",
+      "destination": "/api-reference/update-auto-top-up"
+    },
+    {
+      "source": "/api-reference/exchange-a-sponsor-token-for-the-first-org-scoped-api-key-billing-snapshot-limits-and-mcp-install-metadata",
+      "destination": "/api-reference/agent-bootstrap-exchange"
+    },
+    {
+      "source": "/api-reference/export-durable-delivery-ledger-records-as-json-or-ndjson",
+      "destination": "/api-reference/export-delivery-events"
+    },
+    {
+      "source": "/api-reference/export-one-filing-in-json-or-document-formats",
+      "destination": "/api-reference/export-filing"
+    },
+    {
+      "source": "/api-reference/export-one-persisted-artifact-as-json-compact-json-or-a-markdown-download-envelope",
+      "destination": "/api-reference/export-artifact"
+    },
+    {
+      "source": "/api-reference/extract-a-named-section-from-an-issuers-latest-selected-filing",
+      "destination": "/api-reference/latest-filing-section"
+    },
+    {
+      "source": "/api-reference/extract-a-named-section-from-one-accession-number-filing",
+      "destination": "/api-reference/filing-section-by-accession"
+    },
+    {
+      "source": "/api-reference/extract-disclosed-pension-and-retiree-benefit-payments-for-a-target-year",
+      "destination": "/api-reference/pension-benefit-schedule"
+    },
+    {
+      "source": "/api-reference/filing-comparison-endpoint-currently-unavailable",
+      "destination": "/api-reference/filing-comparison"
+    },
+    {
+      "source": "/api-reference/filing-events-endpoint-currently-unavailable",
+      "destination": "/api-reference/filing-events"
+    },
+    {
+      "source": "/api-reference/filing-guidance-endpoint-currently-unavailable",
+      "destination": "/api-reference/management-guidance"
+    },
+    {
+      "source": "/api-reference/filing-intelligence-coverage-endpoint-currently-unavailable",
+      "destination": "/api-reference/filing-intelligence-coverage"
+    },
+    {
+      "source": "/api-reference/filing-to-model-workbooks/capture-a-workbook-fingerprint-before-mapping-previewing-or-applying-model-changes",
+      "destination": "/api-reference/filing-to-model-workbooks/capture-workbook-fingerprint"
+    },
+    {
+      "source": "/api-reference/filing-to-model-workbooks/capture-the-workbook-model-context-used-for-preview-approval-and-safe-apply-checks",
+      "destination": "/api-reference/filing-to-model-workbooks/capture-workbook-model-context"
+    },
+    {
+      "source": "/api-reference/filing-to-model-workbooks/create-a-server-owned-analyst-approval-record-for-an-immutable-workbook-model-change-set",
+      "destination": "/api-reference/filing-to-model-workbooks/approve-workbook-model-changes"
+    },
+    {
+      "source": "/api-reference/filing-to-model-workbooks/record-a-server-validated-workbook-apply-receipt-after-an-approved-model-change-set-is-written-by-the-host-add-in",
+      "destination": "/api-reference/filing-to-model-workbooks/record-workbook-apply-receipt"
+    },
+    {
+      "source": "/api-reference/filing-to-model-workbooks/record-a-workbook-refresh-or-preview-run-with-evidence-and-diagnostics",
+      "destination": "/api-reference/filing-to-model-workbooks/record-workbook-refresh-run"
+    },
+    {
+      "source": "/api-reference/filing-to-model-workbooks/register-an-excel-or-google-sheets-workbook-installation-as-the-durable-server-owned-workbook-identity",
+      "destination": "/api-reference/filing-to-model-workbooks/register-workbook-installation"
+    },
+    {
+      "source": "/api-reference/filing-to-model-workbooks/save-append-only-workbook-mapping-versions-for-audited-filing-to-model-refreshes",
+      "destination": "/api-reference/filing-to-model-workbooks/save-workbook-mappings"
+    },
+    {
+      "source": "/api-reference/filing-transcripts-endpoint-currently-unavailable",
+      "destination": "/api-reference/earnings-transcripts"
+    },
+    {
+      "source": "/api-reference/filings/list-issuer-annual-reports-canonical-10-k-20-f-40-f-with-an-optional-ars-sibling",
+      "destination": "/api-reference/filings/list-annual-reports"
+    },
+    {
+      "source": "/api-reference/find-8-k-item-401-auditor-dismissal-resignation-and-engagement-disclosures",
+      "destination": "/api-reference/auditor-changes"
+    },
+    {
+      "source": "/api-reference/find-8-k-item-402-non-reliance-and-restatement-disclosures-with-affected-periods",
+      "destination": "/api-reference/restatements-and-non-reliance"
+    },
+    {
+      "source": "/api-reference/find-8-k-item-502-officer-and-director-appointment-and-departure-disclosures",
+      "destination": "/api-reference/officer-and-director-changes"
+    },
+    {
+      "source": "/api-reference/find-candidate-stock-tickers-from-a-company-name-or-keyword",
+      "destination": "/api-reference/search-securities"
+    },
+    {
+      "source": "/api-reference/find-capital-structure-context-from-ticker-exchange-de-spac-and-split-actions",
+      "destination": "/api-reference/corporate-actions"
+    },
+    {
+      "source": "/api-reference/find-disclosed-convertible-instruments-and-their-conversion-terms",
+      "destination": "/api-reference/convertible-instruments"
+    },
+    {
+      "source": "/api-reference/find-disclosed-lockup-restrictions-dates-parties-and-release-conditions",
+      "destination": "/api-reference/lockup-restrictions"
+    },
+    {
+      "source": "/api-reference/find-disclosed-reverse-stock-split-ratios-and-execution-dates",
+      "destination": "/api-reference/reverse-stock-splits"
+    },
+    {
+      "source": "/api-reference/find-disclosed-rights-of-first-refusal-and-underwriter-tail-financing-provisions",
+      "destination": "/api-reference/rights-of-first-refusal"
+    },
+    {
+      "source": "/api-reference/find-disclosed-warrant-terms-and-potential-share-overhang-in-offering-materials",
+      "destination": "/api-reference/warrant-terms"
+    },
+    {
+      "source": "/api-reference/find-filed-offering-and-issuance-events-by-issuer-filing-date-or-atm-status",
+      "destination": "/api-reference/offering-and-issuance-events"
+    },
+    {
+      "source": "/api-reference/find-filing-derived-ipo-and-public-offering-candidates-from-registration-filings",
+      "destination": "/api-reference/ipo-filings"
+    },
+    {
+      "source": "/api-reference/find-nasdaq-deficiency-and-compliance-notices-by-issuer-status-or-date",
+      "destination": "/api-reference/nasdaq-compliance-notices"
+    },
+    {
+      "source": "/api-reference/find-reported-cash-burn-and-runway-fields-by-issuer-and-reporting-period",
+      "destination": "/api-reference/cash-burn-and-runway"
+    },
+    {
+      "source": "/api-reference/find-sec-filing-records-by-issuer-form-date-text-or-accession-number",
+      "destination": "/api-reference/list-filings"
+    },
+    {
+      "source": "/api-reference/find-sec-registration-statements-and-prospectuses-for-public-offering-research",
+      "destination": "/api-reference/registration-statements-and-prospectuses"
+    },
+    {
+      "source": "/api-reference/full-text-search-across-filing-content-and-section-text",
+      "destination": "/api-reference/full-text-filing-search"
+    },
+    {
+      "source": "/api-reference/fund-letters/deterministic-topic-mentions-for-one-letter-each-with-a-page-anchored-quote",
+      "destination": "/api-reference/fund-letters/fund-letter-topics"
+    },
+    {
+      "source": "/api-reference/fund-letters/full-text-search-over-letter-bodies;-hits-carry-page-anchored-highlights",
+      "destination": "/api-reference/fund-letters/search-letter-text"
+    },
+    {
+      "source": "/api-reference/fund-letters/keyset-paginated-delta-feed-of-fund-letter-events-letterpublished-letterupdated-lettersuperseded-thesisextracted-manageradded-never-response-cached",
+      "destination": "/api-reference/fund-letters/fund-letter-change-feed"
+    },
+    {
+      "source": "/api-reference/fund-letters/list-funds-that-publish-letters-with-per-fund-letter-counts",
+      "destination": "/api-reference/fund-letters/list-funds"
+    },
+    {
+      "source": "/api-reference/fund-letters/list-investor-letters-from-hedge-funds-partnerships-and-registered-funds-filterable-by-manager-fund-company-period-source-and-distribution-tier",
+      "destination": "/api-reference/fund-letters/list-fund-letters"
+    },
+    {
+      "source": "/api-reference/fund-letters/retrieve-one-fund-merged-fund-ids-resolve-forever-via-aliases;-the-response-carries-the-canonical-id-plus-requestedid-when-they-differ",
+      "destination": "/api-reference/fund-letters/get-fund"
+    },
+    {
+      "source": "/api-reference/fund-letters/retrieve-one-letter-with-letter-level-narratives-performance-figures-and-inline-theses-capped-at-25;-thesiscount-carries-the-total-supersededmerged-ids-resolve-forever-via-aliases",
+      "destination": "/api-reference/fund-letters/get-fund-letter"
+    },
+    {
+      "source": "/api-reference/fund-letters/retrieve-one-manager-profile-merged-manager-ids-resolve-forever-via-aliases;-the-response-carries-the-canonical-id-plus-requestedid-when-they-differ",
+      "destination": "/api-reference/fund-letters/get-fund-manager"
+    },
+    {
+      "source": "/api-reference/fund-letters/retrieve-the-original-letter-document-format=pdf-302-redirect-or-page-segmented-markdown-whose-bytes-verify-every-anchor-format=markdown",
+      "destination": "/api-reference/fund-letters/fund-letter-document"
+    },
+    {
+      "source": "/api-reference/fund-letters/semantic-vector-search-over-letter-content;-hits-carry-similarity-scores-matched-chunks-and-page-anchors",
+      "destination": "/api-reference/fund-letters/semantic-letter-search"
+    },
+    {
+      "source": "/api-reference/get-an-issuers-newest-filing-optionally-for-a-specific-sec-form",
+      "destination": "/api-reference/latest-filing"
+    },
+    {
+      "source": "/api-reference/get-one-persisted-artifact-and-its-manifest",
+      "destination": "/api-reference/get-artifact"
+    },
+    {
+      "source": "/api-reference/get-one-sec-filing-record-by-its-accession-number",
+      "destination": "/api-reference/get-filing-by-accession"
+    },
+    {
+      "source": "/api-reference/get-the-structured-manifest-for-one-persisted-artifact",
+      "destination": "/api-reference/artifact-manifest"
+    },
+    {
+      "source": "/api-reference/hosted-mcp-transport-endpoint",
+      "destination": "/api-reference/hosted-mcp-endpoint"
+    },
+    {
+      "source": "/api-reference/inspect-dilution-row-counts-verified-rows-and-latest-observation-dates-by-table",
+      "destination": "/api-reference/dilution-data-coverage"
+    },
+    {
+      "source": "/api-reference/issue-a-short-lived-single-use-sponsor-token-for-agent-bootstrap-under-the-current-organization",
+      "destination": "/api-reference/create-agent-bootstrap-token"
+    },
+    {
+      "source": "/api-reference/list-a-managers-recent-sec-form-13f-filings-and-their-reported-period-dates",
+      "destination": "/api-reference/list-13f-filings"
+    },
+    {
+      "source": "/api-reference/list-api-keys-for-the-current-organization",
+      "destination": "/api-reference/list-api-keys"
+    },
+    {
+      "source": "/api-reference/list-artifacts-previously-persisted-for-the-current-organization",
+      "destination": "/api-reference/list-artifacts"
+    },
+    {
+      "source": "/api-reference/list-canonical-delivery-attempts-for-a-webhook-endpoint",
+      "destination": "/api-reference/webhook-delivery-attempts"
+    },
+    {
+      "source": "/api-reference/list-delivery-event-types-producer-status-replay-support-retention-and-billing-family-metadata",
+      "destination": "/api-reference/event-type-catalog"
+    },
+    {
+      "source": "/api-reference/list-disclosed-shares-outstanding-and-public-float-observations-by-issuer-and-date",
+      "destination": "/api-reference/share-float-history"
+    },
+    {
+      "source": "/api-reference/list-durable-delivery-ledger-webhook-delivery-and-stream-records-for-the-current-organization",
+      "destination": "/api-reference/list-delivery-events"
+    },
+    {
+      "source": "/api-reference/list-persisted-dilution-rating-history-by-issuer-or-overall-risk-value",
+      "destination": "/api-reference/dilution-rating-history"
+    },
+    {
+      "source": "/api-reference/list-saved-search-monitors-for-the-current-organization",
+      "destination": "/api-reference/list-monitors"
+    },
+    {
+      "source": "/api-reference/list-stream-subscriptions-for-the-current-organization",
+      "destination": "/api-reference/list-stream-subscriptions"
+    },
+    {
+      "source": "/api-reference/list-the-current-organizations-prepaid-credit-ledger-entries-top-ups-debits-refunds-grants-adjustments-newest-first",
+      "destination": "/api-reference/list-credit-transactions"
+    },
+    {
+      "source": "/api-reference/list-the-current-organizations-saved-payment-methods-primary-first",
+      "destination": "/api-reference/list-payment-methods"
+    },
+    {
+      "source": "/api-reference/list-webhook-endpoints-for-the-current-organization",
+      "destination": "/api-reference/list-webhook-endpoints"
+    },
+    {
+      "source": "/api-reference/mint-a-short-lived-signed-websocket-stream-ticket-for-the-current-principal",
+      "destination": "/api-reference/create-stream-ticket"
+    },
+    {
+      "source": "/api-reference/open-a-filings-source-document-by-accession-number",
+      "destination": "/api-reference/download-filing-document"
+    },
+    {
+      "source": "/api-reference/poll-an-async-intelligence-workload-until-the-final-traced-result-is-ready",
+      "destination": "/api-reference/intelligence-query-result"
+    },
+    {
+      "source": "/api-reference/poll-canonical-stream-events-for-a-subscription-with-cursor-semantics",
+      "destination": "/api-reference/poll-stream-events"
+    },
+    {
+      "source": "/api-reference/public-embeddable-feed-widget-script-that-renders-the-situations-feed-into-a-host-element",
+      "destination": "/api-reference/embeddable-feed-widget-script"
+    },
+    {
+      "source": "/api-reference/public-embeddable-reverse-chronological-situations-feed-for-third-party-sites-json-cacheable-cors-enabled",
+      "destination": "/api-reference/embeddable-situations-feed"
+    },
+    {
+      "source": "/api-reference/quote-a-billable-workflow-or-meter-class-against-the-current-billing-plan-and-budget-gates",
+      "destination": "/api-reference/quote-request-cost"
+    },
+    {
+      "source": "/api-reference/receive-and-process-signed-stripe-subscription-lifecycle-webhooks",
+      "destination": "/api-reference/stripe-webhook-receiver"
+    },
+    {
+      "source": "/api-reference/reconcile-one-persisted-artifact-with-configured-object-storage",
+      "destination": "/api-reference/reconcile-artifact-storage"
+    },
+    {
+      "source": "/api-reference/refund-the-unspent-credits-of-a-prepaid-top-up-to-the-original-payment-method-within-the-refund-window-platform-fees-non-refundable",
+      "destination": "/api-reference/refund-credit-top-up"
+    },
+    {
+      "source": "/api-reference/register-an-email-for-the-free-alerts-tier-idempotent-lead-capture",
+      "destination": "/api-reference/alerts-email-signup"
+    },
+    {
+      "source": "/api-reference/remove-a-saved-payment-method-from-the-current-organization",
+      "destination": "/api-reference/delete-payment-method"
+    },
+    {
+      "source": "/api-reference/render-an-issuers-latest-selected-filing-as-readable-text",
+      "destination": "/api-reference/render-latest-filing"
+    },
+    {
+      "source": "/api-reference/render-an-unsubscribe-confirmation-page-for-a-signed-token",
+      "destination": "/api-reference/unsubscribe-confirmation-page"
+    },
+    {
+      "source": "/api-reference/replay-a-stored-webhook-delivery-attempt-by-re-emitting-its-source-event-to-the-endpoint",
+      "destination": "/api-reference/replay-webhook-delivery"
+    },
+    {
+      "source": "/api-reference/reset-free-starter-allowance-usage-for-the-current-monthly-period-rate-limited-to-once-per-rolling-30-days-per-organization",
+      "destination": "/api-reference/reset-starter-allowance"
+    },
+    {
+      "source": "/api-reference/resolve-a-single-shared-trace-record-by-trace-identifier-across-filing-derived-and-supported-non-filing-datasets",
+      "destination": "/api-reference/get-trace"
+    },
+    {
+      "source": "/api-reference/resolve-one-issuer-manager-insider-or-fund-from-a-market-or-sec-identifier-returning-the-canonical-entity-and-match-confidence",
+      "destination": "/api-reference/resolve-entity-identifier"
+    },
+    {
+      "source": "/api-reference/retrieve-a-manager-centric-13f-portfolio-with-ranked-disclosed-holdings-and-available-prior-quarter-changes",
+      "destination": "/api-reference/manager-13f-portfolio"
+    },
+    {
+      "source": "/api-reference/retrieve-a-revenue-weighted-macro-exposure-snapshot-built-from-an-issuers-disclosed-geographic-revenue-and-country-indicators",
+      "destination": "/api-reference/company-macro-exposure"
+    },
+    {
+      "source": "/api-reference/retrieve-a-single-monitor-by-id",
+      "destination": "/api-reference/get-monitor"
+    },
+    {
+      "source": "/api-reference/retrieve-an-issuers-disclosed-product-or-geographic-revenue-history-with-filing-level-dimensions-and-source-context",
+      "destination": "/api-reference/segment-revenue-history"
+    },
+    {
+      "source": "/api-reference/retrieve-an-issuers-disclosed-public-float-when-available-with-a-clearly-labeled-shares-outstanding-fallback",
+      "destination": "/api-reference/public-float"
+    },
+    {
+      "source": "/api-reference/retrieve-an-issuers-disclosed-segment-revenue-or-profitloss-history-with-filing-level-dimensions-and-source-context",
+      "destination": "/api-reference/segment-facts-history"
+    },
+    {
+      "source": "/api-reference/retrieve-an-issuers-normalized-balance-sheet-income-statement-and-cash-flow-statement-as-one-sec-derived-bundle",
+      "destination": "/api-reference/all-financial-statements"
+    },
+    {
+      "source": "/api-reference/retrieve-an-issuers-sec-derived-balance-sheet-history-with-normalized-cash-debt-and-equity-fields",
+      "destination": "/api-reference/company-balance-sheets"
+    },
+    {
+      "source": "/api-reference/retrieve-an-issuers-sec-derived-cash-flow-statement-history-with-normalized-cash-generation-fields",
+      "destination": "/api-reference/company-cash-flow-statements"
+    },
+    {
+      "source": "/api-reference/retrieve-an-issuers-sec-derived-income-balance-sheet-and-cash-flow-statements-in-one-company-focused-response",
+      "destination": "/api-reference/company-financial-statements"
+    },
+    {
+      "source": "/api-reference/retrieve-an-issuers-sec-derived-income-statement-history-with-normalized-operating-and-per-share-fields",
+      "destination": "/api-reference/company-income-statements"
+    },
+    {
+      "source": "/api-reference/retrieve-an-issuers-sec-disclosed-product-geographic-and-operating-segment-breakdown-with-revenue-tie-confidence",
+      "destination": "/api-reference/company-segments"
+    },
+    {
+      "source": "/api-reference/retrieve-an-issuers-statement-derived-profitability-return-valuation-dividend-and-leverage-ratios-with-period-context",
+      "destination": "/api-reference/company-ratios"
+    },
+    {
+      "source": "/api-reference/retrieve-an-sec-derived-company-snapshot-with-identity-latest-material-filing-and-a-sector-aware-financial-view",
+      "destination": "/api-reference/company-overview"
+    },
+    {
+      "source": "/api-reference/retrieve-daily-ohlcv-history-for-one-security",
+      "destination": "/api-reference/daily-price-bars"
+    },
+    {
+      "source": "/api-reference/retrieve-institutional-managers-that-disclosed-a-position-in-one-issuer-for-a-selected-13f-cohort",
+      "destination": "/api-reference/institutional-holders-by-ticker"
+    },
+    {
+      "source": "/api-reference/retrieve-one-filed-dilution-event-with-linked-instruments-and-verification-fields",
+      "destination": "/api-reference/get-dilution-event"
+    },
+    {
+      "source": "/api-reference/retrieve-one-managers-disclosed-form-13f-holdings-for-the-latest-parsable-or-selected-report",
+      "destination": "/api-reference/13f-holdings"
+    },
+    {
+      "source": "/api-reference/retrieve-one-managers-historical-13f-extract-for-a-specified-calendar-quarter",
+      "destination": "/api-reference/quarterly-13f-extract"
+    },
+    {
+      "source": "/api-reference/retrieve-one-sec-derived-normalized-balance-sheet-income-statement-or-cash-flow-statement-for-an-issuer",
+      "destination": "/api-reference/company-financial-statement"
+    },
+    {
+      "source": "/api-reference/retrieve-one-sec-derived-normalized-statement-selected-by-statement-key",
+      "destination": "/api-reference/statement-by-key"
+    },
+    {
+      "source": "/api-reference/retrieve-reference-metadata-and-identifiers-for-one-security",
+      "destination": "/api-reference/security-reference-data"
+    },
+    {
+      "source": "/api-reference/retrieve-splits-and-dividends-for-one-security",
+      "destination": "/api-reference/splits-and-dividends"
+    },
+    {
+      "source": "/api-reference/retrieve-stored-latest-price-snapshots-for-one-or-more-symbols",
+      "destination": "/api-reference/latest-price-snapshots"
+    },
+    {
+      "source": "/api-reference/retrieve-structured-shareholder-vote-results-from-8-k-item-507-filings",
+      "destination": "/api-reference/shareholder-voting-results"
+    },
+    {
+      "source": "/api-reference/retrieve-subsidiaries-disclosed-in-an-issuers-latest-available-10-k-exhibit-21",
+      "destination": "/api-reference/company-subsidiaries"
+    },
+    {
+      "source": "/api-reference/retrieve-the-public-free-tier-plan-descriptor-included-features-alert-limits-and-upgrade-paths",
+      "destination": "/api-reference/free-alerts-plan"
+    },
+    {
+      "source": "/api-reference/return-a-bulk-filterable-export-of-macro-observations-across-countries-and-indicators-with-cursor-pagination-and-csv-or-async-export",
+      "destination": "/api-reference/bulk-macro-observations"
+    },
+    {
+      "source": "/api-reference/return-a-country-intelligence-bundle-covering-the-prior-periods-macro-path-likely-drivers-and-forward-view",
+      "destination": "/api-reference/country-intelligence-report"
+    },
+    {
+      "source": "/api-reference/return-a-custom-thematic-similarity-pack-that-combines-factor-overlap-peers-with-deterministic-filingnews-signatures-and-naming-workflow-metadata",
+      "destination": "/api-reference/thematic-similarity-pack"
+    },
+    {
+      "source": "/api-reference/return-a-one-call-company-bundle-spanning-market-filings-ownership-macro-factor-and-risk-context",
+      "destination": "/api-reference/company-intelligence-bundle"
+    },
+    {
+      "source": "/api-reference/return-a-one-call-factor-dashboard-with-intraday-regime-rotation-spotlight-security-and-optional-model-portfolio-drill-down-sections",
+      "destination": "/api-reference/factor-dashboard"
+    },
+    {
+      "source": "/api-reference/return-a-one-call-portfolio-intelligence-bundle-with-exposures-stress-scenarios-events-and-hedge-ideas",
+      "destination": "/api-reference/portfolio-intelligence-bundle"
+    },
+    {
+      "source": "/api-reference/return-a-one-call-security-bundle-with-snapshot-catalysts-filings-and-factor-context",
+      "destination": "/api-reference/security-intelligence-bundle"
+    },
+    {
+      "source": "/api-reference/return-a-single-factors-daily-return-history-with-1d-through-max-summary-windows-for-chart-and-table-workflows",
+      "destination": "/api-reference/factor-return-history"
+    },
+    {
+      "source": "/api-reference/return-a-structured-filing-footnote-investigation-bundle-single-ticker-latest-only-requests-return-a-footnote_intelligence_result;-multi-ticker-or-date-range-requests-return-a-footnote_intelligence_collection",
+      "destination": "/api-reference/footnote-intelligence-query"
+    },
+    {
+      "source": "/api-reference/return-a-watchlist-briefing-bundle-with-movers-catalysts-factor-context-and-regime-overlays",
+      "destination": "/api-reference/watchlist-intelligence-briefing"
+    },
+    {
+      "source": "/api-reference/return-an-earnings-preview-bundle-with-estimates-drivers-risks-and-traceable-supporting-context",
+      "destination": "/api-reference/earnings-preview-bundle"
+    },
+    {
+      "source": "/api-reference/return-available-factor-returns-data-in-bulk-with-daily-series-for-commercial-plan-bulk-download-workflows",
+      "destination": "/api-reference/bulk-factor-returns"
+    },
+    {
+      "source": "/api-reference/return-bounded-benchmark-instrument-factor-hedge-candidates-for-a-portfolio-with-compact-residual-exposure-and-trust-metadata",
+      "destination": "/api-reference/portfolio-hedge-candidates"
+    },
+    {
+      "source": "/api-reference/return-bounded-factor-aware-optimizer-scenario-candidates-for-factor-neutral-min-drawdown-or-regime-aware-objectives",
+      "destination": "/api-reference/optimize-portfolio-weights"
+    },
+    {
+      "source": "/api-reference/return-compact-multi-factor-sparkline-series-with-1d-through-max-summary-windows-for-dashboard-sector-index-and-model-uis",
+      "destination": "/api-reference/factor-sparklines"
+    },
+    {
+      "source": "/api-reference/return-compact-sec-api-factor-definitions-with-trust-and-methodology-metadata-available-on-request",
+      "destination": "/api-reference/factor-catalog"
+    },
+    {
+      "source": "/api-reference/return-factor-attribution-decomposition-for-a-security-over-a-bounded-lookback-window-with-explained-return-alpha-and-methodology-metadata",
+      "destination": "/api-reference/factor-decomposition"
+    },
+    {
+      "source": "/api-reference/return-factor-exposures-attribution-and-hedge-suggestions-for-a-portfolio-in-one-deterministic-response",
+      "destination": "/api-reference/analyze-portfolio-factors"
+    },
+    {
+      "source": "/api-reference/return-factor-exposures-for-securities-portfolios-or-watchlists",
+      "destination": "/api-reference/factor-exposures"
+    },
+    {
+      "source": "/api-reference/return-factor-moves-ranked-by-unusual-z-score-or-absolute-return-with-direction-threshold-and-trust-metadata",
+      "destination": "/api-reference/extreme-factor-moves"
+    },
+    {
+      "source": "/api-reference/return-factor-pairs-ranked-by-unusual-rolling-spread-divergence-with-direction-threshold-and-trust-metadata",
+      "destination": "/api-reference/extreme-factor-pairs"
+    },
+    {
+      "source": "/api-reference/return-factor-return-attribution-for-a-portfolio-with-explained-return-residualunexplained-return-and-compact-contribution-rows",
+      "destination": "/api-reference/portfolio-return-attribution"
+    },
+    {
+      "source": "/api-reference/return-factor-return-history-z-scores-and-volatility-scaled-series-for-supported-factor-families",
+      "destination": "/api-reference/factor-returns"
+    },
+    {
+      "source": "/api-reference/return-factor-rotation-research-scenarios-informed-by-macro-regime-context-and-factor-state",
+      "destination": "/api-reference/factor-rotation-scenarios"
+    },
+    {
+      "source": "/api-reference/return-factor-sensitivity-to-a-named-macro-stress-scenario-using-the-current-macro-regime-overlay",
+      "destination": "/api-reference/factor-macro-sensitivity"
+    },
+    {
+      "source": "/api-reference/return-factor-to-factor-and-factor-to-security-correlation-surfaces-for-strategy-and-risk-workflows",
+      "destination": "/api-reference/factor-correlations"
+    },
+    {
+      "source": "/api-reference/return-historical-spread-between-two-specific-factors-identified-by-path-parameters-with-windowed-series-data",
+      "destination": "/api-reference/factor-pair-history"
+    },
+    {
+      "source": "/api-reference/return-intraday-factor-snapshots-for-dashboards-using-the-current-benchmark-proxy-surface-and-freshness-metadata",
+      "destination": "/api-reference/intraday-factor-returns"
+    },
+    {
+      "source": "/api-reference/return-macro-release-observations-with-actual-prior-consensus-and-surprise-metadata",
+      "destination": "/api-reference/macro-data-releases"
+    },
+    {
+      "source": "/api-reference/return-macro-runtime-readiness-artifact-freshness-source-posture-and-country-support-status",
+      "destination": "/api-reference/macro-coverage-status"
+    },
+    {
+      "source": "/api-reference/return-normalized-executive-compensation-records-derived-from-the-latest-def-14a-filing",
+      "destination": "/api-reference/executive-compensation"
+    },
+    {
+      "source": "/api-reference/return-normalized-sec-company-facts-for-an-issuer",
+      "destination": "/api-reference/company-facts"
+    },
+    {
+      "source": "/api-reference/return-oauth-protected-resource-metadata-for-hosted-mcp-and-api-clients",
+      "destination": "/api-reference/oauth-protected-resource-metadata"
+    },
+    {
+      "source": "/api-reference/return-official-source-macro-indicator-observations-with-revision-aware-provenance-and-country-quality-metadata",
+      "destination": "/api-reference/macro-indicator-observations"
+    },
+    {
+      "source": "/api-reference/return-or-proxy-oauth-authorization-server-metadata-for-the-configured-workos-tenant",
+      "destination": "/api-reference/oauth-authorization-server-metadata"
+    },
+    {
+      "source": "/api-reference/return-pairwise-factor-spread-data-including-cumulative-spread-average-volatility-and-daily-series-for-two-specified-factors",
+      "destination": "/api-reference/factor-pair-spreads"
+    },
+    {
+      "source": "/api-reference/return-principal-accountant-fee-rows-extracted-from-the-latest-def-14a-or-10-k-for-an-issuer",
+      "destination": "/api-reference/company-audit-fees"
+    },
+    {
+      "source": "/api-reference/return-recent-form-144-notices-of-proposed-insider-sales-with-cursor-pagination-and-date-filters",
+      "destination": "/api-reference/form-144-notices"
+    },
+    {
+      "source": "/api-reference/return-recent-form-c-crowdfunding-offering-filings-with-cursor-pagination-and-date-filters",
+      "destination": "/api-reference/form-c-offerings"
+    },
+    {
+      "source": "/api-reference/return-recent-form-d-private-offering-filings-with-dbsec-source-stable-cursor-pagination",
+      "destination": "/api-reference/form-d-filings"
+    },
+    {
+      "source": "/api-reference/return-recent-form-n-cen-annual-census-filings-with-cursor-pagination-and-date-filters",
+      "destination": "/api-reference/form-n-cen-filings"
+    },
+    {
+      "source": "/api-reference/return-recent-form-n-px-proxy-voting-filings-with-cursor-pagination-and-date-filters",
+      "destination": "/api-reference/form-n-px-filings"
+    },
+    {
+      "source": "/api-reference/return-recent-regulation-a-form-1-a-offering-filings-with-cursor-pagination-and-date-filters",
+      "destination": "/api-reference/form-1-a-offerings"
+    },
+    {
+      "source": "/api-reference/return-regime-conditioned-factor-rankings-that-blend-the-active-macro-backdrop-with-current-factor-state",
+      "destination": "/api-reference/factor-regime-performance"
+    },
+    {
+      "source": "/api-reference/return-related-stocks-ranked-by-factor-overlap-similarity-for-peer-discovery-and-hedge-ideation",
+      "destination": "/api-reference/related-stocks-by-factor"
+    },
+    {
+      "source": "/api-reference/return-rights-safe-news-stories-with-entity-tagging-provenance-and-source-rights-metadata",
+      "destination": "/api-reference/list-news-stories"
+    },
+    {
+      "source": "/api-reference/return-sec-api-forecast-baselines-and-scenario-aware-macro-projections-with-methodology-metadata",
+      "destination": "/api-reference/macro-forecasts"
+    },
+    {
+      "source": "/api-reference/return-sec-furnished-earnings-materials-from-8-k-filings-with-release-remarks-and-transcript-coverage-states",
+      "destination": "/api-reference/earnings-materials"
+    },
+    {
+      "source": "/api-reference/return-sovereign-credit-ratings-from-s&p-moodys-and-fitch-for-tracked-countries-and-g20-members",
+      "destination": "/api-reference/sovereign-credit-ratings"
+    },
+    {
+      "source": "/api-reference/return-stock-level-factor-loadings-for-a-single-ticker-using-the-latest-stored-exposure-model",
+      "destination": "/api-reference/stock-factor-loadings"
+    },
+    {
+      "source": "/api-reference/return-structured-form-d-offering-data-parsed-from-the-filing-xml",
+      "destination": "/api-reference/form-d-filing-detail"
+    },
+    {
+      "source": "/api-reference/return-the-current-authenticated-principal-and-organization-context",
+      "destination": "/api-reference/current-api-principal"
+    },
+    {
+      "source": "/api-reference/return-the-current-macro-regime-classification-for-a-country-using-the-canonical-sec-api-macro-overlay",
+      "destination": "/api-reference/macro-regime-classification"
+    },
+    {
+      "source": "/api-reference/return-the-current-organization-profile",
+      "destination": "/api-reference/organization-profile"
+    },
+    {
+      "source": "/api-reference/return-the-current-organizations-billing-snapshot-including-pricing-posture-budget-controls-and-settlement-provider-state",
+      "destination": "/api-reference/billing-overview"
+    },
+    {
+      "source": "/api-reference/return-the-current-organizations-effective-plan-billing-state-and-route-quota-windows",
+      "destination": "/api-reference/plan-limits-and-quotas"
+    },
+    {
+      "source": "/api-reference/return-the-current-organizations-prepaid-credit-balance-auto-top-up-settings-lifetime-totals-and-low-balance-status",
+      "destination": "/api-reference/credit-balance"
+    },
+    {
+      "source": "/api-reference/return-the-current-organizations-stripe-publishable-key-configuration-for-browser-payment-setup",
+      "destination": "/api-reference/payment-client-configuration"
+    },
+    {
+      "source": "/api-reference/return-the-latest-board-composition-derived-from-definitive-proxy-filings-with-director-roster-and-committee-coverage-semantics",
+      "destination": "/api-reference/board-composition"
+    },
+    {
+      "source": "/api-reference/return-the-latest-sec-n-port-holdings-roster-with-explicit-capability-semantics-and-balance-unit-metadata",
+      "destination": "/api-reference/n-port-fund-holdings"
+    },
+    {
+      "source": "/api-reference/return-the-launch-ring-tier-1-high-signal-macro-pack-with-explicit-source-fallback-and-release-calendar-posture-for-supported-countries",
+      "destination": "/api-reference/macro-high-signal-pack"
+    },
+    {
+      "source": "/api-reference/return-the-macro-event-calendar-for-supported-official-source-releases-and-central-bank-events",
+      "destination": "/api-reference/macro-event-calendar"
+    },
+    {
+      "source": "/api-reference/return-the-public-pricing-catalog-free-allowance-metadata-plan-metadata-and-meter-family-launch-rates",
+      "destination": "/api-reference/pricing-catalog"
+    },
+    {
+      "source": "/api-reference/return-the-sec-api-dilution-score-with-factor-model-context-for-liquidity-regime-momentum-exposure-and-financing-risk-interpretation",
+      "destination": "/api-reference/enhanced-dilution-score"
+    },
+    {
+      "source": "/api-reference/return-the-sec-api-volatility-score-with-transparent-factor-breakdown-and-freshness-metadata",
+      "destination": "/api-reference/volatility-score"
+    },
+    {
+      "source": "/api-reference/return-the-sovereign-credit-rating-for-a-single-country-by-iso-country-code",
+      "destination": "/api-reference/country-credit-rating"
+    },
+    {
+      "source": "/api-reference/return-the-supported-portfolio-stress-test-scenario-catalog-with-macro-and-factor-shock-definitions",
+      "destination": "/api-reference/stress-test-scenarios"
+    },
+    {
+      "source": "/api-reference/rotate-the-signing-secret-for-a-webhook-endpoint",
+      "destination": "/api-reference/rotate-webhook-signing-secret"
+    },
+    {
+      "source": "/api-reference/run-a-tenant-safe-analytical-query-over-supported-sec-api-history-datasets-without-exposing-raw-sql",
+      "destination": "/api-reference/run-analytics-query"
+    },
+    {
+      "source": "/api-reference/run-portfolio-stress-scenarios-across-factor-and-macro-shock-definitions-with-compact-traceable-outputs",
+      "destination": "/api-reference/run-portfolio-stress-test"
+    },
+    {
+      "source": "/api-reference/run-the-monitors-saved-query-and-return-new-matches-since-last_checked_at",
+      "destination": "/api-reference/monitor-matches"
+    },
+    {
+      "source": "/api-reference/search-canonical-sec-entities-across-issuers-managers-insiders-and-funds-with-offset-pagination",
+      "destination": "/api-reference/search-entities"
+    },
+    {
+      "source": "/api-reference/search-filing-sections-and-snippets-with-filing-scoped-filters-and-cursor-pagination",
+      "destination": "/api-reference/search-filing-sections"
+    },
+    {
+      "source": "/api-reference/search-normalized-sec-forms-3-4-and-5-records-by-issuer-reporting-owner-transaction-and-filing-date",
+      "destination": "/api-reference/search-insider-filings"
+    },
+    {
+      "source": "/api-reference/search-official-sec-enforcement-releases-proceedings-and-accounting-actions",
+      "destination": "/api-reference/sec-enforcement-actions"
+    },
+    {
+      "source": "/api-reference/search-rights-safe-news-coverage-and-issuer-communications-by-symbol-entity-or-topic",
+      "destination": "/api-reference/search-news"
+    },
+    {
+      "source": "/api-reference/search-sec-edgar-entity-records-by-name-ticker-cik-or-identifier-with-source-oriented-pagination",
+      "destination": "/api-reference/search-edgar-entities"
+    },
+    {
+      "source": "/api-reference/search-sec-form-adv-investment-adviser-filings-by-name-cik-or-state",
+      "destination": "/api-reference/search-investment-advisers"
+    },
+    {
+      "source": "/api-reference/search-sec-schedule-13d-and-13g-beneficial-ownership-reports-by-issuer-filer-form-and-filing-date",
+      "destination": "/api-reference/schedule-13d-and-13g-filings"
+    },
+    {
+      "source": "/api-reference/search-supported-macro-indicators-by-keyword-across-all-countries-and-high-signal-packs",
+      "destination": "/api-reference/search-macro-indicators"
+    },
+    {
+      "source": "/api-reference/send-a-signed-webhooktest-event-to-a-webhook-endpoint",
+      "destination": "/api-reference/send-test-webhook"
+    },
+    {
+      "source": "/api-reference/set-a-saved-payment-method-as-primary-andor-change-its-auto-top-up-fallback-priority",
+      "destination": "/api-reference/update-payment-method"
+    },
+    {
+      "source": "/api-reference/shadow-execute-a-channel-neutral-operation-envelope-without-settling-usage",
+      "destination": "/api-reference/execute-an-operation"
+    },
+    {
+      "source": "/api-reference/shadow-quote-a-channel-neutral-operation-before-execution-across-api-mcp-cli-sdk-excel-or-sheets",
+      "destination": "/api-reference/quote-an-operation"
+    },
+    {
+      "source": "/api-reference/special-situations/create-a-situation-scoped-watchlist-monitor",
+      "destination": "/api-reference/special-situations/create-situation-watchlist"
+    },
+    {
+      "source": "/api-reference/special-situations/deactivate-a-situation-scoped-watchlist-monitor",
+      "destination": "/api-reference/special-situations/deactivate-situation-watchlist"
+    },
+    {
+      "source": "/api-reference/special-situations/enqueue-an-async-bulk-special-situations-export-from-the-same-snapshotissue-renderer-json-csv-excel-pdf-or-copy-for-llm",
+      "destination": "/api-reference/special-situations/export-situations"
+    },
+    {
+      "source": "/api-reference/special-situations/export-one-situation-from-the-shared-snapshot-renderer-json-csv-xlsx-and-llm-are-inline;-pdf-is-an-async-job",
+      "destination": "/api-reference/special-situations/export-one-situation"
+    },
+    {
+      "source": "/api-reference/special-situations/list-durable-special-situations-m&a-tender-offers-going-private-spin-offs-activist-campaigns-restructuring-bankruptcy-…-with-lifecycle-status-deal-terms-and-market-snapshot",
+      "destination": "/api-reference/special-situations/list-special-situations"
+    },
+    {
+      "source": "/api-reference/special-situations/list-immutable-numbered-weekly-special-situations-digest-issues",
+      "destination": "/api-reference/special-situations/weekly-digest-issues"
+    },
+    {
+      "source": "/api-reference/special-situations/list-situation-scoped-watchlist-monitors-for-the-current-organization",
+      "destination": "/api-reference/special-situations/list-situation-watchlists"
+    },
+    {
+      "source": "/api-reference/special-situations/list-special-situations-opened-or-advanced-by-a-given-edgar-form-type-eg-sc-13d-sc-to-t-425-defm14a-the-form-is-expanded-to-the-situation-types-it-triggers",
+      "destination": "/api-reference/special-situations/situations-by-filing-form"
+    },
+    {
+      "source": "/api-reference/special-situations/paid-authenticated-rss-feed-of-situation-events",
+      "destination": "/api-reference/special-situations/situation-rss-feed"
+    },
+    {
+      "source": "/api-reference/special-situations/poll-an-async-export-job-and-re-sign-its-download-url",
+      "destination": "/api-reference/special-situations/get-export-job"
+    },
+    {
+      "source": "/api-reference/special-situations/retrieve-a-deterministic-source-cited-underwriting-pack-with-canonical-detail-filing-timeline-and-copy-for-llm-markdown",
+      "destination": "/api-reference/special-situations/situation-underwriting-pack"
+    },
+    {
+      "source": "/api-reference/special-situations/retrieve-a-single-situation-with-its-full-per-filing-timeline-oldest-first",
+      "destination": "/api-reference/special-situations/get-situation"
+    },
+    {
+      "source": "/api-reference/special-situations/retrieve-a-situation-scoped-watchlist-monitor-by-id",
+      "destination": "/api-reference/special-situations/get-situation-watchlist"
+    },
+    {
+      "source": "/api-reference/special-situations/retrieve-a-situations-per-filing-timeline-as-a-paginated-sub-resource-oldest-first",
+      "destination": "/api-reference/special-situations/situation-filing-timeline"
+    },
+    {
+      "source": "/api-reference/special-situations/retrieve-one-immutable-weekly-special-situations-digest-issue-by-number-or-slug",
+      "destination": "/api-reference/special-situations/get-digest-issue"
+    },
+    {
+      "source": "/api-reference/special-situations/reverse-chronological-feed-of-situation-events-each-enriched-with-its-parent-situation-summary",
+      "destination": "/api-reference/special-situations/situation-event-feed"
+    },
+    {
+      "source": "/api-reference/special-situations/situation-counts-by-type-status-sector-market-cap-bucket-and-country-with-coverage-scope",
+      "destination": "/api-reference/special-situations/situation-counts"
+    },
+    {
+      "source": "/api-reference/special-situations/upcoming-situation-key-dates-record-vote-expiry-expected-close-within-a-horizon-of-up-to-365-days",
+      "destination": "/api-reference/special-situations/situation-calendar"
+    },
+    {
+      "source": "/api-reference/summarize-persisted-artifact-storage-for-the-current-organization",
+      "destination": "/api-reference/artifact-storage-summary"
+    },
+    {
+      "source": "/api-reference/unsubscribe-from-monitor-email-delivery-rfc-8058-one-click-compatible",
+      "destination": "/api-reference/confirm-email-unsubscribe"
+    },
+    {
+      "source": "/api-reference/update-a-stream-subscription-description-event-types-transport-or-status",
+      "destination": "/api-reference/update-stream-subscription"
+    },
+    {
+      "source": "/api-reference/update-a-webhook-endpoint-url-description-subscribed-event-types-or-active-status",
+      "destination": "/api-reference/update-webhook-endpoint"
+    },
+    {
+      "source": "/api-reference/update-or-replace-the-monitors-delivery-destination-eg-set-or-change-an-email-recipient",
+      "destination": "/api-reference/update-monitor-delivery"
+    },
+    {
+      "source": "/api-reference/update-organization-level-spend-caps-soft-caps-and-approval-thresholds-for-payg-usage",
+      "destination": "/api-reference/update-spend-budget"
+    },
+    {
+      "source": "/api-reference/upgrade-to-a-websocket-connection-for-delivery-event-streaming",
+      "destination": "/api-reference/websocket-event-stream"
+    },
+    {
+      "source": "/api-reference/enable-pay-as-you-go-in-one-flow*",
+      "destination": "/api-reference/enable-pay-as-you-go"
+    },
+    {
+      "source": "/api-reference/filing-to-model-workbooks/return-the-durable-workbook-provenance-ledger*",
+      "destination": "/api-reference/filing-to-model-workbooks/workbook-provenance-ledger"
+    },
+    {
+      "source": "/api-reference/fund-letters/browse-the-fund-directory*",
+      "destination": "/api-reference/fund-letters/list-fund-managers"
+    },
+    {
+      "source": "/api-reference/fund-letters/company-coverage-index*",
+      "destination": "/api-reference/fund-letters/company-letter-coverage"
+    },
+    {
+      "source": "/api-reference/fund-letters/cross-cutting-thesis-screen*",
+      "destination": "/api-reference/fund-letters/letter-investment-theses"
+    },
+    {
+      "source": "/api-reference/fund-letters/fund-overview*",
+      "destination": "/api-reference/fund-letters/fund-manager-overview"
+    },
+    {
+      "source": "/api-reference/fund-letters/topic-variance-between-two-letters*",
+      "destination": "/api-reference/fund-letters/compare-letter-topics"
+    },
+    {
+      "source": "/api-reference/return-a-one-call-country-macro-dashboard*",
+      "destination": "/api-reference/country-macro-overview"
+    },
+    {
+      "source": "/api-reference/return-ex-ante-portfolio-risk*",
+      "destination": "/api-reference/portfolio-risk-model"
+    },
+    {
+      "source": "/api-reference/return-revenue-weighted-macro-sensitivities-for-a-portfolio*",
+      "destination": "/api-reference/portfolio-macro-exposure"
+    },
+    {
+      "source": "/api-reference/return-the-sec-api-dilution-score*",
+      "destination": "/api-reference/dilution-score"
+    },
+    {
+      "source": "/api-reference/semantic-vector-search-across-sec-filing-section-content-with-finance-tuned-embeddings-hybrid-keyword*",
+      "destination": "/api-reference/semantic-filing-search"
+    },
+    {
+      "source": "/api-reference/special-situations/closed-situation-outcome-cohorts*",
+      "destination": "/api-reference/special-situations/situation-outcome-statistics"
+    },
+    {
+      "source": "/api-reference/special-situations/retrieve-a-compact-situation-summary*",
+      "destination": "/api-reference/special-situations/situation-summary"
     }
   ],
   "footer": {

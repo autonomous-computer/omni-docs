@@ -7,9 +7,9 @@ Resolve and search entities across issuers, managers, insiders, and funds. Resol
 
 | Method | Endpoint | Description |
 | --- | --- | --- |
-| `GET` | `/v1/entities/resolve` | Resolve one issuer, manager, insider, or fund from a market or SEC identifier, returning the canonical entity and match confidence. |
-| `GET` | `/v1/entities` | Search canonical SEC entities across issuers, managers, insiders, and funds with offset pagination. |
-| `GET` | `/v1/entities/edgar` | Search SEC EDGAR entity records by name, ticker, CIK, or identifier with source-oriented pagination. |
+| `GET` | `/v1/entities/resolve` | Resolve entity identifier. |
+| `GET` | `/v1/entities` | Search entities. |
+| `GET` | `/v1/entities/edgar` | Search EDGAR entities. |
 
 A resolve request looks like this:
 

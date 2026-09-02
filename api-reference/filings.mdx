@@ -7,16 +7,16 @@ Search SEC filing records, then move from a result into retrieval, section extra
 
 | Method | Endpoint | Description |
 | --- | --- | --- |
-| `GET` | `/v1/filings` | Find SEC filing records by issuer, form, date, text, or accession number. |
-| `GET` | `/v1/filings/latest` | Get an issuer's newest filing, optionally for a specific SEC form. |
-| `GET` | `/v1/filings/latest/render` | Render an issuer's latest selected filing as readable text. |
-| `GET` | `/v1/filings/latest/sections/{section_key}` | Extract a named section from an issuer's latest selected filing. |
-| `GET` | `/v1/filings/latest/risk-categories` | Classify Item 1A risk categories in a selected issuer filing. |
-| `GET` | `/v1/filings/{accession_number}` | Get one SEC filing record by its accession number. |
-| `GET` | `/v1/filings/{accession_number}/sections/{section_key}` | Extract a named section from one accession-number filing. |
-| `GET` | `/v1/filings/{accession_number}/download` | Open a filing's source document by accession number. |
-| `GET` | `/v1/filings/{accession_number}/export` | Export one filing in JSON or document formats. |
-| `GET` | `/v1/filings/pension-benefit-schedule` | Extract disclosed pension and retiree benefit payments for a target year. |
+| `GET` | `/v1/filings` | List filings. |
+| `GET` | `/v1/filings/latest` | Latest filing. |
+| `GET` | `/v1/filings/latest/render` | Render latest filing. |
+| `GET` | `/v1/filings/latest/sections/{section_key}` | Latest filing section. |
+| `GET` | `/v1/filings/latest/risk-categories` | Risk factor categories. |
+| `GET` | `/v1/filings/{accession_number}` | Get filing by accession. |
+| `GET` | `/v1/filings/{accession_number}/sections/{section_key}` | Filing section by accession. |
+| `GET` | `/v1/filings/{accession_number}/download` | Download filing document. |
+| `GET` | `/v1/filings/{accession_number}/export` | Export filing. |
+| `GET` | `/v1/filings/pension-benefit-schedule` | Pension benefit schedule. |
 
 Retrieve the latest 10-K for an issuer:
 
