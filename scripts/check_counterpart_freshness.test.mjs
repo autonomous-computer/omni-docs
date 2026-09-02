@@ -13,6 +13,7 @@ import {
   isEntryPoint,
   lastCommitUrl,
   main,
+  defaultFetch,
   repoUrl,
 } from "./check_counterpart_freshness.mjs"
 
@@ -287,14 +288,18 @@ test("main applies DEFAULT_MAX_AGE_DAYS when no budget is set", async () => {
   assert.equal(await main({ env: {}, now: NOW, log: silent, logError: silent, fetchImpl: routed({ repo: okRepoResponse, commits: commitsResponse(outside) }) }), 1)
 })
 
-test("main requests the DEFAULT repo and path when the env is empty", async () => {
+// EXACT sequence, not `.some()`. Presence-only assertions pin that a correct URL
+// was requested but not that no ADDITIONAL wrong one was, nor which response the
+// decision used — so a second call to `path: "README.md"` overwriting the result
+// (the degraded "is the repo alive at all" check this guard exists to prevent),
+// or a silent retry with the filter dropped, both passed.
+test("main makes EXACTLY the two expected requests, in order", async () => {
   const impl = routed({ repo: okRepoResponse, commits: commitsResponse(daysBefore(1)) })
   await main({ env: {}, now: NOW, log: silent, logError: silent, fetchImpl: impl })
-  assert.ok(impl.seen.some((u) => u === repoUrl({ repo: "autonomous-computer/docs" })), `repo URL not requested: ${impl.seen}`)
-  assert.ok(
-    impl.seen.some((u) => u === lastCommitUrl({ repo: "autonomous-computer/docs", path: "openapi/sec-api-public.v1.json" })),
-    `path-filtered commits URL not requested: ${impl.seen}`,
-  )
+  assert.deepEqual(impl.seen, [
+    repoUrl({ repo: "autonomous-computer/docs" }),
+    lastCommitUrl({ repo: "autonomous-computer/docs", path: "openapi/sec-api-public.v1.json" }),
+  ])
 })
 
 test("main honours COUNTERPART_REPO and COUNTERPART_PATH", async () => {
@@ -303,8 +308,10 @@ test("main honours COUNTERPART_REPO and COUNTERPART_PATH", async () => {
     env: { COUNTERPART_REPO: "other/repo", COUNTERPART_PATH: "some/spec.json" },
     now: NOW, log: silent, logError: silent, fetchImpl: impl,
   })
-  assert.ok(impl.seen.some((u) => u === repoUrl({ repo: "other/repo" })), `wrong repo URL: ${impl.seen}`)
-  assert.ok(impl.seen.some((u) => u === lastCommitUrl({ repo: "other/repo", path: "some/spec.json" })), `wrong commits URL: ${impl.seen}`)
+  assert.deepEqual(impl.seen, [
+    repoUrl({ repo: "other/repo" }),
+    lastCommitUrl({ repo: "other/repo", path: "some/spec.json" }),
+  ])
 })
 
 test("main checks archived BEFORE fetching commits", async () => {
@@ -370,4 +377,27 @@ test("isEntryPoint still matches the literal form when realpath throws", () => {
 test("isEntryPoint is false for a different file, and for a missing entrypoint", () => {
   assert.equal(isEntryPoint({ importMetaUrl: "file:///a/b.mjs", entryPoint: "/a/other.mjs", realpath: (p) => p }), false)
   assert.equal(isEntryPoint({ importMetaUrl: "file:///a/b.mjs", entryPoint: undefined }), false)
+})
+
+// N27: fetchImpl was the last unpinned production default. Every test injected
+// one, and the spawn test returns before any fetch, so nothing asserted the CLI
+// is network-bound at all — the same class the second pass blocked on.
+test("main's DEFAULT fetch is the real global fetch", async () => {
+  assert.equal(defaultFetch, globalThis.fetch)
+})
+
+// main() was never exercised on the future-skew path; only the pure function was.
+test("main returns 1 for a far-future commit date", async () => {
+  assert.equal(
+    await main({ env: {}, now: NOW, log: silent, logError: silent,
+      fetchImpl: routed({ repo: okRepoResponse, commits: commitsResponse("2099-01-01T00:00:00Z") }) }),
+    1,
+  )
+})
+
+// A valid budget was validated but never asserted to be APPLIED.
+test("main applies a valid COUNTERPART_MAX_AGE_DAYS override", async () => {
+  const impl = () => routed({ repo: okRepoResponse, commits: commitsResponse(daysBefore(10)) })
+  assert.equal(await main({ env: { COUNTERPART_MAX_AGE_DAYS: "5" }, now: NOW, log: silent, logError: silent, fetchImpl: impl() }), 1)
+  assert.equal(await main({ env: { COUNTERPART_MAX_AGE_DAYS: "20" }, now: NOW, log: silent, logError: silent, fetchImpl: impl() }), 0)
 })

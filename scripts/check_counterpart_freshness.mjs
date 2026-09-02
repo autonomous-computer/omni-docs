@@ -182,7 +182,10 @@ export async function fetchIsArchived({ repo, fetchImpl = fetch, token }) {
  * mutations — forcing exit 0, swallowing the catch, and disabling isMain — each
  * turned the guard into a permanent no-op with the whole suite still green.
  */
-export async function main({ env = process.env, fetchImpl = fetch, now = new Date().toISOString(), log = console.log, logError = console.error } = {}) {
+/** Exported so the CLI default is pinnable; every test injects its own. */
+export const defaultFetch = fetch
+
+export async function main({ env = process.env, fetchImpl = defaultFetch, now = new Date().toISOString(), log = console.log, logError = console.error } = {}) {
   const repo = env.COUNTERPART_REPO ?? "autonomous-computer/docs"
   const path = env.COUNTERPART_PATH ?? "openapi/sec-api-public.v1.json"
   const maxAgeDays = Number(env.COUNTERPART_MAX_AGE_DAYS ?? DEFAULT_MAX_AGE_DAYS)
