@@ -19,7 +19,7 @@ import sys
 from pathlib import Path
 from typing import Any, Iterator
 
-HTTP_METHODS = ("get", "post", "put", "patch", "delete", "head", "options")
+HTTP_METHODS = ("get", "put", "post", "delete", "options", "head", "patch", "trace")
 OPERATION_PAGE = re.compile(r"^(%s) (/\S*)$" % "|".join(m.upper() for m in HTTP_METHODS))
 
 
