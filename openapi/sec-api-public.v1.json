@@ -942,7 +942,17 @@
     "/v1/billing/payment-methods/{id}": {
       "put": {
         "summary": "Set a saved payment method as primary and/or change its auto-top-up fallback priority",
-        "parameters": [{"name":"id","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `id`."}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `id`."
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -1016,7 +1026,17 @@
       },
       "delete": {
         "summary": "Remove a saved payment method from the current organization",
-        "parameters": [{"name":"id","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `id`."}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `id`."
+          }
+        ],
         "responses": {
           "204": {
             "description": "No content"
@@ -3600,7 +3620,17 @@
     "/v1/webhook_endpoints/{webhook_id}": {
       "patch": {
         "summary": "Update a webhook endpoint URL, description, subscribed event types, or active status",
-        "parameters": [{"name":"webhook_id","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `webhook_id`."}],
+        "parameters": [
+          {
+            "name": "webhook_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `webhook_id`."
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -3713,7 +3743,17 @@
       },
       "delete": {
         "summary": "Delete a webhook endpoint while preserving delivery audit history",
-        "parameters": [{"name":"webhook_id","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `webhook_id`."}],
+        "parameters": [
+          {
+            "name": "webhook_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `webhook_id`."
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -3784,7 +3824,17 @@
     "/v1/webhook_endpoints/{webhook_id}/enable": {
       "post": {
         "summary": "Enable a webhook endpoint",
-        "parameters": [{"name":"webhook_id","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `webhook_id`."}],
+        "parameters": [
+          {
+            "name": "webhook_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `webhook_id`."
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -3848,7 +3898,17 @@
     "/v1/webhook_endpoints/{webhook_id}/disable": {
       "post": {
         "summary": "Disable a webhook endpoint without deleting delivery history",
-        "parameters": [{"name":"webhook_id","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `webhook_id`."}],
+        "parameters": [
+          {
+            "name": "webhook_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `webhook_id`."
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -3912,7 +3972,17 @@
     "/v1/webhook_endpoints/{webhook_id}/test": {
       "post": {
         "summary": "Send a signed webhook.test event to a webhook endpoint",
-        "parameters": [{"name":"webhook_id","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `webhook_id`."}],
+        "parameters": [
+          {
+            "name": "webhook_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `webhook_id`."
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -4040,7 +4110,17 @@
     "/v1/webhook_endpoints/{webhook_id}/rotate_secret": {
       "post": {
         "summary": "Rotate the signing secret for a webhook endpoint",
-        "parameters": [{"name":"webhook_id","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `webhook_id`."}],
+        "parameters": [
+          {
+            "name": "webhook_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `webhook_id`."
+          }
+        ],
         "responses": {
           "200": {
             "description": "Signing secret rotated. The new secret is revealed once.",
@@ -4106,7 +4186,15 @@
       "get": {
         "summary": "List canonical delivery attempts for a webhook endpoint",
         "parameters": [
-          {"name":"webhook_id","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `webhook_id`."},
+          {
+            "name": "webhook_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `webhook_id`."
+          },
           {
             "name": "eventId",
             "in": "query",
@@ -4343,7 +4431,26 @@
     "/v1/webhook_endpoints/{webhook_id}/deliveries/{delivery_id}/replay": {
       "post": {
         "summary": "Replay a stored webhook delivery attempt by re-emitting its source event to the endpoint",
-        "parameters": [{"name":"webhook_id","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `webhook_id`."},{"name":"delivery_id","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `delivery_id`."}],
+        "parameters": [
+          {
+            "name": "webhook_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `webhook_id`."
+          },
+          {
+            "name": "delivery_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `delivery_id`."
+          }
+        ],
         "responses": {
           "200": {
             "description": "Explicit replay result. Replay creates new delivery records linked to the source attempt.",
@@ -4593,7 +4700,17 @@
     "/v1/monitors/{monitor_id}": {
       "get": {
         "summary": "Retrieve a single monitor by id",
-        "parameters": [{"name":"monitor_id","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `monitor_id`."}],
+        "parameters": [
+          {
+            "name": "monitor_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `monitor_id`."
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -4633,7 +4750,17 @@
       },
       "delete": {
         "summary": "Deactivate a monitor (idempotent; sets is_active=false)",
-        "parameters": [{"name":"monitor_id","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `monitor_id`."}],
+        "parameters": [
+          {
+            "name": "monitor_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `monitor_id`."
+          }
+        ],
         "responses": {
           "204": {
             "description": "No content"
@@ -4664,7 +4791,17 @@
     "/v1/monitors/{monitor_id}/matches": {
       "get": {
         "summary": "Run the monitor's saved query and return new matches since last_checked_at",
-        "parameters": [{"name":"monitor_id","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `monitor_id`."}],
+        "parameters": [
+          {
+            "name": "monitor_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `monitor_id`."
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -4706,7 +4843,17 @@
     "/v1/monitors/{monitor_id}/delivery": {
       "post": {
         "summary": "Update or replace the monitor's delivery destination (e.g., set or change an email recipient)",
-        "parameters": [{"name":"monitor_id","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `monitor_id`."}],
+        "parameters": [
+          {
+            "name": "monitor_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `monitor_id`."
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -7020,7 +7167,17 @@
     "/v1/stream_subscriptions/{stream_id}": {
       "patch": {
         "summary": "Update a stream subscription description, event types, transport, or status",
-        "parameters": [{"name":"stream_id","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `stream_id`."}],
+        "parameters": [
+          {
+            "name": "stream_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `stream_id`."
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -7138,7 +7295,17 @@
       },
       "delete": {
         "summary": "Delete a stream subscription while preserving delivery records",
-        "parameters": [{"name":"stream_id","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `stream_id`."}],
+        "parameters": [
+          {
+            "name": "stream_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `stream_id`."
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -7209,7 +7376,17 @@
     "/v1/stream_subscriptions/{stream_id}/enable": {
       "post": {
         "summary": "Enable a stream subscription",
-        "parameters": [{"name":"stream_id","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `stream_id`."}],
+        "parameters": [
+          {
+            "name": "stream_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `stream_id`."
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -7274,7 +7451,17 @@
     "/v1/stream_subscriptions/{stream_id}/disable": {
       "post": {
         "summary": "Disable a stream subscription without deleting its delivery records",
-        "parameters": [{"name":"stream_id","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `stream_id`."}],
+        "parameters": [
+          {
+            "name": "stream_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `stream_id`."
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -8250,7 +8437,17 @@
     "/v1/traces/{trace_id}": {
       "get": {
         "summary": "Resolve a single shared trace record by trace identifier across filing-derived and supported non-filing datasets",
-        "parameters": [{"name":"trace_id","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `trace_id`."}],
+        "parameters": [
+          {
+            "name": "trace_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `trace_id`."
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -21794,7 +21991,17 @@
     "/v1/intelligence/query/{jobId}": {
       "get": {
         "summary": "Poll an async intelligence workload until the final traced result is ready",
-        "parameters": [{"name":"jobId","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `jobId`."}],
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `jobId`."
+          }
+        ],
         "responses": {
           "200": {
             "description": "Completed intelligence query result",
@@ -26973,7 +27180,17 @@
     "/v1/filings/{accession_number}/download": {
       "get": {
         "summary": "Open a filing's source document by accession number",
-        "parameters": [{"name":"accession_number","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `accession_number`."}],
+        "parameters": [
+          {
+            "name": "accession_number",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `accession_number`."
+          }
+        ],
         "description": "Resolve a filing accession number and return its source document through the available delivery path. The response may be served from a cached copy or redirect to SEC EDGAR; use the source document itself when the exact filed presentation matters.",
         "responses": {
           "200": {
@@ -27018,7 +27235,15 @@
         "summary": "Export one filing in JSON or document formats",
         "description": "Export a selected filing as JSON by default, or request a derived Markdown, CSV, XLSX, DOCX, or PDF document with `format`. JSON returns the filing manifest; derived formats can be large and should retain the filing accession and source provenance. Derived exports do not replace the original filing as evidence.",
         "parameters": [
-          {"name":"accession_number","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `accession_number`."},
+          {
+            "name": "accession_number",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path identifier `accession_number`."
+          },
           {
             "name": "format",
             "in": "query",
@@ -28636,8 +28861,8 @@
     },
     "/v1/filings/events": {
       "get": {
-        "summary": "Filing events endpoint (currently unavailable)",
-        "description": "This endpoint is currently unavailable and returns `404 filings_intelligence_not_available`. When available, it will list persisted classifications from covered 8-K and 6-K filings for issuer- and date-bounded monitoring. Rows are derived from filing content and are not a real-time market-news feed or a complete record of every issuer event.",
+        "summary": "Return persisted classifications from covered 8-K and 6-K filings",
+        "description": "Lists persisted classifications from covered 8-K and 6-K filings for issuer- and date-bounded monitoring. Rows are derived from filing content and are not a real-time market-news feed or a complete record of every issuer event.",
         "parameters": [
           {
             "name": "forms",
@@ -28767,8 +28992,8 @@
     },
     "/v1/filings/diff": {
       "get": {
-        "summary": "Filing comparison endpoint (currently unavailable)",
-        "description": "This endpoint is currently unavailable and returns `404 filings_intelligence_not_available`. When available, it will compare a selected issuer filing with a prior-period or explicitly chosen counterpart and return section-level change information. Any comparison is a review aid based on rendered filing text, not a determination of materiality or legal significance.",
+        "summary": "Compare an issuer filing with a prior-period or explicitly chosen counterpart",
+        "description": "Compares a selected issuer filing with a prior-period or explicitly chosen counterpart and returns section-level change information. Any comparison is a review aid based on rendered filing text, not a determination of materiality or legal significance.",
         "parameters": [
           {
             "name": "ticker",
@@ -28891,8 +29116,8 @@
     },
     "/v1/filings/transcripts": {
       "get": {
-        "summary": "Filing transcripts endpoint (currently unavailable)",
-        "description": "This endpoint is currently unavailable and returns `404 filings_intelligence_not_available`. When available, it will list persisted earnings-transcript records extracted from covered EX-99 filing materials, with speaker and prepared-remarks or Q&A structure where source material supports extraction. Results will depend on available source materials and extraction coverage.",
+        "summary": "Return persisted earnings-transcript records extracted from covered EX-99 materials",
+        "description": "Lists persisted earnings-transcript records extracted from covered EX-99 filing materials, with speaker and prepared-remarks or Q&A structure where source material supports extraction. Results depend on available source materials and extraction coverage.",
         "parameters": [
           {
             "name": "tickers",
@@ -29022,8 +29247,8 @@
     },
     "/v1/filings/guidance": {
       "get": {
-        "summary": "Filing guidance endpoint (currently unavailable)",
-        "description": "This endpoint is currently unavailable and returns `404 filings_intelligence_not_available`. When available, it will list persisted management-guidance records extracted from covered earnings materials and transcripts, including metric, direction, target period, and disclosed ranges where available. These records will be source-derived extractions, not normalized estimates or a complete guidance history.",
+        "summary": "Return persisted management-guidance records extracted from covered earnings materials",
+        "description": "Lists persisted management-guidance records extracted from covered earnings materials and transcripts, including metric, direction, target period, and disclosed ranges where available. These records are source-derived extractions, not normalized estimates or a complete guidance history.",
         "parameters": [
           {
             "name": "tickers",
@@ -29176,8 +29401,8 @@
     },
     "/v1/intelligence/coverage": {
       "get": {
-        "summary": "Filing-intelligence coverage endpoint (currently unavailable)",
-        "description": "This endpoint is currently unavailable and returns `404 filings_intelligence_not_available`. When available, it will compose a single-issuer rollup over persisted filings-intelligence stores, including tagged events, guidance, transcripts, and footnote newness. Coverage will reflect available extracted records, not complete issuer disclosure history.",
+        "summary": "Compose a single-issuer rollup over the persisted filings-intelligence stores",
+        "description": "Composes a single-issuer rollup over persisted filings-intelligence stores, including tagged events, guidance, transcripts, and footnote newness. Coverage reflects available extracted records, not complete issuer disclosure history.",
         "parameters": [
           {
             "name": "ticker",
@@ -32456,7 +32681,7 @@
           "Fund Letters"
         ],
         "summary": "List investor letters from hedge funds, partnerships, and registered funds, filterable by manager, fund, company, period, source, and distribution tier.",
-        "description": "These routes return 404 until the letters plane is enabled. Documented coverage, when enabled, begins with letters published in 2025 Q1 and is not a historical archive. view=compact returns the trimmed FundLetterCompactList projection (billed identically); view=agent currently equals the default view.",
+        "description": "Documented coverage begins with letters published in 2025 Q1 and is not a historical archive. view=compact returns the trimmed FundLetterCompactList projection (billed identically); view=agent currently equals the default view.",
         "parameters": [
           {
             "name": "manager_id",
@@ -32714,7 +32939,7 @@
           "Fund Letters"
         ],
         "summary": "Full-text search over letter bodies; hits carry page-anchored highlights.",
-        "description": "Returns 404 until the letters plane is enabled. Metered as fund_letter_search. Results are a relevance-ranked top-N (hasMore is always false; raise limit or narrow filters to deepen recall). Every highlight anchor verifies against /document?format=markdown bytes. When the full-text engine is unavailable the response degrades to Postgres lexical search, reported via degradedState.",
+        "description": "Metered as fund_letter_search. Results are a relevance-ranked top-N (hasMore is always false; raise limit or narrow filters to deepen recall). Every highlight anchor verifies against /document?format=markdown bytes. When the full-text engine is unavailable the response degrades to Postgres lexical search, reported via degradedState.",
         "parameters": [
           {
             "name": "q",
@@ -32915,7 +33140,7 @@
           "Fund Letters"
         ],
         "summary": "Semantic (vector) search over letter content; hits carry similarity scores, matched chunks, and page anchors.",
-        "description": "Returns 404 until the letters plane is enabled. Metered as fund_letter_semantic; paid plans only. Results are a relevance-ranked top-N (hasMore is always false). third_party-distribution letters return snippet-capped chunks (their /document is not distributable). On vector-engine failure the response degrades to lexical hits (score 0), reported via degradedState.",
+        "description": "Metered as fund_letter_semantic; paid plans only. Results are a relevance-ranked top-N (hasMore is always false). third_party-distribution letters return snippet-capped chunks (their /document is not distributable). On vector-engine failure the response degrades to lexical hits (score 0), reported via degradedState.",
         "parameters": [
           {
             "name": "q",
@@ -33116,7 +33341,7 @@
           "Fund Letters"
         ],
         "summary": "Keyset-paginated delta feed of fund-letter events (letter.published, letter.updated, letter.superseded, thesis.extracted, manager.added). Never response-cached.",
-        "description": "Returns 404 until the letters plane is enabled. Metered as fund_letter_lookup. The cursor is an opaque keyset token minted by this endpoint (never an offset); malformed cursors 400 as invalid_cursor. nextCursor pins the last returned row whenever the page is non-empty, so pollers resume from it regardless of hasMore.",
+        "description": "Metered as fund_letter_lookup. The cursor is an opaque keyset token minted by this endpoint (never an offset); malformed cursors 400 as invalid_cursor. nextCursor pins the last returned row whenever the page is non-empty, so pollers resume from it regardless of hasMore.",
         "parameters": [
           {
             "name": "types",
@@ -33236,7 +33461,7 @@
           "Fund Letters"
         ],
         "summary": "Browse the fund directory: managers (firms) with coverage stats, searchable by fund/CIO name, ticker held, theme, strategy, and 13F quarter.",
-        "description": "Returns 404 until the letters plane is enabled. When enabled, the Fund Directory expansion (letterless 13F managers, the ticker/cik/theme/min_positions/publishes_letters/period/sort filters, and the theme/publishesLetters/has13F/latest13F/references fields) is separately flag-gated; while that expansion is off this endpoint lists letter-publishing managers with the pre-directory fields only and ignores directory-only parameters. latest13F is a summary — follow crossLinks.holdings13F for full holdings.",
+        "description": "The Fund Directory expansion (letterless 13F managers, the ticker/cik/theme/min_positions/publishes_letters/period/sort filters, and the theme/publishesLetters/has13F/latest13F/references fields) is separately flag-gated; while that expansion is off this endpoint lists letter-publishing managers with the pre-directory fields only and ignores directory-only parameters. latest13F is a summary — follow crossLinks.holdings13F for full holdings.",
         "parameters": [
           {
             "name": "q",
@@ -33420,7 +33645,7 @@
           "Fund Letters"
         ],
         "summary": "Retrieve one manager profile. Merged manager IDs resolve forever via aliases; the response carries the canonical id plus requestedId when they differ.",
-        "description": "Returns 404 until the letters plane is enabled.",
+        "description": "Merged manager IDs resolve forever via aliases, so a stored id keeps working after a merge; compare `id` against `requestedId` to detect one. Metered as fund_letter_lookup.",
         "parameters": [
           {
             "name": "manager_id",
@@ -33475,7 +33700,7 @@
           "Fund Letters"
         ],
         "summary": "Fund Overview: one token-efficient briefing per manager — canonical name, description, founders, website, coverage counts, and the latest letter's highlights with up to 5 headline theses. Pass include=positions for the latest 13F's top-10 positions.",
-        "description": "Returns 404 until the letters plane is enabled. Metered as fund_letter_lookup. The manager twin of GET /v1/companies/overview: identity and latest-letter highlights only — no page markdown, no anchors, no full thesis bodies (follow links.letters / links.theses for those). latestLetter is null for a manager with no canonical letters yet. include=positions opts in latest13F: the manager's latest canonical 13F report (amendment/restatement-deduped, never double-counted) with reportDate, filedAt, totalPositions, and the top 10 positions by reported value — rank, issuer, resolved ticker, CUSIP, USD value, shares, pctOfPortfolio. latest13F is omitted when not requested and null when the manager has no adviser CIK or no indexed 13F; page beyond the top 10 via links.holdings13F. Merged manager IDs resolve forever via aliases; the response carries the canonical id plus requestedId when they differ.",
+        "description": "Metered as fund_letter_lookup. The manager twin of GET /v1/companies/overview: identity and latest-letter highlights only — no page markdown, no anchors, no full thesis bodies (follow links.letters / links.theses for those). latestLetter is null for a manager with no canonical letters yet. include=positions opts in latest13F: the manager's latest canonical 13F report (amendment/restatement-deduped, never double-counted) with reportDate, filedAt, totalPositions, and the top 10 positions by reported value — rank, issuer, resolved ticker, CUSIP, USD value, shares, pctOfPortfolio. latest13F is omitted when not requested and null when the manager has no adviser CIK or no indexed 13F; page beyond the top 10 via links.holdings13F. Merged manager IDs resolve forever via aliases; the response carries the canonical id plus requestedId when they differ.",
         "parameters": [
           {
             "name": "manager_id",
@@ -33539,7 +33764,7 @@
           "Fund Letters"
         ],
         "summary": "List funds that publish letters, with per-fund letter counts.",
-        "description": "Returns 404 until the letters plane is enabled.",
+        "description": "Funds are the vehicles a manager publishes under. A manager with no separately identified vehicles returns no rows here; browse `/v1/fund-letters/managers` instead. Metered as fund_letter_lookup.",
         "parameters": [
           {
             "name": "manager_id",
@@ -33624,7 +33849,7 @@
           "Fund Letters"
         ],
         "summary": "Retrieve one fund. Merged fund IDs resolve forever via aliases; the response carries the canonical id plus requestedId when they differ.",
-        "description": "Returns 404 until the letters plane is enabled.",
+        "description": "Merged fund IDs resolve forever via aliases, so a stored id keeps working after a merge; compare `id` against `requestedId` to detect one. Metered as fund_letter_lookup.",
         "parameters": [
           {
             "name": "fund_id",
@@ -33679,7 +33904,7 @@
           "Fund Letters"
         ],
         "summary": "Company coverage index: every company with at least one extracted thesis, with thesis/manager/letter counts and the latest stance.",
-        "description": "Returns 404 until the letters plane is enabled.",
+        "description": "Use this to find which companies managers have written about before drilling into `/v1/fund-letters/theses`. Counts reflect extracted theses, not every passing mention. Metered as fund_letter_lookup.",
         "parameters": [
           {
             "name": "ticker",
@@ -33763,7 +33988,7 @@
           "Fund Letters"
         ],
         "summary": "Topic variance between two letters: chips that appeared, intensified, or vanished, each with page-anchored quotes.",
-        "description": "Returns 404 until the letters plane is enabled. Register this static path before /v1/fund-letters/{letter_id}. Identify letters by from_letter_id + to_letter_id, or by issuer_cik / issuer_ticker plus from_period + to_period. Deterministic lexicon in v1; no public sentiment field. Metered as fund_letter_lookup.",
+        "description": "Register this static path before /v1/fund-letters/{letter_id}. Identify letters by from_letter_id + to_letter_id, or by issuer_cik / issuer_ticker plus from_period + to_period. Deterministic lexicon in v1; no public sentiment field. Metered as fund_letter_lookup.",
         "parameters": [
           {
             "name": "from_letter_id",
@@ -33863,7 +34088,7 @@
           "Fund Letters"
         ],
         "summary": "Cross-cutting thesis screen: structured per-company extractions (relationship, stance, conviction, narratives, verbatim anchored quotes) across all letters.",
-        "description": "Returns 404 until the letters plane is enabled.",
+        "description": "Each row is an extraction anchored to a passage in a specific letter, so a company with several letters yields several theses. Quotes verify against `/document?format=markdown` bytes. Metered as fund_letter_lookup.",
         "parameters": [
           {
             "name": "ticker",
@@ -34046,7 +34271,7 @@
           "Fund Letters"
         ],
         "summary": "Deterministic topic mentions for one letter, each with a page-anchored quote.",
-        "description": "Returns 404 until the letters plane is enabled. More specific than GET /v1/fund-letters/{letter_id}. Every mention verifies against /document?format=markdown. No public sentiment field.",
+        "description": "More specific than GET /v1/fund-letters/{letter_id}. Every mention verifies against /document?format=markdown. No public sentiment field.",
         "parameters": [
           {
             "name": "letter_id",
@@ -34101,7 +34326,7 @@
           "Fund Letters"
         ],
         "summary": "Retrieve one letter with letter-level narratives, performance figures, and inline theses (capped at 25; thesisCount carries the total). Superseded/merged IDs resolve forever via aliases.",
-        "description": "Returns 404 until the letters plane is enabled. Detail never inlines page markdown (that is the /document endpoint, metered separately), so view=agent and view=compact currently equal the default detail view.",
+        "description": "Detail never inlines page markdown (that is the /document endpoint, metered separately), so view=agent and view=compact currently equal the default detail view.",
         "parameters": [
           {
             "name": "letter_id",
@@ -34169,7 +34394,7 @@
           "Fund Letters"
         ],
         "summary": "Retrieve the original letter document (format=pdf, 302 redirect) or page-segmented markdown whose bytes verify every anchor (format=markdown).",
-        "description": "Returns 404 until the letters plane is enabled. Distribution rules: public_record and fund_published letters serve the full document; third_party letters return 403 document_not_distributable with a sourceUrl hint. EDGAR-sourced letters redirect to the EDGAR primary document. `?sha=` retrieves a superseded source variant's markdown so historical anchors always verify — only when the canonical letter's distribution permits document serving.",
+        "description": "Distribution rules: public_record and fund_published letters serve the full document; third_party letters return 403 document_not_distributable with a sourceUrl hint. EDGAR-sourced letters redirect to the EDGAR primary document. `?sha=` retrieves a superseded source variant's markdown so historical anchors always verify — only when the canonical letter's distribution permits document serving.",
         "parameters": [
           {
             "name": "letter_id",

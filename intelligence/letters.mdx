@@ -1,40 +1,44 @@
 ---
-title: "Fund Letters Coming Soon | TUROS Developer Docs"
-description: "Review the planned fund-letter capability, coverage boundary, source and distribution rules, and its connection to Track Investors."
+title: "Fund Letters | TUROS Developer Docs"
+description: "Query investor letters, extracted theses, and company coverage with page-anchored citations, and join them to reported 13F holdings."
 sidebarTitle: "Fund Letters"
-tag: "COMING SOON"
 ---
 
-Fund Letters will add manager commentary to [Track Investors](/workflows/track-investors): permitted investor letters, company mentions, theses, changes in stated views, and page-level citations alongside SEC-reported holdings and ownership disclosures.
+Fund Letters adds manager commentary to [Track Investors](/workflows/track-investors): permitted investor letters, company mentions, theses, changes in stated views, and page-level citations alongside SEC-reported holdings and ownership disclosures.
 
-<Warning>
-Fund Letters is not publicly available today. The public API and MCP plane remains gated. Routes may appear in OpenAPI while the capability is unavailable; documentation is not an availability signal.
-</Warning>
+The endpoints are live on the production API and return data for keys with fund-letter access. See the [Fund Letters API reference](/api-reference/fund-letters) for parameters and response shapes.
 
-Check `availability` in the [API catalog](https://www.turos.app/docs/.well-known/api-catalog.json) before you treat a `404` as a missing record.
+## What you can ask
 
-## Planned workflow
+- Which permitted letters exist for a manager, fund, company, or period? — `GET /v1/fund-letters`
+- Where did a manager discuss a company or theme? — `GET /v1/fund-letters/search`, `GET /v1/fund-letters/semantic`
+- How did a stated thesis change between letters? — `GET /v1/fund-letters/diff`, `GET /v1/fund-letters/{letter_id}/topics`
+- Which companies have extracted theses, and what is the latest stance? — `GET /v1/fund-letters/companies`, `GET /v1/fund-letters/theses`
+- What is the one-screen view of a manager? — `GET /v1/fund-letters/managers/{manager_id}/overview`
 
-When access opens, the capability is intended to answer bounded questions such as:
-
-- Which permitted letters exist for a manager, fund, company, or period?
-- Where did a manager discuss a company or theme?
-- How did a stated thesis change between letters?
-- How does stated commentary compare with later reported 13F holdings?
-
-Results are designed to retain the letter identity, publication or as-of date, document location, and page-level citation needed to review the original passage.
+Every result retains the letter identity, publication or as-of date, document location, and page-level citation needed to review the original passage. Quotes verify against the bytes served by `GET /v1/fund-letters/{letter_id}/document?format=markdown`.
 
 ## Coverage boundary
 
-Initial documented coverage begins with Q1 2025 and is not a comprehensive historical archive. Coverage will depend on permitted documents, manager and fund identity resolution, extraction quality, and distribution rights. Do not assume that a missing result means a manager did not publish or discuss something.
+Documented coverage begins with letters published in 2025 Q1 and is not a comprehensive historical archive. Coverage depends on permitted documents, manager and fund identity resolution, extraction quality, and distribution rights. **Do not assume that a missing result means a manager did not publish or discuss something.**
+
+Two boundaries are worth knowing before you build:
+
+- `GET /v1/fund-letters/funds` lists the vehicles a manager publishes under, and is sparsely populated — an empty list is a coverage gap, not an error. Browse `GET /v1/fund-letters/managers` instead.
+- `third_party`-distribution letters return `403 document_not_distributable` from `/document` with a `sourceUrl` hint, and their semantic-search chunks are snippet-capped. `public_record` and `fund_published` letters serve the full document.
+
+## Metering
+
+| Route | Meter |
+| --- | --- |
+| List, detail, directory, topics, diff, changes | `fund_letter_lookup` |
+| `GET /v1/fund-letters/search` | `fund_letter_search` |
+| `GET /v1/fund-letters/semantic` | `fund_letter_semantic` (paid plans only) |
 
 ## Availability
 
-When selected customers can use the capability, this page will change from **Coming Soon** to **Preview** and document the actual access path. Until then:
+Fund Letters is a flag-gated plane, so treat availability as a property of the deployment rather than of the contract. Check `availability` for the route in the [API catalog](https://www.turos.app/docs/.well-known/api-catalog.json) before you treat a `404` as a missing record: `live` means the plane is serving, `gated` means the route returns `404 fund_letters_not_available` regardless of your key.
 
-- do not build a production dependency on fund-letter endpoints;
-- do not present letters as generally available through MCP;
-- check the live API catalog for current capability status; and
-- use 13F and 13D/13G data for the available Track Investors workflow.
+The related **public embed** surface (`/v1/embed/letters`) is a separate, unauthenticated snippet-only surface and is currently `gated`.
 
 Continue to [Track Investors](/workflows/track-investors) or [SEC Filing Data](/filings/overview).

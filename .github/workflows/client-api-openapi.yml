@@ -34,6 +34,24 @@ jobs:
             exit 1
           fi
 
+  availability-prose:
+    name: Docs must not claim a live endpoint is unavailable
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Unit-test the guard
+        run: node --test scripts/
+
+      - name: Check availability prose
+        run: node scripts/check_availability_prose.mjs openapi/sec-api-public.v1.json openapi/omni-client-api.v1.json
+
   auto-pr:
     name: Auto-update OpenAPI snapshot (scheduled)
     if: github.event_name == 'schedule'

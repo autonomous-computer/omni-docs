@@ -86,7 +86,7 @@ Preserve when present: `accessionNumber`, `form`, `filingDate`, `filingUrl`, `re
 - Product: SEC Filing Data; Macro Data; Factor Data `Beta`; Investment Analysis.
 - Workflows: Research Companies; Track Investors; Track Company Events; Understand Macro; Analyze Portfolios.
 - Build with TUROS: MCP; API; SDKs; CLI; Excel Add-In `Alpha`.
-- Fund Letters is Coming Soon and publicly gated. Initial documented coverage begins with Q1 2025 and is not a comprehensive historical archive.
+- Fund Letters is live on the production API (`OMNI_FUND_LETTERS_ENABLED` is on). Documented coverage begins with Q1 2025 and is not a comprehensive historical archive. The separate public embed surface (`/v1/embed/letters`) remains gated.
 - Entity → filing → fact/statement/event; factor; position; snapshot; observation. Investment Analysis packages available data into repeatable workflows; it is not another dataset.
 
 ## MCP
