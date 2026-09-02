@@ -33,3 +33,73 @@ jobs:
       # Fails today on POST /v1/models/factor-analysis if the nav entry is removed.
       - name: Validate docs.json navigation covers every OpenAPI operation
         run: python scripts/validate_docs_nav_coverage.py
+
+  internal-vocabulary:
+    name: No internal vocabulary on the public docs surface
+    runs-on: ubuntu-latest
+    # Its own job, not a step behind the Python guards: a nav-coverage failure
+    # there would otherwise mean this result is never produced at all.
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      # Explicit file paths: Node does not expand globs for --test on every
+      # supported version, and the directory form is not universally accepted.
+      - name: Unit-test the guards
+        run: |
+          node --test scripts/check_internal_vocabulary.test.mjs
+          node --test scripts/validate_cross_repo_operation_parity.test.mjs
+
+      # Scans the published surface of THIS repo. Network-free. Would have
+      # failed the 2026-09-01 regression on its own.
+      - name: Check for internal vocabulary on the public docs surface
+        run: node scripts/check_internal_vocabulary.mjs
+
+  cross-repo-parity:
+    name: Docs spec must not drift from the datastream spec
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      # Separate job because, unlike the guards above, this one needs the
+      # network: the counterpart spec lives in autonomous-computer/docs, which is
+      # fed by omni-datastream's `sync-docs-to-mintlify` workflow. That repo's
+      # copy got the 2026-09-01 vocabulary purge while this repo's did not.
+      #
+      # `--fail-with-body` plus an explicit size assertion: a fetch failure or a
+      # truncated/HTML error page must fail the job, never silently produce a
+      # document with no operations that the guard would then compare against
+      # nothing and pass.
+      - name: Fetch the datastream-derived spec
+        run: |
+          curl -sSL --fail-with-body --retry 3 --retry-delay 5 \
+            -o /tmp/datastream-sec-api-public.v1.json \
+            https://raw.githubusercontent.com/autonomous-computer/docs/main/openapi/sec-api-public.v1.json
+          node -e '
+            const fs = require("node:fs");
+            const doc = JSON.parse(fs.readFileSync("/tmp/datastream-sec-api-public.v1.json", "utf8"));
+            const count = Object.keys(doc.paths ?? {}).length;
+            if (count < 50) {
+              console.error(`Fetched spec has only ${count} paths; refusing to compare against a truncated document.`);
+              process.exit(1);
+            }
+            console.log(`Fetched datastream spec: ${count} paths.`);
+          '
+
+      - name: Check cross-repository operation and text parity
+        run: |
+          node scripts/validate_cross_repo_operation_parity.mjs \
+            /tmp/datastream-sec-api-public.v1.json \
+            openapi/sec-api-public.v1.json \
+            --text-baseline scripts/cross_repo_text_parity_baseline.json

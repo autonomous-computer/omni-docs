@@ -1,0 +1,255 @@
+{
+  "_comment": [
+    "Text divergences between openapi/sec-api-public.v1.json in THIS repo and the",
+    "datastream-derived copy at autonomous-computer/docs, recorded so the guard can",
+    "fail on anything NEW. A ratchet, not a mute button:",
+    "  - a divergence not listed here fails;",
+    "  - a listed entry whose text CHANGED on either side fails (the digest pins both);",
+    "  - a listed entry that no longer diverges fails, so the file must shrink.",
+    "digest = sha256(normalized datastream text + NUL + normalized docs text)[:16].",
+    "Generated 2026-09-02 against autonomous-computer/docs@main.",
+    "Do not add entries to silence a fresh divergence - fix the text instead."
+  ],
+  "divergences": {
+    "DELETE /v1/billing/payment-methods/{id}|description": {
+      "digest": "e2f0e18a3cd5e47f",
+      "reason": "omni-docs has no text where the datastream spec does"
+    },
+    "DELETE /v1/monitors/{monitor_id}|description": {
+      "digest": "3430a73fd2a6b01b",
+      "reason": "omni-docs has no text where the datastream spec does"
+    },
+    "GET /.well-known/oauth-authorization-server|description": {
+      "digest": "f6e58296bdf90df2",
+      "reason": "omni-docs has no text where the datastream spec does"
+    },
+    "GET /.well-known/oauth-protected-resource|description": {
+      "digest": "ba1682361235da14",
+      "reason": "omni-docs has no text where the datastream spec does"
+    },
+    "GET /v1/alerts/plan|description": {
+      "digest": "b18169d0a341430a",
+      "reason": "omni-docs has no text where the datastream spec does"
+    },
+    "GET /v1/api_keys|description": {
+      "digest": "08894b4b3a17b34f",
+      "reason": "omni-docs has no text where the datastream spec does"
+    },
+    "GET /v1/billing|description": {
+      "digest": "b51d3f709ed37f4a",
+      "reason": "omni-docs has no text where the datastream spec does"
+    },
+    "GET /v1/billing/credits|description": {
+      "digest": "4e2c774fff86cba7",
+      "reason": "omni-docs has no text where the datastream spec does"
+    },
+    "GET /v1/billing/credits/transactions|description": {
+      "digest": "c32a03fa976efddd",
+      "reason": "omni-docs has no text where the datastream spec does"
+    },
+    "GET /v1/billing/payment-methods|description": {
+      "digest": "f315cd0a31fd5ba1",
+      "reason": "omni-docs has no text where the datastream spec does"
+    },
+    "GET /v1/board|description": {
+      "digest": "81d0667c6cf4adca",
+      "reason": "omni-docs has no text where the datastream spec does"
+    },
+    "GET /v1/compensation|description": {
+      "digest": "63a255ac10c8bc90",
+      "reason": "omni-docs has no text where the datastream spec does"
+    },
+    "GET /v1/earnings/transcripts|description": {
+      "digest": "eb3fa684a665897a",
+      "reason": "independently authored prose; omni-docs carries a different wording"
+    },
+    "GET /v1/embed/situations/feed.rss|summary": {
+      "digest": "5edea5363934bf74",
+      "reason": "independently authored prose; omni-docs carries a different wording"
+    },
+    "GET /v1/embed/widget.js|description": {
+      "digest": "e6f700f2fb7ac661",
+      "reason": "omni-docs has no text where the datastream spec does"
+    },
+    "GET /v1/filings/diff|description": {
+      "digest": "ce31f20fe57c090d",
+      "reason": "independently authored prose; omni-docs carries a different wording"
+    },
+    "GET /v1/filings/events|description": {
+      "digest": "cf9f7caf2345bef8",
+      "reason": "independently authored prose; omni-docs carries a different wording"
+    },
+    "GET /v1/filings/guidance|description": {
+      "digest": "73bb8e7d01ad947c",
+      "reason": "independently authored prose; omni-docs carries a different wording"
+    },
+    "GET /v1/filings/transcripts|description": {
+      "digest": "148dfd60a6c99104",
+      "reason": "independently authored prose; omni-docs carries a different wording"
+    },
+    "GET /v1/fund-letters|description": {
+      "digest": "d2a94fd091bf420c",
+      "reason": "independently authored prose; omni-docs carries a different wording"
+    },
+    "GET /v1/fund-letters/changes|description": {
+      "digest": "461f2eb50affb869",
+      "reason": "independently authored prose; omni-docs carries a different wording"
+    },
+    "GET /v1/fund-letters/companies|description": {
+      "digest": "b119fd9803e51153",
+      "reason": "independently authored prose; omni-docs carries a different wording"
+    },
+    "GET /v1/fund-letters/diff|description": {
+      "digest": "522ffdddbff3db39",
+      "reason": "independently authored prose; omni-docs carries a different wording"
+    },
+    "GET /v1/fund-letters/funds|description": {
+      "digest": "e9a157366bb5f2df",
+      "reason": "independently authored prose; omni-docs carries a different wording"
+    },
+    "GET /v1/fund-letters/funds/{fund_id}|description": {
+      "digest": "f783d8fdd5ecb4df",
+      "reason": "independently authored prose; omni-docs carries a different wording"
+    },
+    "GET /v1/fund-letters/managers|description": {
+      "digest": "8e6f997cd083733e",
+      "reason": "independently authored prose; omni-docs carries a different wording"
+    },
+    "GET /v1/fund-letters/managers/{manager_id}|description": {
+      "digest": "932f69fa9149a4ca",
+      "reason": "independently authored prose; omni-docs carries a different wording"
+    },
+    "GET /v1/fund-letters/managers/{manager_id}/overview|description": {
+      "digest": "90f20ebcccd41838",
+      "reason": "independently authored prose; omni-docs carries a different wording"
+    },
+    "GET /v1/fund-letters/search|description": {
+      "digest": "c3c7d85574355f53",
+      "reason": "independently authored prose; omni-docs carries a different wording"
+    },
+    "GET /v1/fund-letters/semantic|description": {
+      "digest": "13d53e64f8898552",
+      "reason": "independently authored prose; omni-docs carries a different wording"
+    },
+    "GET /v1/fund-letters/theses|description": {
+      "digest": "97efc3fa2a6adeb4",
+      "reason": "independently authored prose; omni-docs carries a different wording"
+    },
+    "GET /v1/fund-letters/{letter_id}|description": {
+      "digest": "77b028c992a1bfac",
+      "reason": "independently authored prose; omni-docs carries a different wording"
+    },
+    "GET /v1/fund-letters/{letter_id}/document|description": {
+      "digest": "220359f8fe27ef0d",
+      "reason": "independently authored prose; omni-docs carries a different wording"
+    },
+    "GET /v1/fund-letters/{letter_id}/topics|description": {
+      "digest": "1321ab874ccbe288",
+      "reason": "independently authored prose; omni-docs carries a different wording"
+    },
+    "GET /v1/funds/nport/holdings|description": {
+      "digest": "76c1bd3a72cc0dc0",
+      "reason": "omni-docs has no text where the datastream spec does"
+    },
+    "GET /v1/intelligence/coverage|description": {
+      "digest": "d667c3b5cae72c2d",
+      "reason": "independently authored prose; omni-docs carries a different wording"
+    },
+    "GET /v1/me|description": {
+      "digest": "8a8ad4d479e2b23a",
+      "reason": "omni-docs has no text where the datastream spec does"
+    },
+    "GET /v1/monitors|description": {
+      "digest": "163bb2e863e120f5",
+      "reason": "omni-docs has no text where the datastream spec does"
+    },
+    "GET /v1/monitors/{monitor_id}|description": {
+      "digest": "32ae088db6ced0f2",
+      "reason": "omni-docs has no text where the datastream spec does"
+    },
+    "GET /v1/monitors/{monitor_id}/matches|description": {
+      "digest": "1afdd5ccec0b8bf6",
+      "reason": "omni-docs has no text where the datastream spec does"
+    },
+    "GET /v1/org|description": {
+      "digest": "35574b99ee5ca85b",
+      "reason": "omni-docs has no text where the datastream spec does"
+    },
+    "GET /v1/signals/volatility|description": {
+      "digest": "fb24d00770039f9e",
+      "reason": "omni-docs has no text where the datastream spec does"
+    },
+    "GET /v1/statements|summary": {
+      "digest": "cfe340469e650c98",
+      "reason": "independently authored prose; omni-docs carries a different wording"
+    },
+    "GET /v1/stream/ws|description": {
+      "digest": "9dac9deb6c64ac61",
+      "reason": "independently authored prose; omni-docs carries a different wording"
+    },
+    "GET /v1/stream_subscriptions|description": {
+      "digest": "055ebe57b2335c6a",
+      "reason": "omni-docs has no text where the datastream spec does"
+    },
+    "GET /v1/traces/{trace_id}|description": {
+      "digest": "ed5b6ab8766f6d01",
+      "reason": "omni-docs has no text where the datastream spec does"
+    },
+    "POST /mcp|description": {
+      "digest": "d8fe7015ff3b0667",
+      "reason": "omni-docs has no text where the datastream spec does"
+    },
+    "POST /v1/alerts/signup|description": {
+      "digest": "41d17a37f648b24f",
+      "reason": "omni-docs has no text where the datastream spec does"
+    },
+    "POST /v1/billing/checkout|description": {
+      "digest": "395bd3e363662391",
+      "reason": "omni-docs has no text where the datastream spec does"
+    },
+    "POST /v1/billing/credits/refund|description": {
+      "digest": "7065fee460982f7d",
+      "reason": "omni-docs has no text where the datastream spec does"
+    },
+    "POST /v1/billing/credits/topup|description": {
+      "digest": "21a96cfe391bb5c1",
+      "reason": "omni-docs has no text where the datastream spec does"
+    },
+    "POST /v1/billing/grant/reset|description": {
+      "digest": "bf2ffd7ec6698924",
+      "reason": "omni-docs has no text where the datastream spec does"
+    },
+    "POST /v1/billing/portal|description": {
+      "digest": "a1992f18b027a21e",
+      "reason": "omni-docs has no text where the datastream spec does"
+    },
+    "POST /v1/billing/webhooks/stripe|description": {
+      "digest": "bc89cfe2612383e7",
+      "reason": "omni-docs has no text where the datastream spec does"
+    },
+    "POST /v1/monitors|description": {
+      "digest": "2c84ab6418e495b0",
+      "reason": "omni-docs has no text where the datastream spec does"
+    },
+    "POST /v1/monitors/{monitor_id}/delivery|description": {
+      "digest": "e7b9132894a94bd3",
+      "reason": "omni-docs has no text where the datastream spec does"
+    },
+    "POST /v1/operations/execute|summary": {
+      "digest": "cf8668c95146d140",
+      "reason": "independently authored prose; omni-docs carries a different wording"
+    },
+    "POST /v1/operations/execute|description": {
+      "digest": "b74274dc4b413a1f",
+      "reason": "independently authored prose; omni-docs carries a different wording"
+    },
+    "PUT /v1/billing/budget|description": {
+      "digest": "e014f077e9b14ea9",
+      "reason": "omni-docs has no text where the datastream spec does"
+    },
+    "PUT /v1/billing/credits/auto-topup|description": {
+      "digest": "99351f2727723cc1",
+      "reason": "omni-docs has no text where the datastream spec does"
+    }
+  }
+}
