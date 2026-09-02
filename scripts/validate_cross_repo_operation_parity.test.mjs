@@ -42,4 +42,80 @@ assert.match(privateFirstPublicSecond.stderr, /duplicate/);
 const malformed = spawnSync(process.execPath, [args[0], write("malformed.json", { paths: { "/v1/filings": null } }), args[2], args[3], args[4]], { encoding: "utf8" });
 assert.equal(malformed.status, 1);
 assert.match(malformed.stderr, /malformed/);
+// ---------------------------------------------------------------------------
+// Text parity: identical method/path identities, divergent description/summary.
+// This is the exact shape of the 2026-09-01 incident, which the identity-only
+// guard passed green.
+// ---------------------------------------------------------------------------
+const textSpec = (description, summary) => ({
+  paths: { "/v1/macro/pack": { get: { summary, description } } },
+});
+const twoSpecs = (a, b, extra = []) =>
+  spawnSync(process.execPath, [args[0], write(`t${Math.random()}.json`, a), write(`t${Math.random()}.json`, b), ...extra], { encoding: "utf8" });
+
+// Agreeing text passes.
+const agree = twoSpecs(textSpec("Country macro indicators.", "Macro pack"), textSpec("Country macro indicators.", "Macro pack"));
+assert.equal(agree.status, 0, agree.stderr);
+assert.match(agree.stdout, /text parity passed/);
+
+// Whitespace-only differences are normalized away, not reported.
+const whitespace = twoSpecs(
+  textSpec("Country macro indicators.", "Macro pack"),
+  textSpec("  Country   macro\n indicators. ", "Macro pack"),
+);
+assert.equal(whitespace.status, 0, whitespace.stderr);
+
+// A divergent description fails and names the operation and the field.
+const divergent = twoSpecs(
+  textSpec("Country macro indicators.", "Macro pack"),
+  textSpec("The country macro plane.", "Macro pack"),
+);
+assert.equal(divergent.status, 1);
+assert.match(divergent.stderr, /GET \/v1\/macro\/pack\|description/);
+assert.match(divergent.stderr, /TEXT parity failed/);
+
+// A divergent summary fails too.
+const divergentSummary = twoSpecs(
+  textSpec("Same.", "Macro pack"),
+  textSpec("Same.", "Launch ring pack"),
+);
+assert.equal(divergentSummary.status, 1);
+assert.match(divergentSummary.stderr, /GET \/v1\/macro\/pack\|summary/);
+
+// A baselined divergence is tolerated...
+const baselineFile = write("baseline.json", { divergences: { "GET /v1/macro/pack|description": "known" } });
+const baselined = twoSpecs(
+  textSpec("Country macro indicators.", "Macro pack"),
+  textSpec("The country macro plane.", "Macro pack"),
+  ["--text-baseline", baselineFile],
+);
+assert.equal(baselined.status, 0, baselined.stderr);
+assert.match(baselined.stdout, /1 baselined divergence/);
+
+// ...but a baseline entry that no longer diverges FAILS, so the file cannot rot
+// into a permanent silent skip.
+const staleBaseline = twoSpecs(
+  textSpec("Country macro indicators.", "Macro pack"),
+  textSpec("Country macro indicators.", "Macro pack"),
+  ["--text-baseline", baselineFile],
+);
+assert.equal(staleBaseline.status, 1);
+assert.match(staleBaseline.stderr, /Stale text-parity baseline/);
+
+// A baseline covering one field must not excuse the other.
+const partialBaseline = twoSpecs(
+  textSpec("Country macro indicators.", "Macro pack"),
+  textSpec("The country macro plane.", "Launch ring pack"),
+  ["--text-baseline", baselineFile],
+);
+assert.equal(partialBaseline.status, 1);
+assert.match(partialBaseline.stderr, /GET \/v1\/macro\/pack\|summary/);
+
+// The real repo baseline must be well formed and non-empty.
+const realBaseline = JSON.parse(fs.readFileSync("scripts/cross_repo_text_parity_baseline.json", "utf8"));
+assert.ok(Object.keys(realBaseline.divergences).length > 0, "baseline must not be empty");
+for (const key of Object.keys(realBaseline.divergences)) {
+  assert.match(key, /^[A-Z]+ \/\S* ?\S*\|(summary|description)$/, `malformed baseline key ${key}`);
+}
+
 console.log("cross-repo parity guard tests passed");

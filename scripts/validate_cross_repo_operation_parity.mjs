@@ -1,21 +1,61 @@
 #!/usr/bin/env node
 
 /**
- * Compare the public operation set at each generated-artifact boundary.
+ * Compare the public operation set at each generated-artifact boundary, and the
+ * operation TEXT between the two OpenAPI documents.
  *
  * Usage:
  *   node scripts/validate_cross_repo_operation_parity.mjs \
- *     <datastream-openapi.json> <docs-openapi.json> <catalog.json> <rendered.json>
+ *     <datastream-openapi.json> <docs-openapi.json> <catalog.json> <rendered.json> \
+ *     [--text-baseline <baseline.json>]
  *
- * This deliberately compares method/path identities, rather than operation
- * counts. Counts are useful evidence but cannot detect a replacement that
- * leaves the count unchanged.
+ * Identity parity deliberately compares method/path identities, rather than
+ * operation counts. Counts are useful evidence but cannot detect a replacement
+ * that leaves the count unchanged.
+ *
+ * Identity parity is NOT sufficient on its own. On 2026-09-01 omni-datastream
+ * purged internal vocabulary from its spec; the sync carried it to
+ * docs.secapi.ai, while omni-docs — which Mintlify builds directly for
+ * www.turos.app/docs from its own copy of the spec — got none of it. All 288
+ * operations still matched on both sides by method and path, so an
+ * identity-only guard stayed green while the rendered page served
+ * `launch_ring_1` and "macro plane" for hours. Only the DESCRIPTION and SUMMARY
+ * text diverged.
+ *
+ * So text parity is enforced too, over the common operations of the two OpenAPI
+ * documents, after whitespace normalization.
+ *
+ * The two specs are independently maintained and carry some deliberately
+ * different prose, so a baseline file records the divergences that exist today.
+ * It is a RATCHET, not a mute button: any divergence not in the baseline fails,
+ * and a baseline entry that no longer diverges also fails, so the file cannot
+ * rot into a silent skip and must shrink as the specs converge.
  */
 import fs from "node:fs";
 
-const [datastreamPath, docsPath, catalogPath, renderedPath] = process.argv.slice(2);
-if (![datastreamPath, docsPath, catalogPath, renderedPath].every(Boolean)) {
-  console.error("Usage: validate_cross_repo_operation_parity.mjs <datastream-openapi.json> <docs-openapi.json> <catalog.json> <rendered.json>");
+const argv = process.argv.slice(2);
+let textBaselinePath = null;
+const baselineFlag = argv.indexOf("--text-baseline");
+if (baselineFlag !== -1) {
+  textBaselinePath = argv[baselineFlag + 1];
+  if (!textBaselinePath) {
+    console.error("--text-baseline requires a path");
+    process.exit(2);
+  }
+  argv.splice(baselineFlag, 2);
+}
+const [datastreamPath, docsPath, catalogPath, renderedPath] = argv;
+// The catalog and rendered-inventory artifacts are optional: omni-docs does not
+// build either one, and requiring all four is precisely what left this guard
+// unwired — able to run only against fixtures in its own test. The two OpenAPI
+// documents are the artifacts this repo actually has, and they are the pair
+// that diverged in the incident this guard exists for.
+if (![datastreamPath, docsPath].every(Boolean)) {
+  console.error("Usage: validate_cross_repo_operation_parity.mjs <datastream-openapi.json> <docs-openapi.json> [<catalog.json> <rendered.json>] [--text-baseline <baseline.json>]");
+  process.exit(2);
+}
+if (Boolean(catalogPath) !== Boolean(renderedPath)) {
+  console.error("catalog and rendered inventory must be supplied together");
   process.exit(2);
 }
 
@@ -37,6 +77,18 @@ const openapiKeys = (document) => {
   }
   return keys;
 };
+const publicOperations = (document) => {
+  const operations = new Map();
+  for (const [path, item] of Object.entries(document.paths ?? {})) {
+    for (const [method, operation] of Object.entries(item ?? {})) {
+      if (methods.has(method.toLowerCase()) && isPublicOperation(operation)) {
+        operations.set(`${method.toUpperCase()} ${path}`, operation ?? {});
+      }
+    }
+  }
+  return operations;
+};
+const normalizeText = (value) => String(value ?? "").replace(/\s+/g, " ").trim();
 const recordKey = (record) => {
   const method = String(record?.method ?? record?.httpMethod ?? "").toUpperCase();
   const path = String(record?.path ?? record?.route ?? "");
@@ -81,8 +133,12 @@ const allowlistKeys = (value) => {
 const sets = new Map([
   ["datastream OpenAPI", openapiKeys(read(datastreamPath))],
   ["docs OpenAPI", openapiKeys(read(docsPath))],
-  ["public catalog/allowlist", allowlistKeys(read(catalogPath))],
-  ["rendered operation inventory", recordsKeys(read(renderedPath), "rendered inventory")],
+  ...(catalogPath
+    ? [
+        ["public catalog/allowlist", allowlistKeys(read(catalogPath))],
+        ["rendered operation inventory", recordsKeys(read(renderedPath), "rendered inventory")],
+      ]
+    : []),
 ]);
 const [firstLabel, first] = sets.entries().next().value;
 const failures = [];
@@ -95,4 +151,66 @@ if (failures.length) {
   console.error(failures.slice(0, 100).join("\n"));
   process.exit(1);
 }
-console.log(`Cross-repository operation parity passed: ${first.size} exact method/path identities across ${sets.size} artifacts`);
+
+// ---------------------------------------------------------------------------
+// Text parity: description and summary must agree between the two OpenAPI
+// documents. This is the rule that catches a one-sided vocabulary purge.
+// ---------------------------------------------------------------------------
+const TEXT_FIELDS = ["summary", "description"];
+const datastreamOperations = publicOperations(read(datastreamPath));
+const docsOperations = publicOperations(read(docsPath));
+
+let baseline = {};
+if (textBaselinePath) {
+  baseline = read(textBaselinePath)?.divergences ?? {};
+  if (!baseline || typeof baseline !== "object" || Array.isArray(baseline)) {
+    console.error(`${textBaselinePath}: expected an object under "divergences"`);
+    process.exit(2);
+  }
+}
+
+const textFailures = [];
+const matchedBaseline = new Set();
+for (const [key, datastreamOperation] of datastreamOperations) {
+  const docsOperation = docsOperations.get(key);
+  if (!docsOperation) continue; // identity parity above already owns this case.
+  for (const field of TEXT_FIELDS) {
+    const expected = normalizeText(datastreamOperation[field]);
+    const actual = normalizeText(docsOperation[field]);
+    if (expected === actual) continue;
+    const entry = `${key}|${field}`;
+    if (Object.prototype.hasOwnProperty.call(baseline, entry)) {
+      matchedBaseline.add(entry);
+      continue;
+    }
+    textFailures.push(
+      `${entry}: text differs between the datastream and docs specs\n` +
+        `    datastream: ${JSON.stringify(expected.slice(0, 200))}\n` +
+        `    docs:       ${JSON.stringify(actual.slice(0, 200))}`,
+    );
+  }
+}
+
+// A baseline entry that no longer diverges means the debt was paid. Fail so the
+// file shrinks instead of silently widening what the guard ignores.
+const staleBaseline = Object.keys(baseline).filter((entry) => !matchedBaseline.has(entry));
+
+if (textFailures.length || staleBaseline.length) {
+  if (textFailures.length) {
+    console.error(`Cross-repository TEXT parity failed (${textFailures.length} divergence(s) not in the baseline):`);
+    console.error(textFailures.slice(0, 100).join("\n"));
+  }
+  if (staleBaseline.length) {
+    console.error(
+      `\nStale text-parity baseline entries (${staleBaseline.length}) — these now agree, remove them from ${textBaselinePath}:\n` +
+        staleBaseline.slice(0, 100).map((entry) => `  ${entry}`).join("\n"),
+    );
+  }
+  process.exit(1);
+}
+
+console.log(
+  `Cross-repository operation parity passed: ${first.size} exact method/path identities across ${sets.size} artifacts; ` +
+    `text parity passed over ${datastreamOperations.size} operations x ${TEXT_FIELDS.length} fields ` +
+    `(${Object.keys(baseline).length} baselined divergence(s), all still diverging)`,
+);
