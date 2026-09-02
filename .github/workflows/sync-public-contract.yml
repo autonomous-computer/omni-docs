@@ -46,6 +46,14 @@ jobs:
         with:
           node-version: "22"
 
+      # Needed by the nav-coverage guard this job re-runs on the synced content.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install PyYAML
+        run: python -m pip install --disable-pip-version-check "PyYAML==6.0.2"
+
       # Offline. Proves the refusal paths — missing artifact, manifest that does
       # not describe the served contract, stale publish — rather than assuming
       # them. A sync that treats an absent or fossilised source as "nothing to
@@ -65,6 +73,28 @@ jobs:
             2) echo "changed=true"  >> "$GITHUB_OUTPUT" ;;
             *) echo "::error::The published contract could not be used. This is a source failure, not 'no update needed'."; exit "$status" ;;
           esac
+
+      # GitHub does NOT trigger workflow runs for events raised by GITHUB_TOKEN —
+      # a deliberate anti-recursion rule. So the PR this job opens gets NO
+      # `pull_request` CI: docs-guards.yml would never run on it, and it would
+      # arrive looking green because nothing checked it. That is precisely the
+      # green-by-absence failure this pipeline exists to end, so the guards are
+      # re-run HERE, against the synced content, before the PR is opened. A
+      # reviewer seeing no checks on that PR is seeing this limitation, not a
+      # pass — and the content was in fact validated, here.
+      - name: Validate the synced content before opening a PR
+        if: steps.pull.outputs.changed == 'true'
+        run: |
+          set -euo pipefail
+          curl -sSL --fail-with-body --retry 3 --retry-delay 5 \
+            -o /tmp/published-contract.json \
+            "${PUBLIC_CONTRACT_URL:-https://pub-8ccf92e01eab45579c477ec003519925.r2.dev/sec-api-public.v1.json}"
+          node scripts/check_internal_vocabulary.mjs
+          node scripts/validate_cross_repo_operation_parity.mjs \
+            /tmp/published-contract.json \
+            openapi/sec-api-public.v1.json \
+            --text-baseline scripts/cross_repo_text_parity_baseline.json
+          python scripts/validate_docs_nav_coverage.py
 
       - name: Open or update the sync PR
         if: steps.pull.outputs.changed == 'true'
