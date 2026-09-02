@@ -33539,7 +33539,7 @@
           "Fund Letters"
         ],
         "summary": "List funds that publish letters, with per-fund letter counts.",
-        "description": "Funds are the vehicles a manager publishes under. A manager with no separately identified vehicles returns no rows here; browse `/v1/fund-letters/managers` instead. Metered as fund_letter_lookup.",
+        "description": "Funds are the vehicles a manager publishes under. A manager with no separately identified vehicles returns no rows here; browse `/v1/fund-letters/managers` instead. Metered as fund_letter_lookup. This route returns an empty list today: the fund-vehicle store has no rows and nothing currently populates it (OMNI-6591), so an empty result is not evidence that a manager has no vehicles.",
         "parameters": [
           {
             "name": "manager_id",
@@ -33624,7 +33624,7 @@
           "Fund Letters"
         ],
         "summary": "Retrieve one fund. Merged fund IDs resolve forever via aliases; the response carries the canonical id plus requestedId when they differ.",
-        "description": "Merged fund IDs resolve forever via aliases, so a stored id keeps working after a merge; compare `id` against `requestedId` to detect one. Metered as fund_letter_lookup.",
+        "description": "Merged fund IDs resolve forever via aliases, so a stored id keeps working after a merge; compare `id` against `requestedId` to detect one. Metered as fund_letter_lookup. No fund rows exist today (OMNI-6591), so every lookup currently 404s on the id rather than on the plane.",
         "parameters": [
           {
             "name": "fund_id",

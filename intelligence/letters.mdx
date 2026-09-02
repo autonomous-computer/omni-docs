@@ -24,7 +24,7 @@ Documented coverage begins with letters published in 2025 Q1 and is not a compre
 
 Two boundaries are worth knowing before you build:
 
-- `GET /v1/fund-letters/funds` lists the vehicles a manager publishes under, and is sparsely populated — an empty list is a coverage gap, not an error. Browse `GET /v1/fund-letters/managers` instead.
+- `GET /v1/fund-letters/funds` and `GET /v1/fund-letters/funds/{fund_id}` return `200` with an **empty list today**: the fund-vehicle store has no rows and nothing currently populates it (OMNI-6591). Treat these two routes as not yet carrying data rather than as a signal that a manager has no vehicles, and browse `GET /v1/fund-letters/managers` instead. Every other Fund Letters route returns real data.
 - `third_party`-distribution letters return `403 document_not_distributable` from `/document` with a `sourceUrl` hint, and their semantic-search chunks are snippet-capped. `public_record` and `fund_published` letters serve the full document.
 
 ## Metering
