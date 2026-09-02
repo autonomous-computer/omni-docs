@@ -37,7 +37,7 @@ Two boundaries are worth knowing before you build:
 
 ## Availability
 
-Fund Letters is a flag-gated plane, so treat availability as a property of the deployment rather than of the contract. Check `availability` for the route in the [API catalog](https://www.turos.app/docs/.well-known/api-catalog.json) before you treat a `404` as a missing record: `live` means the plane is serving, `gated` means the route returns `404 fund_letters_not_available` regardless of your key.
+Fund Letters availability can change independently of the API contract. Check `availability` for the route in the [API catalog](https://www.turos.app/docs/.well-known/api-catalog.json) before you treat a `404` as a missing record: `live` means the endpoints are serving, `gated` means the route returns `404 fund_letters_not_available` regardless of your key.
 
 The related **public embed** surface (`/v1/embed/letters`) is a separate, unauthenticated snippet-only surface and is currently `gated`.
 
