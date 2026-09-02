@@ -105,7 +105,12 @@ jobs:
           git config user.name "public-contract-sync[bot]"
           git config user.email "public-contract-sync@users.noreply.github.com"
           git checkout -B "$SYNC_BRANCH"
-          git add openapi/sec-api-public.v1.json
+          # BOTH files. The sync rewrites the contract AND prunes the text-parity
+          # baseline, because a wholesale sync makes the two specs identical and
+          # every baselined divergence goes stale at once. Staging only the
+          # contract would produce a PR that `cross-repo-parity` rejects for
+          # stale baseline entries — the sync opening a PR that cannot merge.
+          git add openapi/sec-api-public.v1.json scripts/cross_repo_text_parity_baseline.json
           if git diff --cached --quiet; then
             echo "Nothing staged after a reported change; refusing to open an empty PR."
             exit 1

@@ -27,6 +27,8 @@ export const DEFAULT_MANIFEST_URL = "https://pub-8ccf92e01eab45579c477ec00351992
 export const MIN_OPERATIONS = 200
 /** The publisher runs on every docs deploy, so a month of silence is a problem. */
 export const DEFAULT_MAX_MANIFEST_AGE_DAYS = 30
+/** Ordinary clock skew, in days. Six hours; matches the freshness guard. */
+export const MAX_FUTURE_SKEW_DAYS = 0.25
 export const DEFAULT_BASELINE_PATH = "scripts/cross_repo_text_parity_baseline.json"
 
 /**
@@ -113,6 +115,13 @@ export function evaluateSync({ contractBody, manifestBody, localBody, now, maxAg
     return { ok: false, action: "fail", reasons: [`maxAgeDays must be a positive number, got ${maxAgeDays}`] }
   }
   const ageDays = (current.getTime() - publishedAt.getTime()) / 86_400_000
+  // A future publishedAt — clock skew, or corrupt metadata — makes ageDays
+  // negative, which can never exceed the budget, so a fossil with a matching
+  // digest would read as fresh until that date arrived. Ordinary skew is
+  // tolerated; a materially future date is a broken signal, not a fresh one.
+  if (-ageDays > MAX_FUTURE_SKEW_DAYS) {
+    return { ok: false, action: "fail", reasons: [`published manifest is dated ${(-ageDays).toFixed(1)} days in the FUTURE, beyond the ${MAX_FUTURE_SKEW_DAYS}-day skew tolerance — a future date would mask a fossilised artifact for as long as it stayed ahead`] }
+  }
   if (ageDays > maxAgeDays) {
     return { ok: false, action: "fail", reasons: [`published contract was last published ${ageDays.toFixed(1)} days ago, beyond the ${maxAgeDays}-day budget — its producer has gone quiet, so this sync would be reconciling against a fossil`] }
   }

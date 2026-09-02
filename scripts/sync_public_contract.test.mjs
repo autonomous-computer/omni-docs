@@ -4,6 +4,7 @@ import {
   DEFAULT_CONTRACT_URL,
   DEFAULT_MANIFEST_URL,
   DEFAULT_MAX_MANIFEST_AGE_DAYS,
+  MAX_FUTURE_SKEW_DAYS,
   MIN_OPERATIONS,
   defaultFetch,
   evaluateSync,
@@ -217,4 +218,24 @@ test("a corrupt baseline is a failure, not a silently skipped prune", async () =
     writeLocal: () => {},
   })
   assert.equal(code, 1)
+})
+
+// A negative age can never exceed the budget, so without an upper bound a
+// future-dated manifest masks a fossil for as long as it stays ahead.
+test("FAILS on a manifest dated materially in the future", () => {
+  const future = new Date(Date.parse(NOW) + 5 * 86_400_000).toISOString()
+  const r = ev({ manifestBody: manifestFor(GOOD, { publishedAt: future }) })
+  assert.equal(r.ok, false)
+  assert.match(r.reasons[0], /in the FUTURE/)
+})
+
+test("tolerates ordinary clock skew, and the skew boundary is exclusive", () => {
+  const skew = new Date(Date.parse(NOW) + (MAX_FUTURE_SKEW_DAYS * 86_400_000) / 2).toISOString()
+  assert.equal(ev({ manifestBody: manifestFor(GOOD, { publishedAt: skew }) }).ok, true)
+  const past = new Date(Date.parse(NOW) + MAX_FUTURE_SKEW_DAYS * 86_400_000 + 60_000).toISOString()
+  assert.equal(ev({ manifestBody: manifestFor(GOOD, { publishedAt: past }) }).ok, false)
+})
+
+test("MAX_FUTURE_SKEW_DAYS is exactly six hours", () => {
+  assert.equal(MAX_FUTURE_SKEW_DAYS, 0.25)
 })
