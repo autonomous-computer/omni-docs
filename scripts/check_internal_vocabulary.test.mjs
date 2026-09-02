@@ -55,6 +55,34 @@ for (const [rule, file, body] of cases) {
   assert.match(result.stderr, new RegExp(`${file.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}:1: \\[${rule}\\]`), result.stderr);
 }
 
+// --- evasions an enumerated denylist would miss ----------------------------
+// Adversarial review found all of these passing an earlier, narrower ruleset.
+for (const [rule, body] of [
+  ["internal-plane", "The filings plane is disabled.\n"],
+  ["internal-plane", "The coverage plane rolls up.\n"],
+  ["internal-plane", "See the news plane.\n"],
+  ["internal-plane", "The signal plane ranks these.\n"],
+  ["internal-plane", "Served by macro_plane today.\n"],
+  ["internal-plane", "Both macro planes are covered.\n"],
+  ["internal-plane", "Rendered by the Macro  Plane service.\n"],
+  ["launch-ring", "Shipping in the launch  ring first.\n"],
+  ["tier-n-expansion", "Countries in tier_one_expansion follow.\n"],
+  ["tier-n-expansion", "Countries in ring_1_expansion follow.\n"],
+  ["leaked-env-name", "Set OMNI_ETL to point at the warehouse.\n"],
+  ["leaked-env-name", "Set DATASTREAM_INTERNAL_ONLY to true.\n"],
+  ["leaked-env-name", "Set PERIGON_PREMIUM_COMPANY_FILTERS to true.\n"],
+]) {
+  const result = run({ ...ALLOWLISTED, "e.mdx": body });
+  assert.equal(result.status, 1, `evasion not caught: ${JSON.stringify(body)}`);
+  assert.match(result.stderr, new RegExp(`e\\.mdx:1: \\[${rule}\\]`), result.stderr);
+}
+
+// A YAML OpenAPI spec is published content too; changing extension must not
+// silently drop the highest-risk file from the scanned set.
+const yaml = run({ ...ALLOWLISTED, "openapi/spec.yaml": "description: the macro plane\n" });
+assert.equal(yaml.status, 1, yaml.stderr);
+assert.match(yaml.stderr, /openapi\/spec\.yaml:1: \[internal-plane\]/);
+
 // --- documented public/legacy strings must NOT fire ------------------------
 for (const body of [
   'export SECAPI_API_KEY="secapi_..."\n',
@@ -64,6 +92,7 @@ for (const body of [
   // rollout phrasing is internal. This asserts the guard does not fight them.
   '{"ring":{"deprecated":true},"coverageTier":{"enum":["core","extended"]}}\n',
   "This is a control plane for your team.\n",
+  "The coverageTier is core or extended.\n",
 ]) {
   const ok = run({ ...ALLOWLISTED, "c.mdx": body });
   assert.equal(ok.status, 0, `false positive on ${JSON.stringify(body)}: ${ok.stderr}`);

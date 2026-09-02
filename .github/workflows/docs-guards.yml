@@ -34,6 +34,15 @@ jobs:
       - name: Validate docs.json navigation covers every OpenAPI operation
         run: python scripts/validate_docs_nav_coverage.py
 
+  internal-vocabulary:
+    name: No internal vocabulary on the public docs surface
+    runs-on: ubuntu-latest
+    # Its own job, not a step behind the Python guards: a nav-coverage failure
+    # there would otherwise mean this result is never produced at all.
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -46,8 +55,8 @@ jobs:
           node --test scripts/check_internal_vocabulary.test.mjs
           node --test scripts/validate_cross_repo_operation_parity.test.mjs
 
-      # Scans the published surface of THIS repo. Network-free, so it belongs in
-      # this job. Would have failed the 2026-09-01 regression on its own.
+      # Scans the published surface of THIS repo. Network-free. Would have
+      # failed the 2026-09-01 regression on its own.
       - name: Check for internal vocabulary on the public docs surface
         run: node scripts/check_internal_vocabulary.mjs
 

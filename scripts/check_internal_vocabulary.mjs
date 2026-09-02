@@ -20,6 +20,7 @@
  */
 import fs from "node:fs";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 
 const ROOT = path.resolve(process.argv[2] ?? ".");
 
@@ -28,34 +29,51 @@ const ROOT = path.resolve(process.argv[2] ?? ".");
 // name internal flags, and `scripts/` holds this guard, whose own patterns
 // would otherwise match themselves.
 const SKIP_DIRS = new Set([".git", ".github", "scripts", "node_modules"]);
-const EXTENSIONS = new Set([".mdx", ".md", ".json", ".txt"]);
+// .yaml/.yml included: Mintlify accepts YAML OpenAPI specs, so omitting them
+// would let the highest-risk published file leave the scanned set silently by
+// changing extension while the guard still printed a happy file count.
+const EXTENSIONS = new Set([".mdx", ".md", ".json", ".txt", ".yaml", ".yml"]);
 
-const RULES = [
+// `... plane` phrases that are ordinary public English rather than internal
+// architecture jargon. An allow-set lets the rule match a broad "<word> plane"
+// instead of enumerating only the words that happened to leak once.
+export const PUBLIC_PLANE_TERMS = new Set(["control"]);
+
+export const RULES = [
   {
     id: "launch-ring",
     // `ring` alone is deliberately NOT matched: omni-docs #46 / omni-datastream
     // #2628 keep a deprecated `ring` PROPERTY for backwards compatibility while
     // replacing its internal VALUES with the neutral `coverageTier`
     // core/extended. Only the rollout phrasing is internal.
-    pattern: /launch[-_ ]?ring/i,
+    // `[-_ ]*` not `[-_ ]?`, so "launch  ring" cannot slip past.
+    pattern: /launch[-_ ]*ring/i,
     message: "internal rollout phase name (`launch ring`); use the neutral `coverageTier` values `core` / `extended`",
   },
   {
     id: "tier-n-expansion",
-    pattern: /tier[-_ ]?[0-9][-_ ]?(expansion|pack|coverage)/i,
+    // Covers `ring_1_expansion` as well as `tier_1_*`, and spelled-out ordinals.
+    pattern: /\b(?:tier|ring)[-_ ]*(?:\d+|one|two|three)[-_ ]*(?:expansion|pack|coverage)\b/i,
     message: "internal rollout tier name (`tier_1_expansion` and friends); use `coverageTier` `core` / `extended`",
   },
   {
     id: "internal-plane",
-    pattern: /\b(macro|letters|data|factor|situations|market|intelligence)[- ]plane\b/i,
+    // Broad on purpose. Enumerating the six words that had already leaked let
+    // `filings plane`, `signal plane` and `macro_plane` through — and snake_case
+    // is exactly the form the leaked enum values took. Any "<word> plane" is
+    // jargon now unless it is in PUBLIC_PLANE_TERMS.
+    pattern: /\b([A-Za-z][\w-]*)[-_ ]+planes?\b/i,
     message: "internal architecture jargon (`... plane`); name the user-facing thing instead (API, universe, indicators)",
+    ignore: (match) => PUBLIC_PLANE_TERMS.has(match[1].toLowerCase()),
   },
   {
     id: "leaked-env-name",
     // Case-SENSITIVE on purpose. The published docs legitimately show lowercase
     // product identifiers (`omni_live_...`, `omni_api_get_symbol`,
     // `secapi_test_...`); only UPPER_SNAKE names read as server-side env flags.
-    pattern: /\b(?:OMNI|SECAPI)_[A-Z][A-Z0-9_]{3,}\b/,
+    // Prefixes cover this org's services; the length floor is low enough for
+    // short real flags such as OMNI_ETL.
+    pattern: /\b(?:OMNI|SECAPI|DATASTREAM|MERLIN|PERIGON|TUROS)_[A-Z][A-Z0-9_]{1,}\b/,
     message: "server-side environment/flag name leaked into public docs",
   },
 ];
@@ -86,16 +104,23 @@ const ALLOWLIST = [
 const walk = (dir) => {
   const out = [];
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    if (entry.isDirectory()) {
+    const full = path.join(dir, entry.name);
+    // statSync, not entry.isDirectory(): the latter is false for a SYMLINKED
+    // content directory, which would drop a whole published tree silently.
+    if (fs.statSync(full).isDirectory()) {
       if (SKIP_DIRS.has(entry.name)) continue;
-      out.push(...walk(path.join(dir, entry.name)));
+      out.push(...walk(full));
     } else if (EXTENSIONS.has(path.extname(entry.name))) {
-      out.push(path.join(dir, entry.name));
+      out.push(full);
     }
   }
   return out;
 };
 
+// Everything below is the CLI entry point. Guarded so that importing this file
+// for its RULES (the parity guard does, to stop a baseline entry laundering a
+// leak) does not run a scan as a side effect.
+const main = () => {
 const used = new Set();
 const isAllowed = (relative, ruleId, line) =>
   ALLOWLIST.some((entry, index) => {
@@ -120,6 +145,7 @@ for (const file of files) {
     for (const rule of RULES) {
       const match = line.match(rule.pattern);
       if (!match) continue;
+      if (rule.ignore?.(match)) continue;
       if (isAllowed(relative, rule.id, line)) continue;
       failures.push(`${relative}:${index + 1}: [${rule.id}] ${rule.message}\n    matched: ${JSON.stringify(match[0])}`);
     }
@@ -147,3 +173,8 @@ console.log(
   `Internal vocabulary check passed: ${files.length} published files scanned against ${RULES.length} rules ` +
     `(${ALLOWLIST.length} documented exception(s), all still matching).`,
 );
+};
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main();
+}

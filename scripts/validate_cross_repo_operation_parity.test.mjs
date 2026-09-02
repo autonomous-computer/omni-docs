@@ -89,14 +89,16 @@ const digest = (expected, actual) =>
 const baselineFile = write("baseline.json", {
   divergences: {
     "GET /v1/macro/pack|description": {
-      digest: digest("Country macro indicators.", "The country macro plane."),
+      // Clean-but-different wording. Leaky text can no longer be baselined,
+      // which the laundering case below asserts.
+      digest: digest("Country macro indicators.", "A different but clean wording."),
       reason: "test fixture",
     },
   },
 });
 const baselined = twoSpecs(
   textSpec("Country macro indicators.", "Macro pack"),
-  textSpec("The country macro plane.", "Macro pack"),
+  textSpec("A different but clean wording.", "Macro pack"),
   ["--text-baseline", baselineFile],
 );
 assert.equal(baselined.status, 0, baselined.stderr);
@@ -115,7 +117,7 @@ assert.match(staleBaseline.stderr, /Stale text-parity baseline/);
 // A baseline covering one field must not excuse the other.
 const partialBaseline = twoSpecs(
   textSpec("Country macro indicators.", "Macro pack"),
-  textSpec("The country macro plane.", "Launch ring pack"),
+  textSpec("A different but clean wording.", "Another clean summary"),
   ["--text-baseline", baselineFile],
 );
 assert.equal(partialBaseline.status, 1);
@@ -131,6 +133,30 @@ const rewritten = twoSpecs(
 );
 assert.equal(rewritten.status, 1);
 assert.match(rewritten.stderr, /text CHANGED since it was baselined/);
+
+// A baseline entry must not launder a fresh leak: the digest is generated from
+// whatever text is present, so a same-PR addition would otherwise pass.
+const leak = "Return the launch_ring_1 tier_1_expansion macro plane snapshot.";
+const launderFile = write("launder.json", {
+  divergences: {
+    "GET /v1/macro/pack|description": {
+      digest: digest("Country macro indicators.", leak),
+      reason: "deliberate divergence, totally legitimate",
+    },
+  },
+});
+const laundered = twoSpecs(
+  textSpec("Country macro indicators.", "Macro pack"),
+  textSpec(leak, "Macro pack"),
+  ["--text-baseline", launderFile],
+);
+assert.equal(laundered.status, 1, laundered.stdout);
+assert.match(laundered.stderr, /baselined text contains internal vocabulary/);
+
+// Two documents with no public operations compare equal; that must not pass.
+const vacuous = twoSpecs({ openapi: "3.1.0", paths: {} }, { openapi: "3.1.0", paths: {} });
+assert.equal(vacuous.status, 2, vacuous.stdout);
+assert.match(vacuous.stderr, /Refusing to pass vacuously/);
 
 // The real repo baseline must be well formed and non-empty.
 const realBaseline = JSON.parse(fs.readFileSync("scripts/cross_repo_text_parity_baseline.json", "utf8"));

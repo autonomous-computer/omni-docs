@@ -25,6 +25,14 @@
  * So text parity is enforced too, over the common operations of the two OpenAPI
  * documents, after whitespace normalization.
  *
+ * SCOPE, precisely: this compares operation-level `summary` and `description`
+ * only. In the 2026-09-01 spec, 18 strings carried the leaked vocabulary and
+ * just ONE of them sat at a location this comparison reads; the other 17 lived
+ * in `responses.*.description`, response `examples[].value`, and
+ * `components.schemas.*`. So this rule is NOT a complete leak detector, and must
+ * not be read as one. `scripts/check_internal_vocabulary.mjs` is the guard that
+ * covers the whole published surface; this one covers cross-repo DRIFT.
+ *
  * The two specs are independently maintained and carry some deliberately
  * different prose, so a baseline file records the divergences that exist today.
  * It is a RATCHET, not a mute button: any divergence not in the baseline fails,
@@ -33,6 +41,7 @@
  */
 import fs from "node:fs";
 import crypto from "node:crypto";
+import { RULES as VOCABULARY_RULES } from "./check_internal_vocabulary.mjs";
 
 const argv = process.argv.slice(2);
 let textBaselinePath = null;
@@ -145,6 +154,14 @@ const sets = new Map([
     : []),
 ]);
 const [firstLabel, first] = sets.entries().next().value;
+// Two documents with no public operations compare equal and would "pass". The
+// workflow also asserts a path count on the fetched file, but that check lives
+// in YAML, counts paths rather than public operations, and does not survive
+// reuse of this script elsewhere. Refuse here too.
+if (first.size === 0) {
+  console.error(`${firstLabel}: no public operations found. Refusing to pass vacuously.`);
+  process.exit(2);
+}
 const failures = [];
 for (const [label, current] of sets) {
   for (const key of first) if (!current.has(key)) failures.push(`${label}: missing ${key}`);
@@ -185,6 +202,22 @@ for (const [key, datastreamOperation] of datastreamOperations) {
     const entry = `${key}|${field}`;
     const recorded = baseline[entry];
     if (recorded) {
+      // A baseline entry must never launder a fresh leak. The digest pins the
+      // text against later drift, but it is generated FROM whatever text is
+      // present, so a same-PR addition would otherwise sail through. Run the
+      // vocabulary rules over both sides before honouring the entry.
+      const dirty = VOCABULARY_RULES.filter((rule) => {
+        const hit = actual.match(rule.pattern) ?? expected.match(rule.pattern);
+        return hit && !rule.ignore?.(hit);
+      });
+      if (dirty.length) {
+        textFailures.push(
+          `${entry}: baselined text contains internal vocabulary [${dirty.map((rule) => rule.id).join(", ")}]; ` +
+            `a baseline entry cannot excuse a leak\n    docs: ${JSON.stringify(actual.slice(0, 200))}`,
+        );
+        matchedBaseline.add(entry);
+        continue;
+      }
       // The baseline pins the EXACT text it excuses, by digest. Keying on the
       // operation alone would let a baselined description be rewritten to any
       // other divergent value — including freshly leaked vocabulary — and still
