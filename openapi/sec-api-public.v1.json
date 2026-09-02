@@ -942,17 +942,7 @@
     "/v1/billing/payment-methods/{id}": {
       "put": {
         "summary": "Set a saved payment method as primary and/or change its auto-top-up fallback priority",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Path identifier `id`."
-          }
-        ],
+        "parameters": [{"name":"id","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `id`."}],
         "requestBody": {
           "required": true,
           "content": {
@@ -1026,17 +1016,7 @@
       },
       "delete": {
         "summary": "Remove a saved payment method from the current organization",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Path identifier `id`."
-          }
-        ],
+        "parameters": [{"name":"id","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `id`."}],
         "responses": {
           "204": {
             "description": "No content"
@@ -3620,17 +3600,7 @@
     "/v1/webhook_endpoints/{webhook_id}": {
       "patch": {
         "summary": "Update a webhook endpoint URL, description, subscribed event types, or active status",
-        "parameters": [
-          {
-            "name": "webhook_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Path identifier `webhook_id`."
-          }
-        ],
+        "parameters": [{"name":"webhook_id","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `webhook_id`."}],
         "requestBody": {
           "required": true,
           "content": {
@@ -3743,17 +3713,7 @@
       },
       "delete": {
         "summary": "Delete a webhook endpoint while preserving delivery audit history",
-        "parameters": [
-          {
-            "name": "webhook_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Path identifier `webhook_id`."
-          }
-        ],
+        "parameters": [{"name":"webhook_id","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `webhook_id`."}],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -3824,17 +3784,7 @@
     "/v1/webhook_endpoints/{webhook_id}/enable": {
       "post": {
         "summary": "Enable a webhook endpoint",
-        "parameters": [
-          {
-            "name": "webhook_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Path identifier `webhook_id`."
-          }
-        ],
+        "parameters": [{"name":"webhook_id","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `webhook_id`."}],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -3898,17 +3848,7 @@
     "/v1/webhook_endpoints/{webhook_id}/disable": {
       "post": {
         "summary": "Disable a webhook endpoint without deleting delivery history",
-        "parameters": [
-          {
-            "name": "webhook_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Path identifier `webhook_id`."
-          }
-        ],
+        "parameters": [{"name":"webhook_id","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `webhook_id`."}],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -3972,17 +3912,7 @@
     "/v1/webhook_endpoints/{webhook_id}/test": {
       "post": {
         "summary": "Send a signed webhook.test event to a webhook endpoint",
-        "parameters": [
-          {
-            "name": "webhook_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Path identifier `webhook_id`."
-          }
-        ],
+        "parameters": [{"name":"webhook_id","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `webhook_id`."}],
         "requestBody": {
           "required": true,
           "content": {
@@ -4110,17 +4040,7 @@
     "/v1/webhook_endpoints/{webhook_id}/rotate_secret": {
       "post": {
         "summary": "Rotate the signing secret for a webhook endpoint",
-        "parameters": [
-          {
-            "name": "webhook_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Path identifier `webhook_id`."
-          }
-        ],
+        "parameters": [{"name":"webhook_id","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `webhook_id`."}],
         "responses": {
           "200": {
             "description": "Signing secret rotated. The new secret is revealed once.",
@@ -4186,15 +4106,7 @@
       "get": {
         "summary": "List canonical delivery attempts for a webhook endpoint",
         "parameters": [
-          {
-            "name": "webhook_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Path identifier `webhook_id`."
-          },
+          {"name":"webhook_id","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `webhook_id`."},
           {
             "name": "eventId",
             "in": "query",
@@ -4431,26 +4343,7 @@
     "/v1/webhook_endpoints/{webhook_id}/deliveries/{delivery_id}/replay": {
       "post": {
         "summary": "Replay a stored webhook delivery attempt by re-emitting its source event to the endpoint",
-        "parameters": [
-          {
-            "name": "webhook_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Path identifier `webhook_id`."
-          },
-          {
-            "name": "delivery_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Path identifier `delivery_id`."
-          }
-        ],
+        "parameters": [{"name":"webhook_id","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `webhook_id`."},{"name":"delivery_id","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `delivery_id`."}],
         "responses": {
           "200": {
             "description": "Explicit replay result. Replay creates new delivery records linked to the source attempt.",
@@ -4700,17 +4593,7 @@
     "/v1/monitors/{monitor_id}": {
       "get": {
         "summary": "Retrieve a single monitor by id",
-        "parameters": [
-          {
-            "name": "monitor_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Path identifier `monitor_id`."
-          }
-        ],
+        "parameters": [{"name":"monitor_id","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `monitor_id`."}],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -4750,17 +4633,7 @@
       },
       "delete": {
         "summary": "Deactivate a monitor (idempotent; sets is_active=false)",
-        "parameters": [
-          {
-            "name": "monitor_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Path identifier `monitor_id`."
-          }
-        ],
+        "parameters": [{"name":"monitor_id","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `monitor_id`."}],
         "responses": {
           "204": {
             "description": "No content"
@@ -4791,17 +4664,7 @@
     "/v1/monitors/{monitor_id}/matches": {
       "get": {
         "summary": "Run the monitor's saved query and return new matches since last_checked_at",
-        "parameters": [
-          {
-            "name": "monitor_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Path identifier `monitor_id`."
-          }
-        ],
+        "parameters": [{"name":"monitor_id","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `monitor_id`."}],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -4843,17 +4706,7 @@
     "/v1/monitors/{monitor_id}/delivery": {
       "post": {
         "summary": "Update or replace the monitor's delivery destination (e.g., set or change an email recipient)",
-        "parameters": [
-          {
-            "name": "monitor_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Path identifier `monitor_id`."
-          }
-        ],
+        "parameters": [{"name":"monitor_id","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `monitor_id`."}],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -7167,17 +7020,7 @@
     "/v1/stream_subscriptions/{stream_id}": {
       "patch": {
         "summary": "Update a stream subscription description, event types, transport, or status",
-        "parameters": [
-          {
-            "name": "stream_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Path identifier `stream_id`."
-          }
-        ],
+        "parameters": [{"name":"stream_id","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `stream_id`."}],
         "requestBody": {
           "required": true,
           "content": {
@@ -7295,17 +7138,7 @@
       },
       "delete": {
         "summary": "Delete a stream subscription while preserving delivery records",
-        "parameters": [
-          {
-            "name": "stream_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Path identifier `stream_id`."
-          }
-        ],
+        "parameters": [{"name":"stream_id","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `stream_id`."}],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -7376,17 +7209,7 @@
     "/v1/stream_subscriptions/{stream_id}/enable": {
       "post": {
         "summary": "Enable a stream subscription",
-        "parameters": [
-          {
-            "name": "stream_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Path identifier `stream_id`."
-          }
-        ],
+        "parameters": [{"name":"stream_id","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `stream_id`."}],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -7451,17 +7274,7 @@
     "/v1/stream_subscriptions/{stream_id}/disable": {
       "post": {
         "summary": "Disable a stream subscription without deleting its delivery records",
-        "parameters": [
-          {
-            "name": "stream_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Path identifier `stream_id`."
-          }
-        ],
+        "parameters": [{"name":"stream_id","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `stream_id`."}],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -8437,17 +8250,7 @@
     "/v1/traces/{trace_id}": {
       "get": {
         "summary": "Resolve a single shared trace record by trace identifier across filing-derived and supported non-filing datasets",
-        "parameters": [
-          {
-            "name": "trace_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Path identifier `trace_id`."
-          }
-        ],
+        "parameters": [{"name":"trace_id","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `trace_id`."}],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -21991,17 +21794,7 @@
     "/v1/intelligence/query/{jobId}": {
       "get": {
         "summary": "Poll an async intelligence workload until the final traced result is ready",
-        "parameters": [
-          {
-            "name": "jobId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Path identifier `jobId`."
-          }
-        ],
+        "parameters": [{"name":"jobId","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `jobId`."}],
         "responses": {
           "200": {
             "description": "Completed intelligence query result",
@@ -27180,17 +26973,7 @@
     "/v1/filings/{accession_number}/download": {
       "get": {
         "summary": "Open a filing's source document by accession number",
-        "parameters": [
-          {
-            "name": "accession_number",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Path identifier `accession_number`."
-          }
-        ],
+        "parameters": [{"name":"accession_number","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `accession_number`."}],
         "description": "Resolve a filing accession number and return its source document through the available delivery path. The response may be served from a cached copy or redirect to SEC EDGAR; use the source document itself when the exact filed presentation matters.",
         "responses": {
           "200": {
@@ -27235,15 +27018,7 @@
         "summary": "Export one filing in JSON or document formats",
         "description": "Export a selected filing as JSON by default, or request a derived Markdown, CSV, XLSX, DOCX, or PDF document with `format`. JSON returns the filing manifest; derived formats can be large and should retain the filing accession and source provenance. Derived exports do not replace the original filing as evidence.",
         "parameters": [
-          {
-            "name": "accession_number",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Path identifier `accession_number`."
-          },
+          {"name":"accession_number","in":"path","required":true,"schema":{"type":"string"},"description":"Path identifier `accession_number`."},
           {
             "name": "format",
             "in": "query",
