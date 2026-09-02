@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import crypto from "node:crypto";
 import { spawnSync } from "node:child_process";
 
 const dir = fs.mkdtempSync(path.join(os.tmpdir(), "turos-parity-"));
@@ -83,7 +84,16 @@ assert.equal(divergentSummary.status, 1);
 assert.match(divergentSummary.stderr, /GET \/v1\/macro\/pack\|summary/);
 
 // A baselined divergence is tolerated...
-const baselineFile = write("baseline.json", { divergences: { "GET /v1/macro/pack|description": "known" } });
+const digest = (expected, actual) =>
+  crypto.createHash("sha256").update(`${expected}\u0000${actual}`).digest("hex").slice(0, 16);
+const baselineFile = write("baseline.json", {
+  divergences: {
+    "GET /v1/macro/pack|description": {
+      digest: digest("Country macro indicators.", "The country macro plane."),
+      reason: "test fixture",
+    },
+  },
+});
 const baselined = twoSpecs(
   textSpec("Country macro indicators.", "Macro pack"),
   textSpec("The country macro plane.", "Macro pack"),
@@ -111,11 +121,24 @@ const partialBaseline = twoSpecs(
 assert.equal(partialBaseline.status, 1);
 assert.match(partialBaseline.stderr, /GET \/v1\/macro\/pack\|summary/);
 
+// A baselined entry whose text CHANGED must fail: keying on the operation alone
+// would let a baselined description be rewritten to any other divergent value,
+// including freshly leaked vocabulary. Mutation testing found this hole.
+const rewritten = twoSpecs(
+  textSpec("Country macro indicators.", "Macro pack"),
+  textSpec("Some entirely different wording.", "Macro pack"),
+  ["--text-baseline", baselineFile],
+);
+assert.equal(rewritten.status, 1);
+assert.match(rewritten.stderr, /text CHANGED since it was baselined/);
+
 // The real repo baseline must be well formed and non-empty.
 const realBaseline = JSON.parse(fs.readFileSync("scripts/cross_repo_text_parity_baseline.json", "utf8"));
 assert.ok(Object.keys(realBaseline.divergences).length > 0, "baseline must not be empty");
-for (const key of Object.keys(realBaseline.divergences)) {
+for (const [key, value] of Object.entries(realBaseline.divergences)) {
   assert.match(key, /^[A-Z]+ \/\S* ?\S*\|(summary|description)$/, `malformed baseline key ${key}`);
+  assert.match(value.digest, /^[0-9a-f]{16}$/, `malformed digest for ${key}`);
+  assert.ok(value.reason?.length > 0, `baseline entry ${key} needs a reason`);
 }
 
 console.log("cross-repo parity guard tests passed");

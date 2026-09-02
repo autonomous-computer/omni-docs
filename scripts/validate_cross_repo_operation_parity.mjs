@@ -32,6 +32,7 @@
  * rot into a silent skip and must shrink as the specs converge.
  */
 import fs from "node:fs";
+import crypto from "node:crypto";
 
 const argv = process.argv.slice(2);
 let textBaselinePath = null;
@@ -89,6 +90,9 @@ const publicOperations = (document) => {
   return operations;
 };
 const normalizeText = (value) => String(value ?? "").replace(/\s+/g, " ").trim();
+/** Pins both sides of a baselined divergence, so either one changing fails. */
+const fingerprint = (expected, actual) =>
+  crypto.createHash("sha256").update(`${expected}\u0000${actual}`).digest("hex").slice(0, 16);
 const recordKey = (record) => {
   const method = String(record?.method ?? record?.httpMethod ?? "").toUpperCase();
   const path = String(record?.path ?? record?.route ?? "");
@@ -179,7 +183,22 @@ for (const [key, datastreamOperation] of datastreamOperations) {
     const actual = normalizeText(docsOperation[field]);
     if (expected === actual) continue;
     const entry = `${key}|${field}`;
-    if (Object.prototype.hasOwnProperty.call(baseline, entry)) {
+    const recorded = baseline[entry];
+    if (recorded) {
+      // The baseline pins the EXACT text it excuses, by digest. Keying on the
+      // operation alone would let a baselined description be rewritten to any
+      // other divergent value — including freshly leaked vocabulary — and still
+      // pass. Mutation testing caught precisely that hole.
+      const digest = fingerprint(expected, actual);
+      if (recorded.digest === digest) {
+        matchedBaseline.add(entry);
+        continue;
+      }
+      textFailures.push(
+        `${entry}: text CHANGED since it was baselined (baseline pins ${recorded.digest}, found ${digest})\n` +
+          `    datastream: ${JSON.stringify(expected.slice(0, 200))}\n` +
+          `    docs:       ${JSON.stringify(actual.slice(0, 200))}`,
+      );
       matchedBaseline.add(entry);
       continue;
     }
