@@ -1,7 +1,9 @@
 name: Docs Guards
 
-# Network-free, deterministic guards. `pull_request` so they actually run on
-# every change; no `push:` trigger (repo policy).
+# Deterministic guards. `pull_request` so they actually run on
+# every change; no `push:` trigger (repo policy). The first two jobs are
+# network-free; cross-repo-parity and counterpart-freshness are not — both read
+# the counterpart spec and its metadata over the network.
 on:
   pull_request:
   workflow_dispatch:
