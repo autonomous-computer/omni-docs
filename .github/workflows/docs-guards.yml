@@ -74,20 +74,24 @@ jobs:
         with:
           node-version: "22"
 
-      # Separate job because, unlike the guards above, this one needs the
-      # network: the counterpart spec lives in autonomous-computer/docs, which is
-      # fed by omni-datastream's `sync-docs-to-mintlify` workflow. That repo's
-      # copy got the 2026-09-01 vocabulary purge while this repo's did not.
+      # Separate job because, unlike the first two, this one needs the network.
+      #
+      # The counterpart is the PUBLISHED contract — the same artifact the sync
+      # workflow pulls — not a copy in another repository. That is deliberate:
+      # this guard used to fetch from `autonomous-computer/docs`, retired as a
+      # source of truth on 2026-09-02, so it reconciled against an intermediary
+      # that would have gone stale silently. Reading the same URL the sync reads
+      # means the guard and the sync cannot disagree about what "the contract" is.
       #
       # `--fail-with-body` plus an explicit size assertion: a fetch failure or a
       # truncated/HTML error page must fail the job, never silently produce a
       # document with no operations that the guard would then compare against
       # nothing and pass.
-      - name: Fetch the datastream-derived spec
+      - name: Fetch the published contract
         run: |
           curl -sSL --fail-with-body --retry 3 --retry-delay 5 \
             -o /tmp/datastream-sec-api-public.v1.json \
-            https://raw.githubusercontent.com/autonomous-computer/docs/main/openapi/sec-api-public.v1.json
+            https://pub-8ccf92e01eab45579c477ec003519925.r2.dev/sec-api-public.v1.json
           node -e '
             const fs = require("node:fs");
             const doc = JSON.parse(fs.readFileSync("/tmp/datastream-sec-api-public.v1.json", "utf8"));
@@ -96,7 +100,7 @@ jobs:
               console.error(`Fetched spec has only ${count} paths; refusing to compare against a truncated document.`);
               process.exit(1);
             }
-            console.log(`Fetched datastream spec: ${count} paths.`);
+            console.log(`Fetched published contract: ${count} paths.`);
           '
 
       - name: Check cross-repository operation and text parity
@@ -110,11 +114,16 @@ jobs:
   # `bash -e`, so a freshness failure placed before the parity comparison would
   # stop that comparison running at all — replacing "green and useless" with
   # "red and no longer comparing anything". Since this guard exists precisely
-  # because the counterpart is EXPECTED to go quiet, that masking would be the
-  # normal case, not an edge case. Same reasoning the internal-vocabulary job
-  # above already carries; it belongs here too.
+  # because a counterpart is EXPECTED to go quiet, that masking would be the
+  # normal case, not an edge case.
+  #
+  # What it asserts changed with the publisher: instead of the commit age of a
+  # retired repository, it now asserts the PUBLISHED artifact is present, that
+  # its manifest actually describes the contract served beside it (a mismatch
+  # means a partial publish), and that it is still being produced. Same premise,
+  # checked against the real source rather than an intermediary.
   counterpart-freshness:
-    name: Counterpart spec must still be maintained
+    name: Published contract must still be produced
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -125,19 +134,13 @@ jobs:
         with:
           node-version: "22"
 
-      # Offline. Proves the failure paths rather than assuming them — including
-      # the CLI's exit codes and the entrypoint guard, each of which could
-      # otherwise no-op the whole check while staying green.
-      - name: Unit-test the freshness guard
-        run: node --test scripts/check_counterpart_freshness.test.mjs
+      # Offline. Proves the refusal paths rather than assuming them.
+      - name: Unit-test the sync guard
+        run: node --test scripts/sync_public_contract.test.mjs
 
-      # cross-repo-parity's every assertion rests on an unstated premise: that
-      # the counterpart is still being FED. If its producer stops, the fetch
-      # there keeps returning a well-formed 200 and parity is reported against a
-      # fossil — green forever, whatever this repo does to its own spec.
-      - name: Counterpart spec must still be maintained
+      # CHECK-ONLY: a drifted local copy is not a failure here (the scheduled
+      # sync opens a PR for that), but an unusable SOURCE is.
+      - name: Published contract must be present, self-consistent and fresh
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COUNTERPART_REPO: autonomous-computer/docs
-          COUNTERPART_PATH: openapi/sec-api-public.v1.json
-        run: node scripts/check_counterpart_freshness.mjs
+          PUBLIC_CONTRACT_CHECK_ONLY: "true"
+        run: node scripts/sync_public_contract.mjs
