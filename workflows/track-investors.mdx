@@ -1,10 +1,10 @@
 ---
 title: "Track Investors | TUROS Developer Docs"
-description: "Compare 13F reports and ownership disclosures, then add cited investor-letter research when the Fund Letters capability is available."
+description: "Compare 13F reports and ownership disclosures, then add cited investor-letter research from the Fund Letters capability."
 sidebarTitle: "Track Investors"
 ---
 
-Follow investment managers and activists through reported holdings, position changes, beneficial-ownership disclosures, and—when available—the ideas they explain in fund letters.
+Follow investment managers and activists through reported holdings, position changes, beneficial-ownership disclosures, and the ideas they explain in fund letters.
 
 ## Available now: holdings and ownership disclosures
 
@@ -16,11 +16,16 @@ Follow investment managers and activists through reported holdings, position cha
 
 13F data is delayed and reports long U.S. holdings within its regulatory scope. It is not a live portfolio, complete exposure map, or proof of an investor's current thesis.
 
-## Fund Letters — Coming Soon
+## Fund Letters
 
-Fund Letters will add cited manager commentary, theses, company mentions, and changes in stated views to the same investor workflow. It is not publicly available today. Routes may appear in the API contract while the underlying capability remains gated; a documented route is not proof of general availability.
+Fund Letters adds cited manager commentary, theses, company mentions, and changes in stated views to the same investor workflow. The endpoints are live on the production API.
 
-When access opens, use the [Fund Letters capability guide](/intelligence/letters) for the coverage boundary, permitted documents, source and distribution rules, and current availability. Do not treat letters as a comprehensive historical archive.
+1. Find the manager with `GET /v1/fund-letters/managers`, or go straight to `GET /v1/fund-letters/managers/{manager_id}/overview` for a one-screen briefing.
+2. List their letters with `GET /v1/fund-letters`, or search across bodies with `GET /v1/fund-letters/search`.
+3. Pull the structured theses with `GET /v1/fund-letters/theses` and compare two periods with `GET /v1/fund-letters/diff`.
+4. Keep the letter id, period, and page anchor with every observation, and verify quotes against `/document?format=markdown`.
+
+Use the [Fund Letters capability guide](/intelligence/letters) for the coverage boundary, permitted documents, source and distribution rules, and metering. Documented coverage begins with 2025 Q1 — do not treat letters as a comprehensive historical archive.
 
 ## A combined investor record
 
@@ -32,4 +37,4 @@ The useful comparison is not “what did the filing say?” or “what did the l
 - when the reported holding and stated thesis diverged; and
 - which filing or permitted document supports each observation.
 
-Start with SEC ownership data in the free sandbox. Fund Letters remains Coming Soon until TUROS publishes access and coverage.
+Start with SEC ownership data in the free sandbox, then layer Fund Letters on top for the stated rationale behind a position.

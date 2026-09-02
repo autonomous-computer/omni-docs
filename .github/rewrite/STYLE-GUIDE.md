@@ -17,7 +17,7 @@ Organize the story three ways:
 - **Product:** SEC Filing Data; Macro Data; Factor Data `Beta`; Investment Analysis.
 - **Workflows:** Research Companies; Track Investors; Track Company Events; Understand Macro; Analyze Portfolios.
 - **Build with TUROS:** MCP; API; SDKs; CLI; Excel Add-In `Alpha`.
-- **Status:** Fund Letters `Coming Soon`; never present it as publicly available until the live gate opens.
+- **Status:** derive a capability's status from `availability` in the API catalog, never from memory. Fund Letters is `live`; the `/v1/embed/letters` embed surface is `gated`.
 
 Do not recreate the old “Filings & companies” and “Intelligence & market data” groups.
 

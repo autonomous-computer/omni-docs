@@ -1,0 +1,40 @@
+name: Availability Guards
+
+# Fails when the docs claim an endpoint is unavailable while the API serves it.
+#
+# Deliberately NOT attached to `client-api-openapi.yml`: GitHub has that workflow
+# in `disabled_inactivity`, so a job added there would never run and the guard
+# would be decorative. No `paths:` filter either — the prose that makes an
+# availability claim and the allowlist that excuses one live in different files,
+# and a filter that missed either would fail open. No `push:` trigger (repo
+# policy); `pull_request` is what actually gates a merge.
+#
+# TODO: fold into `docs-guards.yml` (added by #45) once that lands, so the repo
+# has one home for network-free deterministic guards.
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  availability-prose:
+    name: Docs must not claim a live endpoint is unavailable
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      # Explicit file paths: Node 20 does not expand globs for --test, and the
+      # directory form is not accepted on every supported version.
+      - name: Unit-test the guard
+        run: node --test scripts/check_availability_prose.test.mjs
+
+      - name: Check availability prose
+        run: node scripts/check_availability_prose.mjs openapi/sec-api-public.v1.json openapi/omni-client-api.v1.json

@@ -37,7 +37,7 @@ New organizations receive 100 included live calls each UTC calendar month; the a
 - Track Company Events: https://www.turos.app/docs/workflows/track-company-events
 - Understand Macro: https://www.turos.app/docs/workflows/understand-macro
 - Analyze Portfolios: https://www.turos.app/docs/workflows/analyze-portfolios
-- Fund Letters Coming Soon: https://www.turos.app/docs/intelligence/letters
+- Fund Letters: https://www.turos.app/docs/intelligence/letters
 
 ## Build with TUROS
 
