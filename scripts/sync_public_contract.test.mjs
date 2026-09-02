@@ -50,7 +50,7 @@ test("FAILS when the manifest does not describe the served contract", () => {
 test("FAILS on a stale manifest, however valid the contract", () => {
   const r = ev({ manifestBody: manifestFor(GOOD, { publishedAt: "2020-01-01T00:00:00.000Z" }) })
   assert.equal(r.ok, false)
-  assert.match(r.reasons[0], /beyond the 30-day budget/)
+  assert.match(r.reasons[0], new RegExp(`beyond the ${DEFAULT_MAX_MANIFEST_AGE_DAYS}-day budget`))
 })
 
 test("a stale manifest fails even when the local copy already matches", () => {
@@ -78,10 +78,12 @@ test("FAILS on an invalid date or a non-positive budget", () => {
   assert.equal(ev({ maxAgeDays: Number.NaN }).ok, false)
 })
 
-test("the staleness budget is exactly 30 days and the boundary is exclusive", () => {
-  assert.equal(DEFAULT_MAX_MANIFEST_AGE_DAYS, 30)
-  const at = new Date(Date.parse(NOW) - 30 * 86_400_000).toISOString()
-  const past = new Date(Date.parse(NOW) - 30.5 * 86_400_000).toISOString()
+test("the staleness budget is exactly 7 days and the boundary is exclusive", () => {
+  // 7, not 30: the publisher is dispatch-only, so a 30-day budget let main lead
+  // the published contract by a month with every check green.
+  assert.equal(DEFAULT_MAX_MANIFEST_AGE_DAYS, 7)
+  const at = new Date(Date.parse(NOW) - 7 * 86_400_000).toISOString()
+  const past = new Date(Date.parse(NOW) - 7.5 * 86_400_000).toISOString()
   assert.equal(ev({ manifestBody: manifestFor(GOOD, { publishedAt: at }) }).ok, true)
   assert.equal(ev({ manifestBody: manifestFor(GOOD, { publishedAt: past }) }).ok, false)
 })
@@ -90,7 +92,7 @@ test("the staleness budget is exactly 30 days and the boundary is exclusive", ()
 const routed = (bodies, seen = []) => {
   const impl = async (url) => {
     seen.push(url)
-    const body = url.endsWith(".meta.json") ? bodies.manifest : bodies.contract
+    const body = url.includes(".meta.json") ? bodies.manifest : bodies.contract
     if (body === null) return { ok: false, status: 404, text: async () => "" }
     return { ok: true, status: 200, text: async () => body }
   }
@@ -138,7 +140,10 @@ test("main returns 1 and writes nothing on a stale publish", async () => {
 test("main reads BOTH published objects from the documented URLs", async () => {
   const impl = routed({ contract: GOOD, manifest: manifestFor(GOOD) })
   await run({ fetchImpl: impl })
-  assert.deepEqual(impl.seen, [DEFAULT_CONTRACT_URL, DEFAULT_MANIFEST_URL])
+  assert.equal(impl.seen.length, 2, "the rate-limited artifact must be fetched once per run")
+  assert.ok(impl.seen[0].startsWith(DEFAULT_CONTRACT_URL), impl.seen[0])
+  assert.ok(impl.seen[1].startsWith(DEFAULT_MANIFEST_URL), impl.seen[1])
+  for (const url of impl.seen) assert.match(url, /[?&]sync=\d+/, `missing cache-buster: ${url}`)
 })
 
 test("main honours URL and target overrides", async () => {
@@ -146,7 +151,9 @@ test("main honours URL and target overrides", async () => {
   let path = null
   await main({ env: { PUBLIC_CONTRACT_URL: "https://x.test/c.json", PUBLIC_CONTRACT_MANIFEST_URL: "https://x.test/c.meta.json", PUBLIC_CONTRACT_TARGET: "other.json" },
     now: NOW, log: silent, logError: silent, fetchImpl: impl, readLocal: () => null, writeLocal: (p) => { path = p } })
-  assert.deepEqual(impl.seen, ["https://x.test/c.json", "https://x.test/c.meta.json"])
+  assert.equal(impl.seen.length, 2)
+  assert.ok(impl.seen[0].startsWith("https://x.test/c.json"), impl.seen[0])
+  assert.ok(impl.seen[1].startsWith("https://x.test/c.meta.json"), impl.seen[1])
   assert.equal(path, "other.json")
 })
 
@@ -157,8 +164,9 @@ test("main's DEFAULT fetch is the real global fetch", () => {
 test("main's DEFAULT clock is real, not frozen", async () => {
   // A manifest published 29 days before REAL now is inside the budget; a clock
   // frozen to any literal drifts and flips this.
-  const fresh = new Date(Date.now() - 29 * 86_400_000).toISOString()
-  const stale = new Date(Date.now() - 31 * 86_400_000).toISOString()
+  // Derived from the budget, so tightening it cannot silently break this test.
+  const fresh = new Date(Date.now() - (DEFAULT_MAX_MANIFEST_AGE_DAYS - 1) * 86_400_000).toISOString()
+  const stale = new Date(Date.now() - (DEFAULT_MAX_MANIFEST_AGE_DAYS + 1) * 86_400_000).toISOString()
   const mk = (at) => routed({ contract: GOOD, manifest: manifestFor(GOOD, { publishedAt: at }) })
   assert.equal(await main({ env: {}, log: silent, logError: silent, fetchImpl: mk(fresh), readLocal: () => null, writeLocal: () => {} }), 2)
   assert.equal(await main({ env: {}, log: silent, logError: silent, fetchImpl: mk(stale), readLocal: () => null, writeLocal: () => {} }), 1)
@@ -238,4 +246,10 @@ test("tolerates ordinary clock skew, and the skew boundary is exclusive", () => 
 
 test("MAX_FUTURE_SKEW_DAYS is exactly six hours", () => {
   assert.equal(MAX_FUTURE_SKEW_DAYS, 0.25)
+})
+
+test("counts TRACE, matching the publisher's method set", () => {
+  assert.equal(operationCountOf(JSON.stringify({ paths: { "/a": { trace: {} } } })), 1)
+  const all = { get: {}, post: {}, put: {}, patch: {}, delete: {}, head: {}, options: {}, trace: {} }
+  assert.equal(operationCountOf(JSON.stringify({ paths: { "/a": all } })), 8)
 })

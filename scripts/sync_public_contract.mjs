@@ -25,8 +25,18 @@ export const DEFAULT_CONTRACT_URL = "https://pub-8ccf92e01eab45579c477ec00351992
 export const DEFAULT_MANIFEST_URL = "https://pub-8ccf92e01eab45579c477ec003519925.r2.dev/sec-api-public.v1.meta.json"
 /** Matches the publisher's own floor: below this, the document is truncated. */
 export const MIN_OPERATIONS = 200
-/** The publisher runs on every docs deploy, so a month of silence is a problem. */
-export const DEFAULT_MAX_MANIFEST_AGE_DAYS = 30
+/**
+ * 7 days, not 30.
+ *
+ * The publisher is `workflow_dispatch`-only, so nothing republishes the contract
+ * automatically. With a 30-day budget, omni-datastream's `main` could lead the
+ * published contract by a MONTH while this guard, the parity check and the sync
+ * all stayed green — the drift window the whole pipeline exists to close, just
+ * slower. A week is short enough that a forgotten dispatch surfaces while
+ * someone still remembers the change, and long enough not to cry wolf over a
+ * quiet stretch.
+ */
+export const DEFAULT_MAX_MANIFEST_AGE_DAYS = 7
 /** Ordinary clock skew, in days. Six hours; matches the freshness guard. */
 export const MAX_FUTURE_SKEW_DAYS = 0.25
 export const DEFAULT_BASELINE_PATH = "scripts/cross_repo_text_parity_baseline.json"
@@ -63,7 +73,11 @@ import { createHash } from "node:crypto"
 export const sha256Of = (body) => createHash("sha256").update(body).digest("hex")
 
 export function operationCountOf(body) {
-  const methods = new Set(["get", "post", "put", "patch", "delete", "head", "options"])
+  // Includes `trace`, matching the publisher's operationIdentities and both of
+  // omni-datastream's OpenAPI processors. An asymmetric method set makes the
+  // manifest's operationCount disagree with what this side computes, which
+  // reads as drift that is really just two different definitions of "operation".
+  const methods = new Set(["get", "post", "put", "patch", "delete", "head", "options", "trace"])
   const paths = JSON.parse(body)?.paths ?? {}
   let count = 0
   for (const operations of Object.values(paths)) {
@@ -140,7 +154,12 @@ import { realpathSync } from "node:fs"
 export const defaultFetch = fetch
 
 async function fetchText(fetchImpl, url) {
-  const response = await fetchImpl(url, { headers: { "Cache-Control": "no-cache" } })
+  // r2.dev is rate-limited by Cloudflare and this runs on every PR, so the
+  // artifact is fetched ONCE per run and reused; the cache-buster keeps an
+  // intermediary from serving a stale contract beside a fresh manifest, which
+  // would look exactly like a partial publish.
+  const busted = `${url}${url.includes("?") ? "&" : "?"}sync=${Date.now()}`
+  const response = await fetchImpl(busted, { headers: { "Cache-Control": "no-cache" } })
   if (!response.ok) throw new Error(`${url} returned ${response.status}`)
   return await response.text()
 }
