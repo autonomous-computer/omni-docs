@@ -724,6 +724,12 @@
                 ]
               },
               {
+                "group": "Models",
+                "pages": [
+                  "POST /v1/models/factor-analysis"
+                ]
+              },
+              {
                 "group": "News",
                 "pages": [
                   "GET /v1/news/search",

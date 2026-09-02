@@ -26,32 +26,101 @@ from typing import Any, Dict
 DEFAULT_SOURCE_URL = "https://api.turos.app/openapi.json"
 DEFAULT_BASE_URL = "https://api.turos.app"
 DEFAULT_OUT_PATH = Path("openapi/omni-client-api.v1.json")
+# Routes that only the OMNI Client API serves. Used as an identity gate so a
+# redirect to some other API cannot silently replace the snapshot.
+DEFAULT_SENTINEL_PATHS = ("/v1/fred/search", "/v1/mcp/tools", "/mcp", "/sse")
+
+
+class OpenApiFetchError(RuntimeError):
+    """Raised when the upstream OpenAPI contract cannot be retrieved or parsed."""
+
+
+class OpenApiIdentityError(RuntimeError):
+    """Raised when the fetched document is not the OMNI Client API contract."""
+
+
+def _parse_json(text: str, source_url: str, how: str) -> Dict[str, Any]:
+    if not text.strip():
+        raise OpenApiFetchError(
+            f"{source_url} returned an empty body via {how}. "
+            "The upstream OpenAPI contract is unreachable; refusing to write a snapshot."
+        )
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError as exc:
+        preview = text[:200].replace("\n", " ")
+        raise OpenApiFetchError(
+            f"{source_url} did not return JSON via {how} ({exc}). First 200 bytes: {preview!r}"
+        ) from exc
 
 
 def _fetch_json(source_url: str, timeout_seconds: int) -> Dict[str, Any]:
+    urllib_error: str | None = None
     try:
-        req = urllib.request.Request(source_url, headers={"Accept": "application/json"})
+        req = urllib.request.Request(
+            source_url,
+            headers={"Accept": "application/json", "User-Agent": "omni-docs-openapi-refresh/1"},
+        )
+        # urllib follows 301/302/303/307/308 for GET by default.
         with urllib.request.urlopen(req, timeout=timeout_seconds) as resp:
-            return json.loads(resp.read().decode("utf-8"))
-    except Exception:
-        # Fallback to curl (useful for local environments with broken cert stores).
-        with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as tmp:
-            tmp_path = tmp.name
+            return _parse_json(resp.read().decode("utf-8"), source_url, "urllib")
+    except OpenApiFetchError:
+        raise
+    except Exception as exc:  # noqa: BLE001 - fall back to curl, but remember why.
+        urllib_error = f"{type(exc).__name__}: {exc}"
+
+    # Fallback to curl (useful for local environments with broken cert stores).
+    # -L is REQUIRED: the upstream host answers 308 and without it curl writes an
+    # empty body, which used to surface as a bare JSONDecodeError.
+    # --fail turns an HTTP error status into a non-zero exit instead of a body.
+    with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as tmp:
+        tmp_path = tmp.name
+    try:
         try:
             subprocess.run(
-                ["curl", "-sS", source_url, "-o", tmp_path],
+                ["curl", "-sS", "-L", "--fail", source_url, "-o", tmp_path],
                 check=True,
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.PIPE,
                 text=True,
             )
-            with open(tmp_path, "r", encoding="utf-8") as handle:
-                return json.load(handle)
-        finally:
-            try:
-                os.unlink(tmp_path)
-            except OSError:
-                pass
+        except FileNotFoundError as exc:
+            raise OpenApiFetchError(
+                f"Could not fetch {source_url}: urllib failed ({urllib_error}) and curl is not installed."
+            ) from exc
+        except subprocess.CalledProcessError as exc:
+            raise OpenApiFetchError(
+                f"Could not fetch {source_url}: urllib failed ({urllib_error}) and "
+                f"curl exited {exc.returncode}: {(exc.stderr or '').strip()}"
+            ) from exc
+        with open(tmp_path, "r", encoding="utf-8") as handle:
+            return _parse_json(handle.read(), source_url, "curl")
+    finally:
+        try:
+            os.unlink(tmp_path)
+        except OSError:
+            pass
+
+
+def _assert_client_api_identity(raw: Dict[str, Any], source_url: str, sentinels: set[str]) -> None:
+    """Refuse to overwrite the snapshot with a document from a different API.
+
+    `https://api.turos.app/openapi.json` now 308-redirects to the SEC public
+    spec. That document also has `/v1/*` routes, so without this gate the
+    generator would happily filter it, relabel it "OMNI Client API" and commit an
+    unrelated contract. Silently writing the wrong API is worse than crashing.
+    """
+    paths = raw.get("paths")
+    if not isinstance(paths, dict):
+        raise OpenApiIdentityError(f"{source_url}: OpenAPI payload missing object 'paths'.")
+    missing = sorted(s for s in sentinels if s not in paths)
+    if missing:
+        title = (raw.get("info") or {}).get("title") if isinstance(raw.get("info"), dict) else None
+        raise OpenApiIdentityError(
+            f"{source_url} does not look like the OMNI Client API contract "
+            f"(info.title={title!r}, {len(paths)} paths). Missing required routes: "
+            f"{', '.join(missing)}. Refusing to overwrite the committed snapshot."
+        )
 
 
 def _filter_paths(paths: Dict[str, Any]) -> Dict[str, Any]:
@@ -117,15 +186,22 @@ def main() -> int:
     parser.add_argument("--base-url", default=DEFAULT_BASE_URL)
     parser.add_argument("--out", default=str(DEFAULT_OUT_PATH))
     parser.add_argument("--timeout-seconds", type=int, default=30)
+    parser.add_argument(
+        "--sentinel-path",
+        action="append",
+        default=None,
+        help="Route that must exist in the fetched spec (repeatable). Identity gate.",
+    )
     args = parser.parse_args()
 
     raw = _fetch_json(args.source_url, timeout_seconds=args.timeout_seconds)
     if not isinstance(raw, dict):
-        raise SystemExit("OpenAPI payload must be a JSON object.")
+        raise OpenApiFetchError(f"{args.source_url}: OpenAPI payload must be a JSON object.")
 
-    paths = raw.get("paths", {})
-    if not isinstance(paths, dict):
-        raise SystemExit("OpenAPI payload missing object 'paths'.")
+    sentinels = set(args.sentinel_path or DEFAULT_SENTINEL_PATHS)
+    _assert_client_api_identity(raw, args.source_url, sentinels)
+
+    paths = raw["paths"]
 
     raw["paths"] = _filter_paths(paths)
 
@@ -162,4 +238,8 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    try:
+        raise SystemExit(main())
+    except (OpenApiFetchError, OpenApiIdentityError) as exc:
+        print(f"[openapi] ERROR: {exc}", file=sys.stderr)
+        raise SystemExit(1) from exc

@@ -2,19 +2,26 @@ name: Client API OpenAPI Drift Guard
 
 on:
   pull_request:
+    # Scoped to the artifact this job actually guards. `openapi/**`, `docs.json`
+    # and `scripts/**` also cover the SEC public spec and the navigation guards,
+    # which this job knows nothing about; those are checked by docs-guards.yml.
     paths:
-      - "openapi/**"
-      - "docs.json"
-      - "scripts/**"
+      - "openapi/omni-client-api.v1.json"
+      - "scripts/update_client_api_openapi.py"
       - ".github/workflows/client-api-openapi.yml"
   workflow_dispatch:
   schedule:
     - cron: "23 7 * * *"
 
+permissions:
+  contents: read
+
 jobs:
   check:
     name: Verify OpenAPI snapshot is up to date
     runs-on: ubuntu-latest
+    outputs:
+      drift: ${{ steps.drift.outputs.drift }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,21 +31,45 @@ jobs:
         with:
           python-version: "3.11"
 
+      # A fetch or identity failure is a genuine error and fails the job on every
+      # trigger. It is NOT drift, and it must never be swallowed: the generator
+      # refuses to write when the upstream document is not the Client API.
       - name: Refresh OpenAPI snapshot
         run: python scripts/update_client_api_openapi.py
 
-      - name: Assert no drift
+      # Record drift as a job output instead of failing unconditionally. The old
+      # workflow failed here on drift, which meant `auto-pr` (needs: check) was
+      # skipped in exactly the case it existed to handle - it could only ever run
+      # when there was nothing to commit, and in ~76 runs it opened zero PRs.
+      - name: Detect drift
+        id: drift
         run: |
-          if ! git diff --exit-code; then
-            echo "OpenAPI snapshot drift detected. Run scripts/update_client_api_openapi.py and commit the changes."
-            exit 1
+          if git diff --quiet; then
+            echo "drift=false" >> "$GITHUB_OUTPUT"
+            echo "OpenAPI snapshot is up to date."
+          else
+            echo "drift=true" >> "$GITHUB_OUTPUT"
+            echo "OpenAPI snapshot drift detected:"
+            git --no-pager diff --stat
           fi
+
+      # PR-time enforcement is unchanged: drift fails the pull request. Only the
+      # scheduled path defers to auto-pr.
+      - name: Assert no drift (pull requests)
+        if: github.event_name != 'schedule' && steps.drift.outputs.drift == 'true'
+        run: |
+          echo "OpenAPI snapshot drift detected. Run scripts/update_client_api_openapi.py and commit the changes."
+          git --no-pager diff
+          exit 1
 
   auto-pr:
     name: Auto-update OpenAPI snapshot (scheduled)
-    if: github.event_name == 'schedule'
+    if: github.event_name == 'schedule' && needs.check.outputs.drift == 'true'
     needs: check
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -59,4 +90,3 @@ jobs:
           body: "Automated refresh of openapi/omni-client-api.v1.json from production OpenAPI contract."
           branch: "automation/openapi-refresh"
           delete-branch: true
-
