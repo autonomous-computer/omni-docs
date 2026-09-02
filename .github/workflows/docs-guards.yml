@@ -1,0 +1,35 @@
+name: Docs Guards
+
+# Network-free, deterministic guards. `pull_request` so they actually run on
+# every change; no `push:` trigger (repo policy).
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  guards:
+    name: Navigation coverage and workflow YAML
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install PyYAML
+        run: python -m pip install --disable-pip-version-check "PyYAML==6.0.2"
+
+      # Rejects duplicate mapping keys, which GitHub refuses to run but
+      # yaml.safe_load accepts silently.
+      - name: Validate workflow YAML (strict)
+        run: python scripts/validate_workflows.py
+
+      # Fails today on POST /v1/models/factor-analysis if the nav entry is removed.
+      - name: Validate docs.json navigation covers every OpenAPI operation
+        run: python scripts/validate_docs_nav_coverage.py
