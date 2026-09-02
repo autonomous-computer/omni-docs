@@ -1,7 +1,9 @@
 name: Docs Guards
 
-# Network-free, deterministic guards. `pull_request` so they actually run on
-# every change; no `push:` trigger (repo policy).
+# Deterministic guards. `pull_request` so they actually run on
+# every change; no `push:` trigger (repo policy). The first two jobs are
+# network-free; cross-repo-parity and counterpart-freshness are not — both read
+# the counterpart spec and its metadata over the network.
 on:
   pull_request:
   workflow_dispatch:
@@ -97,30 +99,45 @@ jobs:
             console.log(`Fetched datastream spec: ${count} paths.`);
           '
 
-      # Unit-tested offline so the failure paths below are proven, not assumed.
-      - name: Unit-test the freshness guard
-        run: node --test scripts/check_counterpart_freshness.test.mjs
-
-      # Every assertion in this job depends on an unstated premise: that the
-      # counterpart spec is still being FED. If its producer stops, the fetch
-      # above keeps returning a well-formed, path-rich 200 and the parity
-      # comparison passes against a fossil — green forever, whatever this repo
-      # does to its own spec. docs.secapi.ai was retired as a source of truth on
-      # 2026-09-02, and its producer (omni-datastream's sync-docs-to-mintlify) is
-      # manual, so that is a live risk, not a hypothetical one.
-      #
-      # Assert the counterpart still MOVES. This does not check correctness and
-      # does not claim to; it checks that the comparison still has a counterparty.
-      - name: Counterpart spec must still be maintained
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COUNTERPART_REPO: autonomous-computer/docs
-          COUNTERPART_PATH: openapi/sec-api-public.v1.json
-        run: node scripts/check_counterpart_freshness.mjs
-
       - name: Check cross-repository operation and text parity
         run: |
           node scripts/validate_cross_repo_operation_parity.mjs \
             /tmp/datastream-sec-api-public.v1.json \
             openapi/sec-api-public.v1.json \
             --text-baseline scripts/cross_repo_text_parity_baseline.json
+
+  # Its own job, NOT a step inside cross-repo-parity. Steps there run under
+  # `bash -e`, so a freshness failure placed before the parity comparison would
+  # stop that comparison running at all — replacing "green and useless" with
+  # "red and no longer comparing anything". Since this guard exists precisely
+  # because the counterpart is EXPECTED to go quiet, that masking would be the
+  # normal case, not an edge case. Same reasoning the internal-vocabulary job
+  # above already carries; it belongs here too.
+  counterpart-freshness:
+    name: Counterpart spec must still be maintained
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      # Offline. Proves the failure paths rather than assuming them — including
+      # the CLI's exit codes and the entrypoint guard, each of which could
+      # otherwise no-op the whole check while staying green.
+      - name: Unit-test the freshness guard
+        run: node --test scripts/check_counterpart_freshness.test.mjs
+
+      # cross-repo-parity's every assertion rests on an unstated premise: that
+      # the counterpart is still being FED. If its producer stops, the fetch
+      # there keeps returning a well-formed 200 and parity is reported against a
+      # fossil — green forever, whatever this repo does to its own spec.
+      - name: Counterpart spec must still be maintained
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COUNTERPART_REPO: autonomous-computer/docs
+          COUNTERPART_PATH: openapi/sec-api-public.v1.json
+        run: node scripts/check_counterpart_freshness.mjs
