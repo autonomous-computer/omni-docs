@@ -5972,7 +5972,7 @@
           "Embed"
         ],
         "summary": "Featured shareholder letters",
-        "description": "Anonymous, cacheable excerpts (up to 480 characters) from featured shareholder letters. Full letter documents are not returned. Returns 404 when this endpoint is not enabled for your account. See [API conventions](https://docs.secapi.ai/api-conventions).",
+        "description": "Anonymous, cacheable excerpts (up to 480 characters) from featured shareholder letters. Full letter documents are not returned. Returns 404 while this public embed is not enabled. See [API conventions](https://docs.secapi.ai/api-conventions).",
         "responses": {
           "200": {
             "description": "Successful response",
@@ -6010,7 +6010,7 @@
           "Embed"
         ],
         "summary": "Featured letter by slug",
-        "description": "Anonymous member of `/v1/embed/letters`. Slugs come from a fixed curated set (`brk-2024`, `brk-2025`, `xyz-q4-2025`, `xyz-q2-2026`). Returns 404 when this endpoint is not enabled for your account.",
+        "description": "Anonymous member of `/v1/embed/letters`. Slugs come from a fixed curated set (`brk-2024`, `brk-2025`, `xyz-q4-2025`, `xyz-q2-2026`). Returns 404 while this public embed is not enabled.",
         "parameters": [
           {
             "name": "slug",
@@ -6225,7 +6225,7 @@
           "Embed"
         ],
         "summary": "Earnings calendar",
-        "description": "Anonymous, cacheable earnings-event calendar. Rows carry only symbol, company name, report date, and session (`bmo`, `amc`, or `unspecified`); estimate and actual figures are not included. The requested window is bounded to 31 days. Returns 404 when this endpoint is not enabled for your account.",
+        "description": "Anonymous, cacheable earnings-event calendar. Rows carry only symbol, company name, report date, and session (`bmo`, `amc`, or `unspecified`); estimate and actual figures are not included. The requested window is bounded to 31 days. Returns 404 while this public embed is not enabled.",
         "parameters": [
           {
             "name": "from",
@@ -6303,7 +6303,7 @@
           "Embed"
         ],
         "summary": "IPO calendar",
-        "description": "Anonymous, cacheable IPO event feed derived from SEC primary-source filings (S-1, F-1, 424B): company, symbol when known, form, offering type and status, filing and effective dates, and price, share, and deal-size figures as disclosed in the filing text. `exchange` is populated only for rows that have reached the market; registration statements do not reliably disclose a venue before effectiveness, and issuers that resolve only to an over-the-counter quote are left blank. Exchange is resolved from EDGAR company-exchange metadata joined on CIK, which codes NYSE American listings as `NYSE`. Returns 404 when this endpoint is not enabled for your account.",
+        "description": "Anonymous, cacheable IPO event feed derived from SEC primary-source filings (S-1, F-1, 424B): company, symbol when known, form, offering type and status, filing and effective dates, and price, share, and deal-size figures as disclosed in the filing text. `exchange` is populated only for rows that have reached the market; registration statements do not reliably disclose a venue before effectiveness, and issuers that resolve only to an over-the-counter quote are left blank. Exchange is resolved from EDGAR company-exchange metadata joined on CIK, which codes NYSE American listings as `NYSE`. Returns 404 while this public embed is not enabled.",
         "responses": {
           "200": {
             "description": "Successful response",
@@ -6341,7 +6341,7 @@
           "Embed"
         ],
         "summary": "Economic calendar",
-        "description": "Anonymous, cacheable economic calendar: scheduled and released official-source macro prints with actual and prior values, plus the Turos in-house model forecast in `turosForecast`. Returns 404 when this endpoint is not enabled for your account.",
+        "description": "Anonymous, cacheable economic calendar: scheduled and released official-source macro prints with actual and prior values, plus the Turos in-house model forecast in `turosForecast`. Returns 404 while this public embed is not enabled.",
         "parameters": [
           {
             "name": "country",
@@ -6402,7 +6402,7 @@
           "Embed"
         ],
         "summary": "US Treasury yield curve",
-        "description": "Anonymous, cacheable US Treasury yield curve built from FRED-derived public-domain observations: latest, month-ago, and year-ago curve snapshots across the 2Y, 5Y, 7Y, 10Y, 20Y, and 30Y tenors; 10Y-2Y and 10Y-3M spread snapshots; and bounded weekly history per series. Returns 404 when this endpoint is not enabled for your account.",
+        "description": "Anonymous, cacheable US Treasury yield curve built from FRED-derived public-domain observations: latest, month-ago, and year-ago curve snapshots across the 2Y, 5Y, 7Y, 10Y, 20Y, and 30Y tenors; 10Y-2Y and 10Y-3M spread snapshots; and bounded weekly history per series. Returns 404 while this public embed is not enabled.",
         "responses": {
           "200": {
             "description": "Successful response",
@@ -6440,7 +6440,7 @@
           "Embed"
         ],
         "summary": "13F manager directory",
-        "description": "Anonymous, cacheable directory of 13F filers. CUSIP and ISIN are never returned on the `/v1/embed/owners` surface. Returns 404 when this endpoint is not enabled for your account.",
+        "description": "Anonymous, cacheable directory of 13F filers. CUSIP and ISIN are never returned on the `/v1/embed/owners` surface. Returns 404 while this public embed is not enabled.",
         "parameters": [
           {
             "name": "letter",
@@ -6527,7 +6527,7 @@
           "Embed"
         ],
         "summary": "13F manager profile",
-        "description": "Anonymous member of `/v1/embed/owners/13f/managers`: manager profile, curated bio when available, and the indexed filings list (quarter, holdings count, total value, top holdings). Returns 404 when this endpoint is not enabled for your account or when no filings are indexed for the CIK.",
+        "description": "Anonymous member of `/v1/embed/owners/13f/managers`: manager profile, curated bio when available, and the indexed filings list (quarter, holdings count, total value, top holdings). Returns 404 while this public embed is not enabled or when no filings are indexed for the CIK.",
         "parameters": [
           {
             "name": "cik",
