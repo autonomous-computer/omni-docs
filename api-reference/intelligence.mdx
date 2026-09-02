@@ -7,15 +7,15 @@ Intelligence routes assemble source-cited research bundles in one call: a compan
 
 | Method | Endpoint | Description |
 | --- | --- | --- |
-| `GET` | `/v1/intelligence/company` | Return a one-call company bundle spanning market, filings, ownership, macro, factor, and risk context. |
-| `GET` | `/v1/intelligence/security` | Return a one-call security bundle with snapshot, catalysts, filings, and factor context. |
-| `GET` | `/v1/intelligence/earnings-preview` | Return an earnings preview bundle with estimates, drivers, risks, and traceable supporting context. |
+| `GET` | `/v1/intelligence/company` | Company intelligence bundle. |
+| `GET` | `/v1/intelligence/security` | Security intelligence bundle. |
+| `GET` | `/v1/intelligence/earnings-preview` | Earnings preview bundle. |
 | `POST` | `/v1/intelligence/query` | Submit a named intelligence job with its required identity fields; returns a completed result or a job ID to poll. |
-| `GET` | `/v1/intelligence/query/{jobId}` | Poll an async intelligence workload until the final traced result is ready. |
-| `POST` | `/v1/intelligence/country-report` | Return a country intelligence bundle covering the prior period's macro path, likely drivers, and forward view. |
-| `POST` | `/v1/intelligence/portfolio` | Return a one-call portfolio intelligence bundle with exposures, stress scenarios, events, and hedge ideas. |
+| `GET` | `/v1/intelligence/query/{jobId}` | Intelligence query result. |
+| `POST` | `/v1/intelligence/country-report` | Country intelligence report. |
+| `POST` | `/v1/intelligence/portfolio` | Portfolio intelligence bundle. |
 | `POST` | `/v1/intelligence/macro-exposure` | Return revenue-weighted macro sensitivities for a portfolio with per-holding contributions and a coverage percentage. |
-| `POST` | `/v1/intelligence/watchlist` | Return a watchlist briefing bundle with movers, catalysts, factor context, and regime overlays. |
+| `POST` | `/v1/intelligence/watchlist` | Watchlist intelligence briefing. |
 | `POST` | `/v1/intelligence/footnotes/query` | Return a structured filing-footnote investigation bundle for one ticker or a multi-ticker collection. |
 
 ## Billing

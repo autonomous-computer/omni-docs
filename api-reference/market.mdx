@@ -7,12 +7,12 @@ Market routes serve trading calendars, security reference metadata, daily price 
 
 | Method | Endpoint | Description |
 | --- | --- | --- |
-| `GET` | `/v1/market/search` | Find candidate stock tickers from a company name or keyword. |
-| `GET` | `/v1/market/reference` | Retrieve reference metadata and identifiers for one security. |
-| `GET` | `/v1/market/bars` | Retrieve daily OHLCV history for one security. |
-| `GET` | `/v1/market/snapshots` | Retrieve stored latest-price snapshots for one or more symbols. |
-| `GET` | `/v1/market/corporate-actions` | Retrieve splits and dividends for one security. |
-| `GET` | `/v1/market/calendar` | Check scheduled trading sessions for a supported market. |
+| `GET` | `/v1/market/search` | Search securities. |
+| `GET` | `/v1/market/reference` | Security reference data. |
+| `GET` | `/v1/market/bars` | Daily price bars. |
+| `GET` | `/v1/market/snapshots` | Latest price snapshots. |
+| `GET` | `/v1/market/corporate-actions` | Splits and dividends. |
+| `GET` | `/v1/market/calendar` | Market trading calendar. |
 
 Snapshots are stored latest prices, not a live quote stream. Record retrieval time with any snapshot you persist.
 

@@ -37,7 +37,7 @@ Upgrade sequence:
 
 1. review changelog and migration notes
 2. run integration tests against target pin
-3. canary by key/environment
+3. roll out to one key or environment first
 4. monitor error and billing drift
 5. promote gradually
 6. retain rollback pin until stability clears
@@ -49,7 +49,7 @@ Required deprecation headers:
 ```http
 Deprecation: true
 Sunset: 2026-08-31T00:00:00Z
-Link: </sources/client-api-mcp-hosted>; rel="successor-version"
+Link: </build/mcp>; rel="successor-version"
 ```
 
 Timeline template:
@@ -58,7 +58,7 @@ Timeline template:
 - `T-60`: surface usage warnings and outreach
 - `T-30`: enforce deprecation headers broadly
 - `T-7`: block new dependencies on deprecated path
-- `T-0`: sunset only after migration SLO gates pass
+- `T-0`: sunset after the migration window closes
 
 ## Migration guide: legacy MCP routes -> hosted MCP
 
@@ -112,7 +112,7 @@ Rollback immediately if sustained:
 
 1. auth/scope spike (`401`/`403`)
 2. idempotency conflict spike (`409`)
-3. invoke/internal failure spike (`mcp_invocation_failed`, `mcp_internal_error`)
+3. invocation failure spike (`mcp_invocation_failed`, `mcp_internal_error`)
 4. billing drift vs expected units
 
 ## Migration completion checklist
@@ -130,5 +130,5 @@ Rollback immediately if sustained:
 - `/sources/client-api-reference`
 - `/sources/client-api-changelog`
 - `/sources/client-api-errors`
-- `/sources/client-api-mcp-hosted`
+- `/build/mcp`
 - `/sources/client-api-mcp-compatibility`

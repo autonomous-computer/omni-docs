@@ -19,7 +19,7 @@ OMNI negotiates protocol on `initialize`.
 - Requested supported version: echoed in `result.protocolVersion`
 - Requested unsupported version: server falls back to default supported version
 
-Supported versions (internal beta):
+Supported versions:
 
 - `2025-11-05` (default)
 - `2025-06-18`
@@ -68,7 +68,7 @@ Parity guarantees with Client API:
 - same error semantics (`omni_code` mapping)
 - same billable semantics: first successful write-like operation only
 
-## SDK compatibility matrix (internal beta)
+## SDK compatibility matrix
 
 | SDK line | Distribution | Supported MCP protocol versions |
 | --- | --- | --- |
@@ -87,22 +87,8 @@ Release integrity artifacts:
 - deprecations: minimum 180-day target sunset window
 - breaking changes: minimum 90-day migration window after replacement is live
 
-## Conformance gating
-
-Every SDK release tag (`mcp-sdks-v*`) is gated by live conformance checks against `https://api.secapi.ai/mcp`:
-
-- JS: `sdk/omni-mcp-js/scripts/conformance.mjs`
-- Python: `sdk/omni-mcp-py/scripts/conformance.py`
-
-Required successful sequence:
-
-1. `initialize`
-2. `tools/list` includes `fred.search`
-3. `tools/call` returns structured content
-
 ## Related docs
 
-- `/sources/client-api-mcp-hosted`
-- `/sources/client-api-sdks`
-- `/getting-started/client-api-sdk-quickstart`
+- `/build/mcp`
+- `/sdks/javascript`
 - `/sources/client-api-migrations`

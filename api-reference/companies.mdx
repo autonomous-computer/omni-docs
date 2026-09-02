@@ -7,15 +7,15 @@ Build issuer research views from SEC-derived statements, ratios, segments, macro
 
 | Method | Endpoint | Description |
 | --- | --- | --- |
-| `GET` | `/v1/companies/overview` | Retrieve an SEC-derived company snapshot with identity, latest material filing, and a sector-aware financial view. |
-| `GET` | `/v1/companies/financials` | Retrieve an issuer's SEC-derived income, balance-sheet, and cash flow statements in one company-focused response. |
+| `GET` | `/v1/companies/overview` | Company overview. |
+| `GET` | `/v1/companies/financials` | Company financial statements. |
 | `GET` | `/v1/companies/income-statements` | Retrieve an issuer's income statement history with normalized operating and per-share fields. |
 | `GET` | `/v1/companies/balance-sheets` | Retrieve an issuer's balance sheet history with normalized cash, debt, and equity fields. |
 | `GET` | `/v1/companies/cash-flow-statements` | Retrieve an issuer's cash flow statement history with normalized cash-generation fields. |
 | `GET` | `/v1/companies/ratios` | Retrieve statement-derived profitability, return, valuation, dividend, and leverage ratios with period context. |
-| `GET` | `/v1/companies/segments` | Retrieve an issuer's SEC-disclosed product, geographic, and operating segment breakdown with revenue-tie confidence. |
-| `GET` | `/v1/companies/subsidiaries` | Retrieve subsidiaries disclosed in an issuer's latest available 10-K Exhibit 21. |
-| `GET` | `/v1/companies/audit-fees` | Return principal-accountant fee rows extracted from the latest DEF 14A or 10-K for an issuer. |
+| `GET` | `/v1/companies/segments` | Company segments. |
+| `GET` | `/v1/companies/subsidiaries` | Company subsidiaries. |
+| `GET` | `/v1/companies/audit-fees` | Company audit fees. |
 | `GET` | `/v1/companies/macro-exposure` | Retrieve a revenue-weighted macro-exposure snapshot built from disclosed geographic revenue and country indicators. |
 
 `GET /v1/companies/segments` is beta; its responses carry `SECAPI-Maturity: beta`. Treat beta fields defensively.

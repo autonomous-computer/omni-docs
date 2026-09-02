@@ -1,6 +1,6 @@
 ---
 title: "Coverage"
-description: "What TUROS covers across filings, macro countries, and gated stores, and how to test the slice your workflow needs."
+description: "What TUROS covers across filings, macro countries, and access-restricted datasets, and how to test the slice your workflow needs."
 ---
 
 Coverage is specific to the issuer, filing, period, and representation you request. A filing can be available while a section, normalized fact, or derived result is not, so a successful lookup isn't a coverage claim. Before you build on a result, write down the exact evidence you need and test that request.
@@ -9,7 +9,7 @@ Coverage is specific to the issuer, filing, period, and representation you reque
 
 Filing and section workflows document a nine-year searchable floor. Completeness checks apply to required filing forms for the two most recently completed years, and the current year is available as filings arrive - it isn't covered by the completed-year completeness check.
 
-TUROS can return older filings. Their usefulness still depends on the issuer, form, document format, and the route's materialization path. A successful query for one issuer or year isn't a platform-wide guarantee, and TUROS doesn't claim equal data density across EDGAR.
+TUROS can return older filings. Their usefulness still depends on the issuer, form, document format, and how the route builds its response. A successful query for one issuer or year isn't a platform-wide guarantee, and TUROS doesn't claim equal data density across EDGAR.
 
 ```bash
 curl --fail-with-body -sS -H "x-api-key: $SECAPI_API_KEY" \
@@ -27,9 +27,9 @@ Macro intelligence launched with five countries, with an expansion set following
 
 Check the per-country status endpoint before you depend on a country's indicators in a workflow.
 
-## Gated stores
+## Access-restricted datasets
 
-Fund letters and authenticated special situations are gated stores. They return `404` when the store is dark for your account, so don't make them your first request. Check `availability` on the API catalog before calling them:
+Fund letters and authenticated special situations require additional access. They return `404` when they aren't enabled for your account, so don't make them your first request. Check `availability` on the API catalog before calling them:
 
 ```bash
 curl --fail-with-body -sS \

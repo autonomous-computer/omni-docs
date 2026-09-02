@@ -41,7 +41,7 @@ Use a test key to verify:
 - **Idempotency:** replays return the first response; a changed body returns `422`; an in-flight duplicate returns `409` with `Retry-After`.
 - **Parsing:** your code preserves `requestId`, sources, and trace fields from the completed result.
 
-Test traffic doesn't prove production data freshness, coverage for a specific issuer, or a gated store's availability. Those depend on the live stores.
+Test traffic doesn't prove production data freshness, coverage for a specific issuer, or whether a restricted capability is enabled for your account. Those depend on the live production data.
 
 ## Switch to production
 

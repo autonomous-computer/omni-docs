@@ -43,12 +43,12 @@ TUROS now orders filing lists by when the SEC accepted each filing, so the newes
 ### Highlights
 
 - `GET /v1/filings` results ordered by SEC acceptance time for accurate recency
-- Real-time hot-lane ingestion keeps the latest filings flowing as they post to EDGAR
+- New filings are indexed continuously as they post to EDGAR
 - More reliable freshness and trust metadata on filing responses
 </Update>
 
 <Update label="June 18, 2026" description="Business Breakdown segments and factor quality calibration" tags={["TUROS", "Release"]}>
-TUROS now classifies company segment breakdowns across product, geographic, and operating axes more reliably, and factor returns went through an empirical quality calibration ahead of general availability.
+TUROS now classifies company segment breakdowns across product, geographic, and operating axes more reliably, and factor returns went through an empirical quality calibration.
 
 ### Highlights
 
@@ -58,33 +58,31 @@ TUROS now classifies company segment breakdowns across product, geographic, and 
 </Update>
 
 <Update label="June 17, 2026" description="Cleaner provenance in API responses" tags={["TUROS", "Release"]}>
-TUROS responses now carry clean, public-safe provenance metadata. Internal source identifiers were removed from `/v1` payloads while all SEC source citations and accession references are preserved.
+TUROS `/v1` responses now carry cleaner provenance metadata. SEC source citations and accession references are unchanged.
 
 ### Highlights
 
-- Provenance and source fields scrubbed of internal identifiers
 - SEC accession numbers, filing dates, and citation fields fully retained
 - More accurate per-period factor return math at the boundaries
 </Update>
 
-<Update label="June 16, 2026" description="Launch-ready docs and faster filing throughput" tags={["TUROS", "Release"]}>
-TUROS documentation is now finalized for public launch, filing search ordering is corrected, and a dedicated signup flow is live.
+<Update label="June 16, 2026" description="Filing search ordering fix and a dedicated signup flow" tags={["TUROS", "Release"]}>
+Filing search ordering is corrected and a dedicated signup flow is live.
 
 ### Highlights
 
-- Documentation finalized and de-beta'd for public launch
 - Filing search now sorts by true filing date, so older filings no longer surface at the top
 - Dedicated signup page and an accuracy pass on the session and pricing docs
 </Update>
 
 <Update label="June 15, 2026" description="Longer-lived dashboard sessions and legal hardening" tags={["TUROS", "Release"]}>
-TUROS dashboard sign-ins now stay active far longer, duplicate organizations are prevented on signup, and the Terms of Service and Privacy Policy were audited and updated for launch.
+TUROS dashboard sign-ins now stay active far longer, duplicate organizations are prevented on signup, and the Terms of Service and Privacy Policy were updated.
 
 ### Highlights
 
 - Refresh-backed sessions keep you signed in to the dashboard for 30 days (90 with remember-me)
 - Signing in with a verified email joins your existing organization instead of creating a duplicate
-- Audited Terms of Service and Privacy Policy with explicit consent capture
+- Updated Terms of Service and Privacy Policy with explicit consent capture
 </Update>
 
 <Update label="June 10, 2026" description="Hardened sign-in exchange" tags={["TUROS", "Release"]}>

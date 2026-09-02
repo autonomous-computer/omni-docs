@@ -22,7 +22,7 @@ The response may return cached bytes directly or answer with a `302` redirect to
 
 Don't assume the downloaded document is a PDF. Its content type comes from the filing source - most primary documents are HTML. Preserve the accession and the final source URL when the filed presentation is evidence.
 
-## Export a PDF deliberately
+## Export a PDF
 
 `GET /v1/filings/{accession_number}/export` defaults to `format=json`, which returns the structured filing record. Set `format` explicitly when you need a file:
 

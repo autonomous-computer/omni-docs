@@ -20,7 +20,7 @@ Handle each outcome distinctly rather than collapsing them into "not done yet":
 | --- | --- | --- |
 | `200` | The job reached a final state. | Read the returned status and result. Attach the trace and cited sources to your research record. |
 | `202` | The job is still running. | Wait, then poll again with bounded backoff. |
-| `404` | The job ID is unknown, or the job depends on a gated store that is dark. | Verify the ID; check `availability` in the [API catalog](https://www.turos.app/docs/.well-known/api-catalog.json) before resubmitting. |
+| `404` | The job ID is unknown, or the job needs a capability that isn't enabled for your account. | Verify the ID; check `availability` in the [API catalog](https://www.turos.app/docs/.well-known/api-catalog.json) before resubmitting. |
 | `502` | The job failed in execution. | Do not treat this as an empty result. Keep the `requestId` and resubmit with a new `Idempotency-Key` if appropriate. |
 
 Polls are not billed. The one debit lands when the named job completes successfully - `$0.50` for a pack, `$1.50` for a report. Failed and cancelled jobs are free.
