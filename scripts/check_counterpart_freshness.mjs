@@ -154,11 +154,20 @@ function githubHeaders(token) {
  * this the guard would stay green for a full budget after the repo was frozen
  * by definition.
  */
+export function repoUrl({ repo }) {
+  return `https://api.github.com/repos/${repo}`
+}
+
 export async function fetchIsArchived({ repo, fetchImpl = fetch, token }) {
-  const response = await fetchImpl(`https://api.github.com/repos/${repo}`, { headers: githubHeaders(token) })
+  const response = await fetchImpl(repoUrl({ repo }), { headers: githubHeaders(token) })
   if (!response.ok) throw new Error(`GitHub API ${response.status} for ${repo}`)
   const body = await response.json()
-  return Boolean(body?.archived)
+  // A 200 whose body lacks `archived` — wrong endpoint, schema change, an
+  // intercepting proxy — must not read as "not archived". Require the field.
+  if (typeof body?.archived !== "boolean") {
+    throw new Error(`GitHub API response for ${repo} has no boolean \`archived\` field`)
+  }
+  return body.archived
 }
 
 /**
@@ -210,23 +219,39 @@ export async function main({ env = process.env, fetchImpl = fetch, now = new Dat
 // `#`, or non-ASCII — and the CLI body then silently never runs: exit 0, no
 // output. That is the exact failure this file exists to prevent, so it is pinned
 // by a spawn test that runs the script from a directory whose name has a space.
-// Three separate traps here, each of which silently no-ops the whole CLI:
-//   1. `file://${argv[1]}` mis-encodes any path with a space, `#`, or non-ASCII.
-//   2. `import.meta.url` is REALPATH-resolved but argv[1] is not, so a symlinked
-//      path (on macOS /tmp -> /private/tmp) never matches.
-//   3. argv[1] is undefined under `node -e` and some embedders.
-// All three end in exit 0 with no output, which is indistinguishable from a
-// pass. Pinned by a spawn test that runs this file through a symlinked
-// directory whose name contains a space.
-const entryPoint = process.argv[1]
-let isMain = false
-if (entryPoint) {
+/**
+ * Whether this module is being run as a script. Extracted and unit-tested
+ * because three separate traps here each silently no-op the ENTIRE CLI —
+ * exit 0, no output, indistinguishable from a pass:
+ *   1. `file://${argv[1]}` mis-encodes any path with a space, `#`, or non-ASCII.
+ *   2. `import.meta.url` is REALPATH-resolved but argv[1] is not, so a symlinked
+ *      path never matches (on macOS /tmp -> /private/tmp).
+ *   3. argv[1] is undefined under `node -e` and some embedders.
+ *
+ * Matches EITHER the realpath-resolved or the literal form. Matching either is
+ * strictly safer than matching one: the failure mode defended against is a
+ * false NEGATIVE (isMain wrongly false, guard never runs), so widening what
+ * counts as a match can only reduce it. An earlier revision used the literal
+ * form as a `catch` FALLBACK, which reintroduced trap 2 whenever realpath threw;
+ * here it is an additional accepted form, not a replacement one.
+ */
+export function isEntryPoint({ importMetaUrl, entryPoint, realpath = realpathSync }) {
+  if (!entryPoint) return false
+  const candidates = [entryPoint]
   try {
-    isMain = import.meta.url === pathToFileURL(realpathSync(entryPoint)).href
+    candidates.push(realpath(entryPoint))
   } catch {
-    isMain = import.meta.url === pathToFileURL(entryPoint).href
+    // Canonicalization failing is not itself a reason to skip the CLI.
   }
+  return candidates.some((candidate) => {
+    try {
+      return importMetaUrl === pathToFileURL(candidate).href
+    } catch {
+      return false
+    }
+  })
 }
-if (isMain) {
+
+if (isEntryPoint({ importMetaUrl: import.meta.url, entryPoint: process.argv[1] })) {
   process.exit(await main())
 }

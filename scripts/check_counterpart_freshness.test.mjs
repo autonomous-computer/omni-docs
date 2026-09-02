@@ -10,8 +10,10 @@ import {
   evaluateCounterpartFreshness,
   fetchIsArchived,
   fetchLastCommitDate,
+  isEntryPoint,
   lastCommitUrl,
   main,
+  repoUrl,
 } from "./check_counterpart_freshness.mjs"
 
 const NOW = "2026-09-02T12:00:00.000Z"
@@ -142,7 +144,18 @@ test("committer.date takes precedence over author.date", async () => {
 // ---------------------------------------------------------------------------
 const okRepoResponse = { ok: true, json: async () => ({ archived: false }) }
 const commitsResponse = (date) => ({ ok: true, json: async () => [{ commit: { committer: { date } } }] })
-const routed = (handlers) => async (url) => (url.includes("/commits") ? handlers.commits : handlers.repo)
+// Records every requested URL. The previous double dispatched on the URL but
+// never asserted it, so repo/path plumbing one call-frame up was unpinned:
+// swapping in `path: "README.md"` — the degraded "is the repo alive at all"
+// check this guard exists to prevent — survived with the suite green.
+const routed = (handlers, seen = []) => {
+  const impl = async (url) => {
+    seen.push(url)
+    return url.includes("/commits") ? handlers.commits : handlers.repo
+  }
+  impl.seen = seen
+  return impl
+}
 const silent = () => {}
 
 test("main returns 0 when the counterpart is fresh", async () => {
@@ -234,4 +247,109 @@ test("the CLI body still runs when invoked via a symlinked path containing a spa
   } finally {
     rmSync(base, { recursive: true, force: true })
   }
+})
+
+// ---------------------------------------------------------------------------
+// main()'s PRODUCTION DEFAULTS. Previously every one was injected by every test,
+// so the real clock, the real budget and the real repo/path were all unpinned —
+// #48's structural gap, relocated one call-frame up.
+// ---------------------------------------------------------------------------
+test("main uses the REAL clock when `now` is not injected", async () => {
+  const realRecent = new Date(Date.now() - 2 * 86_400_000).toISOString()
+  const realAncient = new Date(Date.now() - 400 * 86_400_000).toISOString()
+  assert.equal(await main({ env: {}, log: silent, logError: silent, fetchImpl: routed({ repo: okRepoResponse, commits: commitsResponse(realRecent) }) }), 0)
+  // A frozen default clock would keep returning 0 here forever.
+  assert.equal(await main({ env: {}, log: silent, logError: silent, fetchImpl: routed({ repo: okRepoResponse, commits: commitsResponse(realAncient) }) }), 1)
+})
+
+test("main applies DEFAULT_MAX_AGE_DAYS when no budget is set", async () => {
+  const inside = daysBefore(DEFAULT_MAX_AGE_DAYS - 1)
+  const outside = daysBefore(DEFAULT_MAX_AGE_DAYS + 1)
+  assert.equal(await main({ env: {}, now: NOW, log: silent, logError: silent, fetchImpl: routed({ repo: okRepoResponse, commits: commitsResponse(inside) }) }), 0)
+  assert.equal(await main({ env: {}, now: NOW, log: silent, logError: silent, fetchImpl: routed({ repo: okRepoResponse, commits: commitsResponse(outside) }) }), 1)
+})
+
+test("main requests the DEFAULT repo and path when the env is empty", async () => {
+  const impl = routed({ repo: okRepoResponse, commits: commitsResponse(daysBefore(1)) })
+  await main({ env: {}, now: NOW, log: silent, logError: silent, fetchImpl: impl })
+  assert.ok(impl.seen.some((u) => u === repoUrl({ repo: "autonomous-computer/docs" })), `repo URL not requested: ${impl.seen}`)
+  assert.ok(
+    impl.seen.some((u) => u === lastCommitUrl({ repo: "autonomous-computer/docs", path: "openapi/sec-api-public.v1.json" })),
+    `path-filtered commits URL not requested: ${impl.seen}`,
+  )
+})
+
+test("main honours COUNTERPART_REPO and COUNTERPART_PATH", async () => {
+  const impl = routed({ repo: okRepoResponse, commits: commitsResponse(daysBefore(1)) })
+  await main({
+    env: { COUNTERPART_REPO: "other/repo", COUNTERPART_PATH: "some/spec.json" },
+    now: NOW, log: silent, logError: silent, fetchImpl: impl,
+  })
+  assert.ok(impl.seen.some((u) => u === repoUrl({ repo: "other/repo" })), `wrong repo URL: ${impl.seen}`)
+  assert.ok(impl.seen.some((u) => u === lastCommitUrl({ repo: "other/repo", path: "some/spec.json" })), `wrong commits URL: ${impl.seen}`)
+})
+
+test("main checks archived BEFORE fetching commits", async () => {
+  const impl = routed({ repo: okRepoResponse, commits: commitsResponse(daysBefore(1)) })
+  await main({ env: {}, now: NOW, log: silent, logError: silent, fetchImpl: impl })
+  assert.ok(impl.seen.length >= 2, "expected both requests")
+  assert.ok(!impl.seen[0].includes("/commits"), `archived check must come first, got ${impl.seen[0]}`)
+})
+
+test("a commit carrying no date at all throws rather than defaulting to now", async () => {
+  const fetchImpl = async () => ({ ok: true, json: async () => [{ commit: {} }] })
+  await assert.rejects(() => fetchLastCommitDate({ repo: "a/b", path: "p", fetchImpl }), /carried no date/)
+})
+
+test("fetchIsArchived rejects a 200 whose body has no boolean `archived`", async () => {
+  for (const body of [{}, { archived: "true" }, null, { archived: 1 }]) {
+    await assert.rejects(
+      () => fetchIsArchived({ repo: "a/b", fetchImpl: async () => ({ ok: true, json: async () => body }) }),
+      /no boolean/,
+      `expected rejection for ${JSON.stringify(body)}`,
+    )
+  }
+})
+
+// ---------------------------------------------------------------------------
+// The skew constant, pinned to its exact value and its exact boundary — the
+// budget already was, and an unpinned 0.999 would allow nearly a full day of
+// committer-controlled future tolerance.
+// ---------------------------------------------------------------------------
+test("MAX_FUTURE_SKEW_DAYS is exactly six hours", () => {
+  assert.equal(MAX_FUTURE_SKEW_DAYS, 0.25)
+})
+
+test("the skew boundary is exclusive, like the budget boundary", () => {
+  const atBoundary = new Date(Date.parse(NOW) + MAX_FUTURE_SKEW_DAYS * 86_400_000).toISOString()
+  assert.equal(evaluateCounterpartFreshness({ source, lastCommittedAt: atBoundary, now: NOW }).ok, true)
+  const pastBoundary = new Date(Date.parse(NOW) + (MAX_FUTURE_SKEW_DAYS * 86_400_000) + 60_000).toISOString()
+  assert.equal(evaluateCounterpartFreshness({ source, lastCommittedAt: pastBoundary, now: NOW }).ok, false)
+})
+
+// ---------------------------------------------------------------------------
+// isEntryPoint. Extracted from module scope precisely so these cases exist.
+// ---------------------------------------------------------------------------
+test("isEntryPoint matches the plain path", () => {
+  assert.equal(isEntryPoint({ importMetaUrl: "file:///a/b.mjs", entryPoint: "/a/b.mjs", realpath: (p) => p }), true)
+})
+
+test("isEntryPoint matches a path needing URL encoding", () => {
+  assert.equal(isEntryPoint({ importMetaUrl: "file:///a/dir%20with%20space/b.mjs", entryPoint: "/a/dir with space/b.mjs", realpath: (p) => p }), true)
+})
+
+test("isEntryPoint matches via the realpath-resolved form", () => {
+  assert.equal(isEntryPoint({ importMetaUrl: "file:///private/tmp/b.mjs", entryPoint: "/tmp/b.mjs", realpath: () => "/private/tmp/b.mjs" }), true)
+})
+
+// The first attempt used the literal form as a `catch` FALLBACK, which
+// reintroduced the symlink trap whenever realpath threw. Here it is an
+// additional accepted form, so a throwing realpath still matches the literal.
+test("isEntryPoint still matches the literal form when realpath throws", () => {
+  assert.equal(isEntryPoint({ importMetaUrl: "file:///a/b.mjs", entryPoint: "/a/b.mjs", realpath: () => { throw new Error("boom") } }), true)
+})
+
+test("isEntryPoint is false for a different file, and for a missing entrypoint", () => {
+  assert.equal(isEntryPoint({ importMetaUrl: "file:///a/b.mjs", entryPoint: "/a/other.mjs", realpath: (p) => p }), false)
+  assert.equal(isEntryPoint({ importMetaUrl: "file:///a/b.mjs", entryPoint: undefined }), false)
 })
