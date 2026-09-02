@@ -33236,7 +33236,7 @@
           "Fund Letters"
         ],
         "summary": "Browse the fund directory: managers (firms) with coverage stats, searchable by fund/CIO name, ticker held, theme, strategy, and 13F quarter.",
-        "description": "The Fund Directory expansion (letterless 13F managers, the ticker/cik/theme/min_positions/publishes_letters/period/sort filters, and the theme/publishesLetters/has13F/latest13F/references fields) is separately flag-gated; while that expansion is off this endpoint lists letter-publishing managers with the pre-directory fields only and ignores directory-only parameters. latest13F is a summary — follow crossLinks.holdings13F for full holdings.",
+        "description": "The Fund Directory expansion is enabled: this endpoint covers letterless directory-listed 13F managers alongside letter publishers, and supports the ticker/cik/theme/min_positions/publishes_letters/period/sort filters and the theme/publishesLetters/has13F/latest13F/references fields. latest13F is a summary — follow crossLinks.holdings13F for full holdings.",
         "parameters": [
           {
             "name": "q",
