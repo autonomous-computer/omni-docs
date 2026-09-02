@@ -2,10 +2,12 @@ name: Client API OpenAPI Drift Guard
 
 on:
   pull_request:
+    # Scoped to the artifact this job actually guards. `openapi/**`, `docs.json`
+    # and `scripts/**` also cover the SEC public spec and the navigation guards,
+    # which this job knows nothing about; those are checked by docs-guards.yml.
     paths:
-      - "openapi/**"
-      - "docs.json"
-      - "scripts/**"
+      - "openapi/omni-client-api.v1.json"
+      - "scripts/update_client_api_openapi.py"
       - ".github/workflows/client-api-openapi.yml"
   workflow_dispatch:
   schedule:
