@@ -47658,7 +47658,7 @@
           "ring": {
             "type": "string",
             "deprecated": true,
-            "description": "Deprecated legacy coverage identifier, still emitted for backwards compatibility. Use `coverageTier` instead."
+            "description": "Deprecated. A legacy internal coverage identifier whose values are unspecified and subject to change; it is still emitted for backwards compatibility but is omitted from the examples and should not be parsed. Use `coverageTier` instead. Note that `coverageTier` is a coarser grouping than `ring` \u2014 it answers whether a country is in core coverage, and every non-core country is `extended`."
           },
           "responseMode": {
             "type": "string",
