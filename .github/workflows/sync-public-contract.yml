@@ -1,0 +1,106 @@
+name: Sync public contract
+
+# Pulls the authoritative public OpenAPI contract from its published URL and
+# opens (or updates) a PR when this repo's copy has drifted.
+#
+# PULL, NOT PUSH. omni-datastream is private, so this repo cannot read the spec
+# directly; its publisher writes the contract plus a provenance manifest to a
+# stable public URL. Pulling means nothing needs write access to this repo, and
+# — the point — the sync and the `cross-repo-parity` guard read the SAME
+# artifact, so they cannot disagree. The previous arrangement had the guard
+# reconciling against `autonomous-computer/docs`, retired 2026-09-02, which would
+# have gone stale silently.
+#
+# NO `push:` TRIGGER, by policy and by sense: nothing in THIS repo changes what
+# the published contract says. `schedule:` is the sole-producer case — nothing
+# else will notice the contract moved — plus `workflow_dispatch` to pull on
+# demand.
+#
+# IDEMPOTENT. Always the same branch, so a second run updates the existing PR
+# rather than opening a second one.
+on:
+  schedule:
+    # Daily, offset off the hour to avoid the top-of-hour runner crush.
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: sync-public-contract
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    name: Pull the published contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      SYNC_BRANCH: bot/public-contract-sync
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      # Offline. Proves the refusal paths — missing artifact, manifest that does
+      # not describe the served contract, stale publish — rather than assuming
+      # them. A sync that treats an absent or fossilised source as "nothing to
+      # do" is the same green-by-absence defect one layer down.
+      - name: Unit-test the sync
+        run: node --test scripts/sync_public_contract.test.mjs
+
+      - name: Pull the published contract
+        id: pull
+        run: |
+          set +e
+          node scripts/sync_public_contract.mjs
+          status=$?
+          set -e
+          case "$status" in
+            0) echo "changed=false" >> "$GITHUB_OUTPUT" ;;
+            2) echo "changed=true"  >> "$GITHUB_OUTPUT" ;;
+            *) echo "::error::The published contract could not be used. This is a source failure, not 'no update needed'."; exit "$status" ;;
+          esac
+
+      - name: Open or update the sync PR
+        if: steps.pull.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          git config user.name "public-contract-sync[bot]"
+          git config user.email "public-contract-sync@users.noreply.github.com"
+          git checkout -B "$SYNC_BRANCH"
+          git add openapi/sec-api-public.v1.json
+          if git diff --cached --quiet; then
+            echo "Nothing staged after a reported change; refusing to open an empty PR."
+            exit 1
+          fi
+          git commit -m "chore(contract): sync the published public OpenAPI contract"
+          # Force-with-lease is wrong here: the branch is bot-owned and may have
+          # been rewritten by an earlier run, and there is nothing to preserve.
+          git push --force origin "$SYNC_BRANCH"
+          if [ -z "$(gh pr list --head "$SYNC_BRANCH" --state open --json number --jq '.[].number')" ]; then
+            cat > /tmp/pr-body.md <<'BODY'
+          Automated pull of the authoritative public OpenAPI contract from its published URL.
+
+          The contract is published by omni-datastream's `publish_public_contract` job, together
+          with a provenance manifest recording its source commit and digest. This PR was opened
+          because the published contract differs from this repo's copy.
+
+          The sync refuses to run at all — rather than reporting "no update needed" — when the
+          artifact is missing, when the manifest does not describe the contract served beside it
+          (a partial publish), or when the manifest is older than the staleness budget. Those are
+          source failures, and treating them as no-ops is the defect this pipeline replaced.
+          BODY
+            sed -i 's/^          //' /tmp/pr-body.md
+            gh pr create --base main --head "$SYNC_BRANCH" \
+              --title "chore(contract): sync the published public OpenAPI contract" \
+              --body-file /tmp/pr-body.md
+          else
+            echo "Existing PR updated by the push above."
+          fi
