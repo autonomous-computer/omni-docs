@@ -254,6 +254,24 @@ test("the CLI body still runs when invoked via a symlinked path containing a spa
 // so the real clock, the real budget and the real repo/path were all unpinned —
 // #48's structural gap, relocated one call-frame up.
 // ---------------------------------------------------------------------------
+// Date-INDEPENDENT kill for a frozen default clock. Asserting behaviour against
+// real timestamps cannot work: a literal frozen to "today" behaves identically
+// to the real clock today, and only diverges later — but a mutation test has to
+// fail now. So assert the instant the decision was actually made.
+test("main's DEFAULT clock is the real one, not a frozen literal", async () => {
+  let logged = ""
+  await main({ env: {}, log: (m) => { logged = m }, logError: (m) => { logged = m },
+    fetchImpl: routed({ repo: okRepoResponse, commits: commitsResponse(new Date(Date.now() - 86_400_000).toISOString()) }) })
+  const match = /\[evaluatedAt=([^\]]+)\]/.exec(logged)
+  assert.ok(match, `no evaluatedAt in output: ${logged}`)
+  const drift = Math.abs(Date.parse(match[1]) - Date.now())
+  assert.ok(drift < 60_000, `main's default clock is ${(drift / 1000).toFixed(0)}s from real time — it is frozen`)
+})
+
+test("evaluateCounterpartFreshness reports the instant it evaluated", () => {
+  assert.equal(evaluateCounterpartFreshness({ source, lastCommittedAt: daysBefore(1), now: NOW }).evaluatedAt, new Date(NOW).toISOString())
+})
+
 test("main uses the REAL clock when `now` is not injected", async () => {
   const realRecent = new Date(Date.now() - 2 * 86_400_000).toISOString()
   const realAncient = new Date(Date.now() - 400 * 86_400_000).toISOString()

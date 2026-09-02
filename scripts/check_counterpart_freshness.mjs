@@ -79,6 +79,10 @@ export function evaluateCounterpartFreshness({ source, lastCommittedAt, now, max
     return { ok: false, message: `${source}: current time "${now}" is not a valid date.` }
   }
 
+  // Surfaced so the caller's DEFAULT clock is observable. Without this, freezing
+  // main()'s default `now` to a literal is undetectable by any test that does not
+  // inject one — and a frozen clock keeps the guard green in perpetuity.
+  const evaluatedAt = current.toISOString()
   const ageDays = (current.getTime() - committed.getTime()) / MS_PER_DAY
   // A commit dated slightly ahead is ordinary clock skew and is fresh. An
   // UNBOUNDED future tolerance is not: `commit.committer.date` is
@@ -95,7 +99,7 @@ export function evaluateCounterpartFreshness({ source, lastCommittedAt, now, max
           `A commit dated far ahead would make this counterpart look fresh indefinitely, so it is treated as a broken signal rather than a pass.`,
       }
     }
-    return { ok: true, message: `${source}: last updated ${committed.toISOString()} (dated slightly ahead of now; treated as fresh).` }
+    return { ok: true, evaluatedAt, message: `${source}: last updated ${committed.toISOString()} (dated slightly ahead of now; treated as fresh). [evaluatedAt=${evaluatedAt}]` }
   }
   if (ageDays > maxAgeDays) {
     return {
@@ -103,10 +107,11 @@ export function evaluateCounterpartFreshness({ source, lastCommittedAt, now, max
       message:
         `${source}: last updated ${committed.toISOString()}, ${ageDays.toFixed(1)} days ago, which exceeds the ${maxAgeDays}-day budget.\n` +
         `The spec this repo reconciles against has gone quiet, so cross-repo parity is being checked against a document that no longer moves — it cannot fail, whatever this repo changes.\n` +
-        `Find out whether its producer (omni-datastream's sync-docs-to-mintlify) still runs, and repoint this guard at the authoritative source.`,
+        `Find out whether its producer (omni-datastream's sync-docs-to-mintlify) still runs, and repoint this guard at the authoritative source. [evaluatedAt=${evaluatedAt}]`,
+      evaluatedAt,
     }
   }
-  return { ok: true, message: `${source}: last updated ${committed.toISOString()}, ${ageDays.toFixed(1)} days ago (within the ${maxAgeDays}-day budget).` }
+  return { ok: true, evaluatedAt, message: `${source}: last updated ${committed.toISOString()}, ${ageDays.toFixed(1)} days ago (within the ${maxAgeDays}-day budget). [evaluatedAt=${evaluatedAt}]` }
 }
 
 /**
