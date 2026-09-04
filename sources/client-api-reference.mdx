@@ -25,13 +25,13 @@ https://api.secapi.ai
 All endpoints require an OMNI API key:
 
 ```http
-Authorization: Bearer omni_live_...
+x-api-key: secapi_live_...
 ```
 
 | Header | Required | Used for |
 | --- | --- | --- |
-| `Authorization: Bearer ...` | Yes | Auth to Client API and hosted MCP transport. |
-| `Omni-Version: YYYY-MM-DD` | No | Behavior pinning during beta. Recommended for production integrations. |
+| `x-api-key: secapi_live_...` | Yes | Auth to Client API and hosted MCP transport. |
+| `secapi-version: YYYY-MM-DD` | No | Behavior pinning. Recommended for production integrations. |
 | `X-Request-Id: req_...` | No | End-to-end trace correlation (echoed back and included in errors). |
 | `Idempotency-Key: idem_...` | Conditional | Required for `POST /v1/mcp/invoke` and hosted MCP `tools/call` over `POST /mcp`. |
 | `Content-Type: application/json` | Conditional | Required when sending JSON bodies. |
@@ -49,7 +49,7 @@ Authorization: Bearer omni_live_...
 | `/mcp` | POST | method-dependent | 1 for `tools/list`/`tools/call` success | Required for `tools/call` | Canonical hosted MCP route | JSON-RPC errors `-32700`, `-32600`, `-32601`, `-32602`, `-32001`, `-32002`, `-32603` |
 | `/mcp` | GET | auth only | 0 | No | Hosted stream transport | auth/rate-limit codes |
 | `/mcp` | DELETE | auth only | 0 | No | Session close | auth/rate-limit codes |
-| `/sse` | GET | auth only | 0 | No | Compatibility transport | auth/rate-limit codes |
+| `/v1/sse` | GET | auth only | 0 | No | Compatibility transport | auth/rate-limit codes |
 
 ## Endpoint-by-endpoint playbooks
 
@@ -62,7 +62,7 @@ Purpose:
 Operational notes:
 
 - Treat OpenAPI diffs as release-gating input.
-- Pin `Omni-Version` when validating contract upgrades.
+- Pin `secapi-version` when validating contract upgrades.
 
 ## `GET /v1/health`
 
@@ -119,7 +119,7 @@ Deprecation headers are returned on this route.
 Required headers:
 
 ```http
-Authorization: Bearer omni_live_...
+x-api-key: secapi_live_...
 Idempotency-Key: idem_...
 Content-Type: application/json
 ```
@@ -137,7 +137,7 @@ Migration target:
 
 - replace with hosted MCP `tools/call` over `POST /mcp`
 
-## Hosted MCP (`/mcp`, `/sse`)
+## Hosted MCP (`/mcp`, `/v1/sse`)
 
 Hosted MCP is the canonical MCP integration surface.
 
@@ -171,7 +171,7 @@ Returns stream transport metadata (`text/event-stream`).
 
 Best-effort session close (`204` on success).
 
-### `GET /sse`
+### `GET /v1/sse`
 
 SSE compatibility route. Prefer `/mcp` for new integrations.
 
@@ -180,11 +180,11 @@ SSE compatibility route. Prefer `/mcp` for new integrations.
 - only successful calls (`2xx/3xx`) are billable
 - failed calls (`4xx/5xx`) are non-billable
 - idempotency replays are non-billable
-- transport-only MCP calls (`GET /mcp`, `DELETE /mcp`, `GET /sse`) are zero-unit
+- transport-only MCP calls (`GET /mcp`, `DELETE /mcp`, `GET /v1/sse`) are zero-unit
 
 ## Global integration checklist
 
-- [ ] pin `Omni-Version` in production
+- [ ] pin `secapi-version` in production
 - [ ] send/log `X-Request-Id` on every call
 - [ ] enforce scoped keys and least privilege
 - [ ] use idempotency for write-like methods

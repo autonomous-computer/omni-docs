@@ -43,7 +43,7 @@ Query params:
 
 ```bash
 curl "https://api.secapi.ai/v1/fred/search?q=inflation&limit=5" \
-  -H "Authorization: Bearer omni_live_..."
+  -H "x-api-key: secapi_live_..."
 ```
 
 Common errors:
@@ -55,7 +55,7 @@ Common errors:
 
 ```bash
 curl -X POST "https://api.secapi.ai/mcp" \
-  -H "Authorization: Bearer omni_live_..." \
+  -H "x-api-key: secapi_live_..." \
   -H "Idempotency-Key: idem_fred_search_001" \
   -H "Content-Type: application/json" \
   -d '{
@@ -85,14 +85,14 @@ Query params:
 
 ```bash
 curl "https://api.secapi.ai/v1/fred/series/CPIAUCSL?limit=24" \
-  -H "Authorization: Bearer omni_live_..."
+  -H "x-api-key: secapi_live_..."
 ```
 
 ### Hosted MCP: `tools/call` with `fred.series`
 
 ```bash
 curl -X POST "https://api.secapi.ai/mcp" \
-  -H "Authorization: Bearer omni_live_..." \
+  -H "x-api-key: secapi_live_..." \
   -H "Idempotency-Key: idem_fred_series_001" \
   -H "Content-Type: application/json" \
   -d '{

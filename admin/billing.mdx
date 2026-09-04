@@ -24,7 +24,7 @@ curl --fail-with-body -sS \
 
 ## Included allowance
 
-New organizations receive 100 included live calls each UTC calendar month. For Sandbox and PAYG-pending organizations, the allowance resets automatically on the first eligible request in a new month. Inspect the live billing response for the current balance and renewal state.
+New organizations receive 100 included live calls. Do not describe the allowance as monthly or renewing unless the live billing and limits responses say so for the account you are using. Inspect the live billing response for the current balance and current account state.
 
 From 80% consumption onward, billable responses can return grant advisory headers including `SECAPI-Grant-Status`, `SECAPI-Grant-Consumed-Percent`, `SECAPI-Grant-Remaining`, and a next action. When the allowance is spent, `402 billing_required` identifies the cause in `details.reason`, such as `starter_grant_exhausted`.
 

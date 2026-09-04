@@ -7,16 +7,16 @@ description: Authentication, request semantics, idempotency, and error model for
 
 ## Authentication
 
-Send your OMNI API key in bearer format:
+Send your TUROS API key in the `x-api-key` header:
 
 ```http
-Authorization: Bearer omni_live_...
+x-api-key: secapi_live_...
 ```
 
 Supported key prefixes:
 
-- `omni_live_...`
-- `omni_test_...`
+- `secapi_live_...`
+- `secapi_test_...`
 
 ## Scopes (restricted keys)
 
@@ -63,10 +63,10 @@ The API echoes `X-Request-Id` in responses.
 Optional version header:
 
 ```http
-Omni-Version: 2026-02-17
+secapi-version: 2026-03-19
 ```
 
-The API echoes `Omni-Version` in responses.
+The API echoes the selected `secapi-version` in responses.
 
 ## Idempotency
 

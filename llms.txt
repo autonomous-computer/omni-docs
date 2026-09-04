@@ -3,12 +3,12 @@
 > TUROS is the AI-ready data layer for sophisticated investors. Query SEC filing data, macro data, factor data, and repeatable investment analysis through MCP or one API.
 
 Canonical docs: https://www.turos.app/docs
-Canonical API and MCP: https://api.turos.app
-Compatibility alias: https://api.secapi.ai
+Production API and MCP: https://api.secapi.ai
+Future TUROS API host: https://api.turos.app after documented parity readiness
 Authentication: `x-api-key` header, not `Authorization: Bearer`
 Pricing: free test keys, 100 included live calls, then pay as you go for successful production work
 
-New organizations receive 100 included live calls each UTC calendar month; the allowance resets automatically on the first eligible request in a new month. New integrations should use `api.turos.app`; existing integrations on `api.secapi.ai` remain supported as a permanent compatibility alias.
+New organizations receive 100 included live calls. Do not describe the allowance as monthly or renewing until runtime, billing API, catalog, HTML, docs, and `/content/pricing.md` agree. Production integrations should use `api.secapi.ai`; existing integrations on `api.secapi.ai` remain supported as a permanent compatibility contract.
 
 ## Start Here
 

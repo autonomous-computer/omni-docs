@@ -8,7 +8,7 @@ description: Canonical contract endpoint and OpenAPI generation policy for OMNI 
 ## Canonical endpoint
 
 ```text
-GET https://api.turos.app/v1/openapi.json
+GET https://api.secapi.ai/v1/openapi.json
 ```
 
 The OpenAPI schema published here is the source of truth for generated endpoint reference and SDK workflows.
@@ -26,8 +26,8 @@ The generated reference is backed by the snapshot contract file:
 ## Usage
 
 ```bash
-curl "https://api.turos.app/v1/openapi.json" \
-  -H "Authorization: Bearer omni_live_..."
+curl "https://api.secapi.ai/v1/openapi.json" \
+  -H "x-api-key: secapi_live_..."
 ```
 
 ## Contract governance
@@ -39,6 +39,8 @@ curl "https://api.turos.app/v1/openapi.json" \
 ## What the schema includes
 
 - All `/v1/*` Client API routes
+- Hosted MCP at `/mcp`
+- Documented compatibility routes, including `/v1/sse`
 - Request and response models
 - Error response schema
 - Authentication requirements

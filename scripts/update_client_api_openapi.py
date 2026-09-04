@@ -3,7 +3,9 @@
 
 This script downloads the production FastAPI OpenAPI contract and filters it to:
 - `/v1/*` Client API routes
-- `/mcp` and `/sse` hosted MCP transports
+- `/mcp` hosted MCP transport
+- documented legacy compatibility routes that are still live but not present in
+  the public SEC API OpenAPI source
 
 It then normalizes metadata (info.title, servers) and writes:
   openapi/omni-client-api.v1.json
@@ -23,12 +25,13 @@ from pathlib import Path
 from typing import Any, Dict
 
 
-DEFAULT_SOURCE_URL = "https://api.turos.app/openapi.json"
-DEFAULT_BASE_URL = "https://api.turos.app"
+DEFAULT_SOURCE_URL = "openapi/sec-api-public.v1.json"
+DEFAULT_BASE_URL = "https://api.secapi.ai"
 DEFAULT_OUT_PATH = Path("openapi/omni-client-api.v1.json")
-# Routes that only the OMNI Client API serves. Used as an identity gate so a
-# redirect to some other API cannot silently replace the snapshot.
-DEFAULT_SENTINEL_PATHS = ("/v1/fred/search", "/v1/mcp/tools", "/mcp", "/sse")
+# Routes that the SEC API public contract must expose before the local
+# compatibility overlay is applied. Used as an identity gate so a redirect or
+# empty shell cannot silently replace the snapshot.
+DEFAULT_SENTINEL_PATHS = ("/v1/entities/resolve", "/v1/filings", "/v1/billing/rates", "/mcp")
 
 
 class OpenApiFetchError(RuntimeError):
@@ -53,8 +56,257 @@ def _parse_json(text: str, source_url: str, how: str) -> Dict[str, Any]:
             f"{source_url} did not return JSON via {how} ({exc}). First 200 bytes: {preview!r}"
         ) from exc
 
+LEGACY_COMPATIBILITY_SCHEMAS: Dict[str, Any] = {
+    "ClientApiErrorDetail": {
+        "properties": {
+            "type": {
+                "type": "string",
+                "enum": [
+                    "invalid_request",
+                    "auth_error",
+                    "permission_error",
+                    "rate_limit_error",
+                    "api_error",
+                ],
+                "title": "Type",
+            },
+            "code": {"type": "string", "title": "Code"},
+            "message": {"type": "string", "title": "Message"},
+            "request_id": {"type": "string", "title": "Request Id"},
+        },
+        "type": "object",
+        "required": ["type", "code", "message", "request_id"],
+        "title": "ClientApiErrorDetail",
+    },
+    "ClientApiErrorEnvelope": {
+        "properties": {"error": {"$ref": "#/components/schemas/ClientApiErrorDetail"}},
+        "type": "object",
+        "required": ["error"],
+        "title": "ClientApiErrorEnvelope",
+    },
+    "ClientApiHealthResponse": {
+        "properties": {
+            "object": {"type": "string", "const": "health", "title": "Object"},
+            "status": {"type": "string", "const": "ok", "title": "Status"},
+            "request_id": {"type": "string", "title": "Request Id"},
+            "mode": {"type": "string", "title": "Mode"},
+        },
+        "type": "object",
+        "required": ["object", "status", "request_id", "mode"],
+        "title": "ClientApiHealthResponse",
+    },
+    "ClientApiMcpInvokeResponse": {
+        "properties": {
+            "object": {"type": "string", "const": "mcp.tool_result", "title": "Object"},
+            "tool": {"type": "string", "title": "Tool"},
+            "data": {"additionalProperties": True, "type": "object", "title": "Data"},
+        },
+        "type": "object",
+        "required": ["object", "tool", "data"],
+        "title": "ClientApiMcpInvokeResponse",
+    },
+    "ClientApiTool": {
+        "properties": {
+            "id": {"type": "string", "title": "Id"},
+            "name": {"type": "string", "title": "Name"},
+            "method": {"type": "string", "title": "Method"},
+            "path": {"type": "string", "title": "Path"},
+            "description": {"type": "string", "title": "Description"},
+        },
+        "type": "object",
+        "required": ["id", "name", "method", "path", "description"],
+        "title": "ClientApiTool",
+    },
+    "ClientApiToolListResponse": {
+        "properties": {
+            "object": {"type": "string", "const": "list", "title": "Object"},
+            "data": {
+                "items": {"$ref": "#/components/schemas/ClientApiTool"},
+                "type": "array",
+                "title": "Data",
+            },
+        },
+        "type": "object",
+        "required": ["object", "data"],
+        "title": "ClientApiToolListResponse",
+    },
+}
+
+LEGACY_ERROR_RESPONSES: Dict[str, Any] = {
+    status: {
+        "description": description,
+        "content": {
+            "application/json": {
+                "schema": {"$ref": "#/components/schemas/ClientApiErrorEnvelope"}
+            }
+        },
+    }
+    for status, description in {
+        "401": "Unauthorized",
+        "403": "Forbidden",
+        "429": "Too Many Requests",
+        "503": "Service Unavailable",
+    }.items()
+}
+
+LEGACY_COMPATIBILITY_PATHS: Dict[str, Any] = {
+    "/v1/openapi.json": {
+        "get": {
+            "tags": ["client-api"],
+            "summary": "OpenAPI (v1 subset)",
+            "description": "Returns the OpenAPI contract filtered to Client API and hosted MCP routes.",
+            "operationId": "client_api_openapi_v1_openapi_json_get",
+            "responses": {
+                "200": {
+                    "description": "Successful Response",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "additionalProperties": True,
+                                "type": "object",
+                                "title": "Response Client Api Openapi V1 Openapi Json Get",
+                            }
+                        }
+                    },
+                },
+                "400": {
+                    "description": "Bad Request",
+                    "content": {
+                        "application/json": {
+                            "schema": {"$ref": "#/components/schemas/ClientApiErrorEnvelope"}
+                        }
+                    },
+                },
+                **LEGACY_ERROR_RESPONSES,
+            },
+        }
+    },
+    "/v1/health": {
+        "get": {
+            "tags": ["client-api"],
+            "summary": "Health check",
+            "description": "Authenticates the API key and returns a minimal health payload.",
+            "operationId": "client_api_health_v1_health_get",
+            "responses": {
+                "200": {
+                    "description": "Successful Response",
+                    "content": {
+                        "application/json": {
+                            "schema": {"$ref": "#/components/schemas/ClientApiHealthResponse"}
+                        }
+                    },
+                },
+                **LEGACY_ERROR_RESPONSES,
+            },
+        }
+    },
+    "/v1/mcp/tools": {
+        "get": {
+            "tags": ["client-api"],
+            "summary": "List tools (legacy MCP-compatible surface)",
+            "description": "Legacy MCP-compatible tool catalog. Prefer the hosted MCP transport at `/mcp` for new integrations.",
+            "operationId": "client_api_mcp_tools_v1_mcp_tools_get",
+            "deprecated": True,
+            "responses": {
+                "200": {
+                    "description": "Successful Response",
+                    "content": {
+                        "application/json": {
+                            "schema": {"$ref": "#/components/schemas/ClientApiToolListResponse"}
+                        }
+                    },
+                },
+                **LEGACY_ERROR_RESPONSES,
+            },
+        }
+    },
+    "/v1/mcp/invoke": {
+        "post": {
+            "tags": ["client-api"],
+            "summary": "Invoke tool (legacy MCP-compatible surface)",
+            "description": "Legacy tool invocation endpoint. Prefer the hosted MCP transport at `/mcp` for new integrations.",
+            "operationId": "client_api_mcp_invoke_v1_mcp_invoke_post",
+            "deprecated": True,
+            "parameters": [
+                {
+                    "name": "Idempotency-Key",
+                    "in": "header",
+                    "required": True,
+                    "schema": {"type": "string"},
+                    "description": "Required for safe retries of tool invocations.",
+                }
+            ],
+            "requestBody": {
+                "required": True,
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "tool": {"title": "Tool", "type": "string"},
+                                "arguments": {
+                                    "additionalProperties": True,
+                                    "title": "Arguments",
+                                    "type": "object",
+                                },
+                            },
+                            "required": ["tool"],
+                            "title": "MCPInvokeRequest",
+                            "type": "object",
+                        }
+                    }
+                },
+            },
+            "responses": {
+                "200": {
+                    "description": "Successful Response",
+                    "content": {
+                        "application/json": {
+                            "schema": {"$ref": "#/components/schemas/ClientApiMcpInvokeResponse"}
+                        }
+                    },
+                },
+                "400": {
+                    "description": "Bad Request",
+                    "content": {
+                        "application/json": {
+                            "schema": {"$ref": "#/components/schemas/ClientApiErrorEnvelope"}
+                        }
+                    },
+                },
+                **LEGACY_ERROR_RESPONSES,
+            },
+        }
+    },
+    "/v1/sse": {
+        "get": {
+            "tags": ["client-api-mcp"],
+            "summary": "Hosted MCP SSE compatibility endpoint",
+            "description": "Compatibility endpoint for MCP clients expecting an SSE transport discovery flow. The primary hosted MCP endpoint is `POST /mcp`.",
+            "operationId": "hosted_mcp_sse_compat_v1_sse_get",
+            "responses": {
+                "200": {
+                    "description": "SSE stream advertising the primary MCP endpoint.",
+                    "content": {
+                        "application/json": {"schema": {}},
+                        "text/event-stream": {"schema": {"type": "string"}},
+                    },
+                },
+                **LEGACY_ERROR_RESPONSES,
+            },
+        }
+    },
+}
+
 
 def _fetch_json(source_url: str, timeout_seconds: int) -> Dict[str, Any]:
+    source_path = Path(source_url)
+    if not source_path.is_absolute():
+        repo_relative_source_path = Path(__file__).resolve().parents[1] / source_path
+        if repo_relative_source_path.exists():
+            source_path = repo_relative_source_path
+    if source_path.exists():
+        return _parse_json(source_path.read_text(encoding="utf-8"), source_url, "local file")
+
     urllib_error: str | None = None
     try:
         req = urllib.request.Request(
@@ -105,10 +357,11 @@ def _fetch_json(source_url: str, timeout_seconds: int) -> Dict[str, Any]:
 def _assert_client_api_identity(raw: Dict[str, Any], source_url: str, sentinels: set[str]) -> None:
     """Refuse to overwrite the snapshot with a document from a different API.
 
-    `https://api.turos.app/openapi.json` now 308-redirects to the SEC public
-    spec. That document also has `/v1/*` routes, so without this gate the
-    generator would happily filter it, relabel it "OMNI Client API" and commit an
-    unrelated contract. Silently writing the wrong API is worse than crashing.
+    The docs snapshot is generated from the SEC API public contract and then
+    overlaid with documented compatibility routes. Without this gate the
+    generator could follow a redirect to an unrelated JSON document, relabel it
+    "OMNI Client API" and commit the wrong contract. Silently writing the wrong
+    API is worse than crashing.
     """
     paths = raw.get("paths")
     if not isinstance(paths, dict):
@@ -126,9 +379,27 @@ def _assert_client_api_identity(raw: Dict[str, Any], source_url: str, sentinels:
 def _filter_paths(paths: Dict[str, Any]) -> Dict[str, Any]:
     keep: Dict[str, Any] = {}
     for path, spec in paths.items():
-        if path.startswith("/v1/") or path in {"/mcp", "/sse"}:
+        if path.startswith("/v1/") or path == "/mcp":
             keep[path] = spec
     return keep
+
+
+def _apply_legacy_compatibility_overlay(spec: Dict[str, Any]) -> None:
+    """Preserve documented compatibility routes omitted by the public spec source."""
+
+    paths = spec.setdefault("paths", {})
+    if not isinstance(paths, dict):
+        raise SystemExit("OpenAPI payload 'paths' must be an object before overlay.")
+    paths.update(LEGACY_COMPATIBILITY_PATHS)
+
+    components = spec.setdefault("components", {})
+    if not isinstance(components, dict):
+        raise SystemExit("OpenAPI payload 'components' must be an object before overlay.")
+    schemas = components.setdefault("schemas", {})
+    if not isinstance(schemas, dict):
+        raise SystemExit("OpenAPI payload 'components.schemas' must be an object before overlay.")
+    for name, schema in LEGACY_COMPATIBILITY_SCHEMAS.items():
+        schemas.setdefault(name, schema)
 
 
 def _strip_fastapi_validation_errors(spec: Dict[str, Any]) -> None:
@@ -180,6 +451,46 @@ def _strip_fastapi_validation_errors(spec: Dict[str, Any]) -> None:
             schemas.pop("ValidationError", None)
 
 
+def _normalize_security_to_api_key(spec: Dict[str, Any]) -> None:
+    """Normalize the docs snapshot to the current x-api-key auth contract."""
+
+    components = spec.get("components")
+    if isinstance(components, dict):
+        schemes = components.get("securitySchemes")
+        if isinstance(schemes, dict):
+            if "ApiKeyAuth" in schemes:
+                schemes.pop("BearerAuth", None)
+                spec["security"] = [{"ApiKeyAuth": []}]
+
+    paths = spec.get("paths")
+    if not isinstance(paths, dict):
+        return
+
+    http_methods = {"get", "post", "put", "patch", "delete", "head", "options"}
+    for path_item in paths.values():
+        if not isinstance(path_item, dict):
+            continue
+        for method, op in path_item.items():
+            if method not in http_methods or not isinstance(op, dict):
+                continue
+            security = op.get("security")
+            if not isinstance(security, list):
+                continue
+            normalized = []
+            for requirement in security:
+                if not isinstance(requirement, dict):
+                    normalized.append(requirement)
+                    continue
+                if "BearerAuth" in requirement:
+                    replacement = dict(requirement)
+                    scopes = replacement.pop("BearerAuth")
+                    replacement["ApiKeyAuth"] = scopes
+                    normalized.append(replacement)
+                else:
+                    normalized.append(requirement)
+            op["security"] = normalized
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Update OMNI Client API OpenAPI snapshot for docs.")
     parser.add_argument("--source-url", default=DEFAULT_SOURCE_URL)
@@ -217,13 +528,9 @@ def main() -> int:
     prod = {"url": args.base_url.rstrip("/"), "description": "Production"}
     raw["servers"] = [prod] + [s for s in servers if isinstance(s, dict) and s.get("url") != prod["url"]]
 
-    # Mark auth as required across the contract so generated reference pages
-    # (Mintlify OpenAPI) correctly show Authorization headers.
-    components = raw.get("components")
-    if isinstance(components, dict):
-        schemes = components.get("securitySchemes")
-        if isinstance(schemes, dict) and "HTTPBearer" in schemes:
-            raw["security"] = [{"HTTPBearer": []}]
+    _apply_legacy_compatibility_overlay(raw)
+
+    _normalize_security_to_api_key(raw)
 
     _strip_fastapi_validation_errors(raw)
 
