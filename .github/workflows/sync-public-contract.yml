@@ -18,6 +18,19 @@ name: Sync public contract
 #
 # IDEMPOTENT. Always the same branch, so a second run updates the existing PR
 # rather than opening a second one.
+#
+# REPO PREREQUISITE. `gh pr create` below runs with the default GITHUB_TOKEN.
+# GitHub refuses PR creation from that token unless this repo's
+# Settings > Actions > General > Workflow permissions has "Allow GitHub
+# Actions to create and approve pull requests" checked — a separate toggle
+# from the `permissions:` block below, which only controls what the token can
+# do once GitHub already allows the action. With the toggle off, this job
+# gets all the way through pulling, validating, committing, and pushing the
+# sync branch, then fails in the final step with a GraphQL
+# "GitHub Actions is not permitted to create or approve pull requests" error —
+# which reads as an 18-second failure with no obvious cause. See the failure
+# handling in "Open or update the sync PR" below for what that looks like
+# when it happens again.
 on:
   schedule:
     # Daily, offset off the hour to avoid the top-of-hour runner crush.
@@ -133,9 +146,20 @@ jobs:
           source failures, and treating them as no-ops is the defect this pipeline replaced.
           BODY
             sed -i 's/^          //' /tmp/pr-body.md
-            gh pr create --base main --head "$SYNC_BRANCH" \
+            # The sync branch is pushed above regardless of whether this create call
+            # succeeds, so a failure here does not lose the pulled contract — only the
+            # PR that surfaces it. Capture stderr so the common failure mode (the repo
+            # setting described at the top of this file being off) is named explicitly
+            # instead of leaving the reader to decode a bare GraphQL error.
+            if ! gh pr create --base main --head "$SYNC_BRANCH" \
               --title "chore(contract): sync the published public OpenAPI contract" \
-              --body-file /tmp/pr-body.md
+              --body-file /tmp/pr-body.md 2>/tmp/pr-create-error.log; then
+              cat /tmp/pr-create-error.log >&2
+              if grep -qi "not permitted to create or approve pull requests" /tmp/pr-create-error.log; then
+                echo "::error::PR creation was rejected by GitHub, not by this job. Enable 'Allow GitHub Actions to create and approve pull requests' under Settings > Actions > General > Workflow permissions for autonomous-computer/omni-docs, then re-run this workflow (workflow_dispatch) — the sync branch $SYNC_BRANCH was already pushed and does not need to be re-pulled."
+              fi
+              exit 1
+            fi
           else
             echo "Existing PR updated by the push above."
           fi
