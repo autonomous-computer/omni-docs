@@ -10,7 +10,7 @@ This policy defines what is stable, what can change, and how breaking evolution 
 ## Canonical endpoints
 
 - Primary: `https://api.secapi.ai/mcp`
-- SSE compatibility: `https://api.secapi.ai/sse`
+- SSE compatibility: `https://api.secapi.ai/v1/sse`
 
 ## Protocol negotiation and supported versions
 
@@ -30,7 +30,7 @@ Supported versions:
 | Surface | Stability class | Notes |
 | --- | --- | --- |
 | `/mcp` JSON-RPC transport | Stable | Canonical endpoint for MCP integrations |
-| `/sse` transport | Compatibility | Maintained for client compatibility; `/mcp` is preferred |
+| `/v1/sse` transport | Compatibility | Maintained for client compatibility; `/mcp` is preferred |
 | `initialize`, `notifications/initialized`, `ping`, `tools/list`, `tools/call` | Stable | Method semantics are contract-protected |
 | tool identifiers (`fred.search`, `fred.series`) | Stable | Breaking changes require new identifier |
 

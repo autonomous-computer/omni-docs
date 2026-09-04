@@ -25,12 +25,12 @@ Treat this as the policy source for production integrations.
 | Deprecation | Deprecated route/tool remains functional during sunset | `Deprecation` + `Sunset` headers + migration guide | 180 days target |
 | Breaking | Requires new versioned surface (endpoint/tool/version) | Changelog + migration guide + compatibility update | 90 days target after replacement launch |
 
-## Version pinning policy (`Omni-Version`)
+## Version pinning policy (`secapi-version`)
 
 Pin every production integration:
 
 ```http
-Omni-Version: 2026-02-18
+secapi-version: 2026-03-19
 ```
 
 Upgrade sequence:

@@ -18,13 +18,13 @@ Use with:
 ### Required auth
 
 ```http
-Authorization: Bearer omni_live_...
+x-api-key: secapi_live_...
 ```
 
 ### Recommended global headers
 
 ```http
-Omni-Version: 2026-02-18
+secapi-version: 2026-03-19
 X-Request-Id: req_...
 ```
 
@@ -73,7 +73,7 @@ Purpose:
 
 Production pattern:
 
-1. fetch schema with pinned `Omni-Version`
+1. fetch schema with pinned `secapi-version`
 2. diff against approved baseline
 3. block promotion on breaking diff
 
@@ -169,7 +169,7 @@ Purpose:
 Required headers:
 
 ```http
-Authorization: Bearer omni_live_...
+x-api-key: secapi_live_...
 Idempotency-Key: idem_...
 Content-Type: application/json
 ```
@@ -270,7 +270,7 @@ Billing:
 
 - zero-unit transport call
 
-## `GET /sse`
+## `GET /v1/sse`
 
 Purpose:
 
