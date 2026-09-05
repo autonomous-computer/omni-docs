@@ -1,0 +1,97 @@
+---
+title: "POST /v1/operations/quote"
+description: "Price a channel-neutral operation before execution across API, MCP, CLI, SDK, Excel, and Sheets"
+---
+
+Price a channel-neutral operation before execution across API, MCP, CLI, SDK, Excel, and Sheets. This call returns quote and budget context; it does not settle usage.
+
+<Info>
+Audience: application and coding agent.
+</Info>
+
+## Canonical metadata
+
+- `requestId`
+- `traceparent`
+
+## Example request
+
+<RequestExample>
+```bash
+curl -X POST \
+  -H "x-api-key: $SECAPI_API_KEY" \
+  -H "secapi-version: 2026-03-19" \
+  -H "content-type: application/json" \
+  -d '{"operationId":"filing_model.fact.lookup","surface":"excel","meterClass":"fact_lookup","units":1}' \
+  "https://api.secapi.ai/v1/operations/quote"
+```
+</RequestExample>
+
+## Example response
+
+<ResponseExample>
+```json
+{
+  "object": "operation_quote",
+  "quoteId": "opquote_example",
+  "settlementMode": "shadow",
+  "executable": true,
+  "operationContext": {
+    "operationContextId": "opctx_example",
+    "operationId": "filing_model.fact.lookup",
+    "operationSchemaVersion": "2026-08-16.shadow",
+    "organizationId": "org_example",
+    "accountId": null,
+    "userId": "user_example",
+    "clientId": "excel_addin",
+    "surface": "excel",
+    "workbookInstallationId": "wb_install_example",
+    "sourceKey": "sec_edgar",
+    "artifactClass": "company_filing_fact",
+    "evidenceRequirement": "lineage_required",
+    "priceVersion": "2026-08-16-secapi-auditable-workflows",
+    "quoteId": "opquote_example",
+    "billableUnits": [
+      {
+        "meterClass": "fact_lookup",
+        "meterFamily": "standard_reads",
+        "quantity": 1,
+        "amountCents": 1
+      }
+    ],
+    "reservedMaximumCredits": 1,
+    "idempotencyKey": "idem_example",
+    "idempotencyMode": "deterministic_shadow",
+    "createdAt": "2026-08-16T00:00:00.000Z"
+  },
+  "billingQuote": {
+    "object": "billing_quote",
+    "planKey": "personal",
+    "meterClass": "fact_lookup",
+    "meterFamily": "standard_reads",
+    "units": 1,
+    "unitAmountUsd": 0,
+    "amountUsd": 0,
+    "amountCents": 0,
+    "currency": "usd",
+    "requestId": "req_2ZK8Q1W9F4M6P7R3",
+    "budget": {},
+    "budgetGate": null
+  },
+  "budgetGate": null,
+  "requestId": "req_2ZK8Q1W9F4M6P7R3"
+}
+```
+</ResponseExample>
+
+## Give this prompt to your agent
+
+<Prompt>
+Use SEC API POST /v1/operations/quote to price a channel-neutral operation before execution across API, MCP, CLI, SDK, Excel, and Sheets. Preserve `requestId`, `traceparent` in the output. Return a concise markdown summary plus the exact structured payload fields that a downstream engineer or agent should keep using this result.
+</Prompt>
+
+## Failure posture
+
+- treat non-2xx responses as contract-aware failures, not free-form errors
+- preserve `requestId` and `traceparent` in logs and downstream reports
+- if provenance or freshness metadata is present, return it unchanged so trust is not lost in the handoff
