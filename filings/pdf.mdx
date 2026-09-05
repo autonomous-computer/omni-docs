@@ -14,11 +14,11 @@ All three start from a filing you've already selected. Capture the accession num
 ```bash
 curl --fail-with-body \
   -H "x-api-key: $SECAPI_API_KEY" \
-  "https://api.secapi.ai/v1/filings/0000320193-25-000079/download" \
+  "https://api.turos.app/v1/filings/0000320193-25-000079/download" \
   --output filing-source.html
 ```
 
-The response may return cached bytes directly or answer with a `302` redirect to a signed URL or the SEC source. Don't use `curl --location` on the authenticated request - a redirect can leave `api.secapi.ai`, and `--location` would forward your API key to another host. Read the `Location` header and follow it in a separate, unauthenticated request.
+The response may return cached bytes directly or answer with a `302` redirect to a signed URL or the SEC source. Don't use `curl --location` on the authenticated request - a redirect can leave the API host, and `--location` would forward your API key to another host. Read the `Location` header and follow it in a separate, unauthenticated request.
 
 Don't assume the downloaded document is a PDF. Its content type comes from the filing source - most primary documents are HTML. Preserve the accession and the final source URL when the filed presentation is evidence.
 
@@ -29,7 +29,7 @@ Don't assume the downloaded document is a PDF. Its content type comes from the f
 ```bash
 curl --fail-with-body \
   -H "x-api-key: $SECAPI_API_KEY" \
-  "https://api.secapi.ai/v1/filings/0000320193-25-000079/export?format=pdf" \
+  "https://api.turos.app/v1/filings/0000320193-25-000079/export?format=pdf" \
   --output filing-export.pdf
 ```
 
@@ -42,7 +42,7 @@ curl --fail-with-body \
 ```bash
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
-  "https://api.secapi.ai/v1/filings/latest/render?ticker=AAPL&form=10-K"
+  "https://api.turos.app/v1/filings/latest/render?ticker=AAPL&form=10-K"
 ```
 
 This route defaults to a 10-K, unlike the any-form latest-filing route. Check `truncated` before treating `renderedMd` as complete source text - when it's `true`, don't represent the text as the whole filing. Rendered filings can exceed agent context budgets; prefer [section extraction](/filings/sections) with `view=agent` when you only need one item.

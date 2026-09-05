@@ -42,7 +42,7 @@ Reproduce with the failing workload's key - a different key can have different p
 ```bash
 curl -i -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
-  "https://api.secapi.ai/v1/limits"
+  "https://api.turos.app/v1/limits"
 ```
 
 If `/v1/limits` succeeds but situations requests fail, the problem is route availability or entitlement, not the credential. When you escalate, include the endpoint, status, error code, `Request-Id`, the catalog's `availability` value at the time, and the `GET /v1/limits` outcome - and exclude API keys and private payloads.

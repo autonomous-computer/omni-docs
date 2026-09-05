@@ -1,38 +1,37 @@
 ---
 title: "Migrate from SECAPI.ai to TUROS | Developer Docs"
-description: "Adopt TUROS naming and the future canonical API host without breaking existing api.secapi.ai credentials, paths, or integrations."
+description: "Adopt the canonical api.turos.app host and TUROS naming without breaking existing api.secapi.ai credentials, paths, or integrations."
 sidebarTitle: "SECAPI.ai to TUROS"
 ---
 
-SECAPI.ai is becoming TUROS API and TUROS MCP. This is a brand and product-layer migration, not permission to break working integrations.
+SECAPI.ai is now TUROS API and TUROS MCP. This is a brand and host migration, not permission to break working integrations.
 
 For the broader evaluation and migration path, see [Switch to TUROS](https://www.turos.app/switch). You can compare representative workflows before changing any production integration.
 
+## Hosts
+
+- `https://api.turos.app` is the production API and MCP host. New integrations, examples, and discovery documents use it.
+- `https://api.secapi.ai` is a permanently supported compatibility alias. It serves the same methods, request bodies, authentication, errors, streaming, CORS, billing, and discovery as `api.turos.app`, and it has no end date.
+- API requests are never redirected between hosts. A client that keeps `api.secapi.ai` configured continues to work unchanged.
+
 ## What stays compatible
 
-- `https://api.secapi.ai` remains the current production API and MCP host.
-- Existing API keys, paths, request bodies, headers, and pinned versions continue to work.
-- Current SDK package names, CLI commands, and environment variables remain valid until a separately versioned migration is available.
-- API requests are not redirected between hosts.
+- Existing API keys, paths, request bodies, headers, and pinned versions continue to work on both hosts.
+- Current SDK package names, CLI commands, and environment variables (`@secapi/sdk-js`, `secapi-client`, `secapi`, `SECAPI_API_KEY`, `secapi_live_…` and `secapi_test_…` key prefixes) remain valid. They are compatibility contracts, not stale branding.
+- Billing and quotas are shared across hosts: the same organization, wallet, and rate limits apply whichever host a request reaches.
 
-## What changes now
+## What changes
 
 - Documentation and product language use **TUROS API** and **TUROS MCP**.
-- Canonical documentation lives at `https://www.turos.app/docs`.
-- Marketing and documentation links on the retired SECAPI.ai site should deep-link or redirect to the closest TUROS equivalent.
+- Canonical documentation lives at `https://www.turos.app/docs`; the retired SECAPI.ai documentation redirects to the closest TUROS equivalent.
+- New examples and the OpenAPI `servers` list put `api.turos.app` first, with `api.secapi.ai` listed as the alias.
 
-## The future API host
+## Moving an existing client to `api.turos.app`
 
-`api.turos.app` becomes the default only after it matches `api.secapi.ai` for methods, bodies, authentication, errors, streaming, CORS, billing, discovery, and operation availability. Until TUROS publishes that proof, keep production clients on `api.secapi.ai`.
+Moving is optional. If you choose to, the base URL is the only change:
 
-Once TUROS publishes that parity proof, new examples and newly released SDK defaults may prefer `api.turos.app`. The legacy host will remain backward compatible so customers can migrate on their own schedule.
-
-## A safe migration sequence
-
-1. Create a free account and test key.
-2. Reproduce a representative workflow against `api.secapi.ai`.
-3. Pin an API version and record request, entity, filing, and source identifiers.
-4. When `api.turos.app` is announced as parity-ready, run the same contract tests against both hosts.
-5. Change the base URL only after outputs, errors, billing, and discovery behavior match for your workload.
+1. Confirm the current integration works on `api.secapi.ai` and record a representative request, its `requestId`, and the entity and filing identifiers it returns.
+2. Change the base URL (or the SDK `base_url` / `baseUrl` option) to `https://api.turos.app`. Keep the same API key, version header, and request shape.
+3. Verify with `GET /v1/limits`, then replay the recorded request and compare identifiers, response fields, and billing headers.
 
 Do not rename environment variables or SDK imports merely to make the branding look newer. Compatibility identifiers are part of the integration contract.

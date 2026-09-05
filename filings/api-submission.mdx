@@ -36,7 +36,7 @@ Send the request:
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/filings/latest?ticker=AAPL&form=10-K&view=agent"
+  "https://api.turos.app/v1/filings/latest?ticker=AAPL&form=10-K&view=agent"
 ```
 
 TUROS returns the current latest matching filing:
@@ -75,7 +75,7 @@ To read a named section of the filing you just retrieved:
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/filings/latest/sections/item_1a?ticker=AAPL&form=10-K&view=agent"
+  "https://api.turos.app/v1/filings/latest/sections/item_1a?ticker=AAPL&form=10-K&view=agent"
 ```
 
 A section answers a narrower question; it doesn't replace the filing identity from the preceding request. See [sections and exhibits](/filings/sections).

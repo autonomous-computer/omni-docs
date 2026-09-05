@@ -15,7 +15,7 @@ Supply one issuer identifier, set `statement`, and anchor the reporting slice wi
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/statements?ticker=AAPL&statement=income_statement&period=annual"
+  "https://api.turos.app/v1/statements?ticker=AAPL&statement=income_statement&period=annual"
 ```
 
 Use `GET /v1/statements/all` when you need the annual or quarterly balance-sheet, income-statement, and cash-flow bundle in one response. Read the returned periods, provenance, completeness, and freshness metadata alongside the rows - a missing normalized line item is not zero, and it's not evidence the issuer made no disclosure.
@@ -34,7 +34,7 @@ When the question is one number rather than a page, use facts:
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/facts?ticker=AAPL&tag=Revenues&form=10-K&limit=6"
+  "https://api.turos.app/v1/facts?ticker=AAPL&tag=Revenues&form=10-K&limit=6"
 ```
 
 Omit `tag` to receive the common financial metrics, or pass an XBRL concept such as `Revenues` or `NetIncomeLoss` for a concept-specific series. Use `taxonomy`, `form`, `unit`, and fiscal-year filters to avoid mixing concepts, periods, or units. Read `requestedTag`, `resolvedTag`, `aliasStrategy`, and `completeness` before treating a series as a like-for-like historical comparison - the route can resolve an alias, and you should know when it did.
@@ -46,7 +46,7 @@ Omit `tag` to receive the common financial metrics, or pass an XBRL concept such
 ```bash
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
-  "https://api.secapi.ai/v1/companies/segments?ticker=AAPL&period=annual"
+  "https://api.turos.app/v1/companies/segments?ticker=AAPL&period=annual"
 ```
 
 Each axis reports whether it `tiesToRevenue`. Axes flagged `low_confidence` - common for banks, REITs, and insurers, whose segment basis is net revenue, premiums, or rental income rather than GAAP total revenue - are surfaced, not hidden. Treat them as directional. An empty `segments` array with a `note` is a successful response for single-activity issuers, not an error. Under load the endpoint can return `429` with `Retry-After`; retry shortly.

@@ -8,7 +8,7 @@ Some endpoints let you choose how much of the response you get. `view=` selects 
 ```bash
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
-  "https://api.secapi.ai/v1/filings/latest?ticker=AAPL&form=10-K&view=agent"
+  "https://api.turos.app/v1/filings/latest?ticker=AAPL&form=10-K&view=agent"
 ```
 
 ## `view=`
@@ -32,7 +32,7 @@ Views aren't a universal schema. A field present on filings `view=agent` isn't p
 ```bash
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
-  "https://api.secapi.ai/v1/companies/overview?ticker=AAPL&include=factors"
+  "https://api.turos.app/v1/companies/overview?ticker=AAPL&include=factors"
 ```
 
 Rules:

@@ -32,7 +32,7 @@ export SECAPI_API_KEY="secapi_test_..."
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/entities/resolve?ticker=AAPL&view=agent"
+  "https://api.turos.app/v1/entities/resolve?ticker=AAPL&view=agent"
 ```
 
 TUROS returns the same agent-view entity shape as production:
@@ -56,7 +56,7 @@ From there, retrieve a filing to prove the full path:
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/filings/latest?ticker=AAPL&form=10-K&view=agent"
+  "https://api.turos.app/v1/filings/latest?ticker=AAPL&form=10-K&view=agent"
 ```
 
 Keep the returned `accessionNumber`, `form`, `filingDate`, `filingUrl`, and `requestId` in your test assertions - they're the same citation fields your production workflow should preserve.
@@ -66,7 +66,7 @@ Keep the returned `accessionNumber`, `form`, `filingDate`, `filingUrl`, and `req
 The hosted MCP server accepts test keys the same way it accepts live keys. Point a client at it with the test key in the `x-api-key` header:
 
 ```bash
-claude mcp add --transport http secapi https://api.secapi.ai/mcp \
+claude mcp add --transport http secapi https://api.turos.app/mcp \
   --header "x-api-key: $SECAPI_API_KEY"
 ```
 

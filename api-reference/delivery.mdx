@@ -31,7 +31,7 @@ Streams give a worker explicit checkpoints and controlled replay. Poll events, p
 ```bash
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
-  "https://api.secapi.ai/v1/stream_subscriptions/str_123/events?limit=25"
+  "https://api.turos.app/v1/stream_subscriptions/str_123/events?limit=25"
 ```
 
 The response returns `data`, `nextCursor`, and `replayCursor`.

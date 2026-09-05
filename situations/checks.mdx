@@ -17,7 +17,7 @@ There are two access paths, and they aren't interchangeable:
 The embed routes are a free, anonymous preview for public sites and browser embeds. Don't send `x-api-key` to them:
 
 ```bash
-curl -sS "https://api.secapi.ai/v1/embed/situations?types=merger&limit=10"
+curl -sS "https://api.turos.app/v1/embed/situations?types=merger&limit=10"
 ```
 
 Preview reads are CORS-enabled for browser use and return public cache headers. They're intentionally limited to a capped, recent public projection - a cached preview response is not a substitute for an authenticated research workflow. Never put a paid API key in browser-delivered code.
@@ -30,7 +30,7 @@ The authenticated `/v1/situations` routes require Situations access: they return
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/situations?types=merger,tender_offer&statuses=announced,pending&limit=50"
+  "https://api.turos.app/v1/situations?types=merger,tender_offer&statuses=announced,pending&limit=50"
 ```
 
 Narrow list results by type, subtype, status, ticker, sector, market-cap bucket, country, announcement date, update time, and supported EDGAR forms. `limit` is 1 through 100; advance pagination only with the returned cursor and unchanged filters.

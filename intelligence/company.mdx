@@ -24,7 +24,7 @@ The [Intelligence reference](/api-reference) is the authority for accepted input
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/intelligence/company?ticker=AAPL"
+  "https://api.turos.app/v1/intelligence/company?ticker=AAPL"
 ```
 
 Record the request parameters, retrieval time, and response identifiers (`requestId`, `traceparent`). When a conclusion relies on a filing fact, keep the accession number, filing URL, and period with it. An omitted field can reflect available supporting data, not a negative conclusion.
@@ -42,7 +42,7 @@ curl --fail-with-body -sS -X POST \
   -H "Idempotency-Key: underwriting-aapl-2026-08-23" \
   -H "content-type: application/json" \
   -d '{"job":"underwriting_pack","entities":["AAPL"]}' \
-  "https://api.secapi.ai/v1/intelligence/query"
+  "https://api.turos.app/v1/intelligence/query"
 ```
 
 ## 200 versus 202
@@ -56,7 +56,7 @@ curl --fail-with-body -sS -X POST \
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/intelligence/query/$JOB_ID"
+  "https://api.turos.app/v1/intelligence/query/$JOB_ID"
 ```
 
 Handle `202`, `404`, and `502` as distinct poll outcomes - see [Check job status](/intelligence/status). Billing lands once, on successful completion: `$0.50` for a pack, `$1.50` for a report. Polls, failures, and cache hits are not billed.

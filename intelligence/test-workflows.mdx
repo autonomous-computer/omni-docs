@@ -25,7 +25,7 @@ curl --fail-with-body -sS -X POST \
   -H "Idempotency-Key: filing-brief-aapl-test-1" \
   -H "content-type: application/json" \
   -d '{"job":"filing_brief","entities":["AAPL"]}' \
-  "https://api.secapi.ai/v1/intelligence/query"
+  "https://api.turos.app/v1/intelligence/query"
 ```
 
 The response contract is the same as production: `200` with a completed result or `202` with a job ID to poll on `GET /v1/intelligence/query/{jobId}`. Exercise both branches, plus the `Idempotency-Key` replay behavior, before you switch keys.

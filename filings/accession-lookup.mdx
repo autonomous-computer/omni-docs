@@ -13,7 +13,7 @@ When you're starting from a ticker or company name, resolve it before any issuer
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/entities/resolve?ticker=AAPL&view=agent"
+  "https://api.turos.app/v1/entities/resolve?ticker=AAPL&view=agent"
 ```
 
 Carry the returned CIK forward. Don't infer a CIK from a ticker string or from an old filing URL - tickers can be reused or changed, and a stale URL can point at a different filer. See [entity resolution](/filings/entity-resolution) for match confidence and identifier rules.
@@ -24,7 +24,7 @@ Carry the returned CIK forward. Don't infer a CIK from a ticker string or from a
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/filings/0000320193-25-000079"
+  "https://api.turos.app/v1/filings/0000320193-25-000079"
 ```
 
 TUROS returns the filing manifest for that one filing - `accessionNumber`, `ticker`, `cik`, `form`, `filingDate`, `primaryDocument`, and provenance. Preserve the provenance and `requestId` before rendering or extracting sections from the filing.

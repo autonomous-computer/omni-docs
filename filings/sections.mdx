@@ -13,7 +13,7 @@ Section keys are canonical, not free-form heading lookups. `section_key` must be
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/filings/latest/sections/item_1a?ticker=AAPL&form=10-K&view=agent"
+  "https://api.turos.app/v1/filings/latest/sections/item_1a?ticker=AAPL&form=10-K&view=agent"
 ```
 
 The route defaults to a 10-K. TUROS returns the section with its identity fields - `accessionNumber`, `section_key`, `source_url`, offsets, and a snippet. `view=agent` keeps citation fields and can omit the section body; use the default view when you need the full text.
@@ -23,7 +23,7 @@ For a filing you've already selected, use the accession-scoped route so the resu
 ```bash
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
-  "https://api.secapi.ai/v1/filings/0000320193-25-000079/sections/item_1a"
+  "https://api.turos.app/v1/filings/0000320193-25-000079/sections/item_1a"
 ```
 
 ## Search sections when the heading is unknown
@@ -33,7 +33,7 @@ curl --fail-with-body -sS \
 ```bash
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
-  "https://api.secapi.ai/v1/sections/search?q=liquidity&ticker=AAPL&form=10-K&limit=20"
+  "https://api.turos.app/v1/sections/search?q=liquidity&ticker=AAPL&form=10-K&limit=20"
 ```
 
 Every result row carries citation fields: `accession`, `section_key`, `char_start` / `char_end` (half-open offsets into the section text, stable across reparses), `highlighted_snippet`, `source_url`, and `ticker`. When a span can't be produced, the offsets and snippet drop to `null` and `_citation_degraded` records the reason - keep the accession and section identity and retrieve the source rather than relying on the excerpt.

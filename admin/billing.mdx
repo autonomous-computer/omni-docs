@@ -13,11 +13,11 @@ Use a live API key for the current organization's billing and limit state:
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/billing"
+  "https://api.turos.app/v1/billing"
 
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
-  "https://api.secapi.ai/v1/limits"
+  "https://api.turos.app/v1/limits"
 ```
 
 `GET /v1/billing/rates` returns the public rate catalog. `POST /v1/billing/quote` estimates a request but does not reserve credits or capacity.

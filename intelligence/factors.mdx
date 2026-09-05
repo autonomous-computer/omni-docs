@@ -19,7 +19,7 @@ Start with the catalog. It is the canonical reference for the factor identifiers
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/factors/catalog?response_mode=compact&include=trust"
+  "https://api.turos.app/v1/factors/catalog?response_mode=compact&include=trust"
 ```
 
 The catalog query accepts `response_mode` and `include`. Category is a field on each returned entry (`market`, `style`, `sector`, or `industry`), not a filter argument. Factors carry public history back to a `2015-01-01` floor - the floor is not row-level proof, so use the returned history and freshness metadata for the individual factor and period.
@@ -30,7 +30,7 @@ Then request returns with the same compact/trust envelope:
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/factors/returns?response_mode=compact&include=trust"
+  "https://api.turos.app/v1/factors/returns?response_mode=compact&include=trust"
 ```
 
 Use single-factor history when you need a 1D-through-MAX table, chart, or backtest input:
@@ -39,7 +39,7 @@ Use single-factor history when you need a 1D-through-MAX table, chart, or backte
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/factors/history/VALUE?range=1y&response_mode=compact&include=trust"
+  "https://api.turos.app/v1/factors/history/VALUE?range=1y&response_mode=compact&include=trust"
 ```
 
 From there, `GET /v1/factors/exposures` returns per-stock loadings, `GET /v1/factors/extreme-moves` ranks unusual moves by z-score, and `GET /v1/factors/regime-performance` conditions rankings on the current macro regime.
@@ -77,7 +77,7 @@ Daily and intraday outputs use different clocks. Weekends and U.S. market holida
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/factors/macro-sensitivity?country=US&scenario_key=higher_for_longer&keys=VALUE,MOMENTUM,QUALITY&response_mode=compact"
+  "https://api.turos.app/v1/factors/macro-sensitivity?country=US&scenario_key=higher_for_longer&keys=VALUE,MOMENTUM,QUALITY&response_mode=compact"
 ```
 
 ## Portfolio decomposition

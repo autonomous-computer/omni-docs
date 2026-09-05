@@ -49,7 +49,7 @@ curl --fail-with-body -sS -X POST \
   -H "Idempotency-Key: deal-aapl-2026-08-23" \
   -H "content-type: application/json" \
   -d '{"job":"deal_brief","entities":["AAPL"]}' \
-  "https://api.secapi.ai/v1/intelligence/query"
+  "https://api.turos.app/v1/intelligence/query"
 ```
 
 Send `Idempotency-Key` on every billable POST. The first response is replayed for 24 hours; reusing the key with a different body returns `422`, and an in-flight first call returns `409` with `Retry-After`. See [Check job status](/intelligence/status) for the polling contract.

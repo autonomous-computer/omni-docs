@@ -2,13 +2,14 @@
 
 Source: the live TUROS contract, `omni-datastream`, and the approved TUROS Data & Intelligence positioning plan. If a fact is not here or in the current OpenAPI/catalog, do not add a capability.
 
-## Hosts (cutover)
+## Hosts
 
 - Product / dashboard: `https://www.turos.app` (signup, login, keys, billing, monitors, webhooks).
 - Docs destination: TUROS docs (this tree). `docs.secapi.ai` and secapi.ai docs URLs will redirect here.
-- Live HTTP API today: `https://api.secapi.ai` — keep this in every curl until an API hostname cutover exists. Do not write `api.turos.app` (that is a different service).
-- MCP: `https://api.secapi.ai/mcp`
-- Health: `https://api.secapi.ai/healthz`, `/readyz`
+- Live HTTP API: `https://api.turos.app` — use this host in every curl, MCP snippet, and discovery default.
+- Compatibility alias: `https://api.secapi.ai` — permanently supported for existing integrations, same methods/auth/billing. Never describe it as deprecated, never give it an end date, and never say requests are redirected between hosts. Mention it only where a reader may hold an existing `api.secapi.ai` integration.
+- MCP: `https://api.turos.app/mcp`
+- Health: `https://api.turos.app/healthz`, `/readyz`
 - Status: `https://status.turos.app`
 - OpenAPI: `openapi/sec-api-public.v1.json`
 - Discovery: `/.well-known/api-catalog.json`, `agent-card.json`, `mcp-server-card.json`, `llms.txt`
@@ -36,7 +37,7 @@ Source: the live TUROS contract, `omni-datastream`, and the approved TUROS Data 
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/entities/resolve?ticker=AAPL&view=agent"
+  "https://api.turos.app/v1/entities/resolve?ticker=AAPL&view=agent"
 ```
 
 Then latest 10-K:
@@ -45,7 +46,7 @@ Then latest 10-K:
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/filings/latest?ticker=AAPL&form=10-K&view=agent"
+  "https://api.turos.app/v1/filings/latest?ticker=AAPL&form=10-K&view=agent"
 ```
 
 Preserve when present: `accessionNumber`, `form`, `filingDate`, `filingUrl`, `requestId`. Do not infer a CIK from a ticker or an old filing URL. Latest-filing results are time-dependent.
@@ -92,7 +93,7 @@ Preserve when present: `accessionNumber`, `form`, `filingDate`, `filingUrl`, `re
 ## MCP
 
 - `GET /mcp` public discovery. `POST /mcp` authenticated JSON-RPC with `x-api-key`.
-- `claude mcp add --transport http secapi https://api.secapi.ai/mcp --header "x-api-key: $SECAPI_API_KEY"`
+- `claude mcp add --transport http secapi https://api.turos.app/mcp --header "x-api-key: $SECAPI_API_KEY"`
 - `secapi mcp install --client <claude-code|claude-desktop|cursor|windsurf|project>`
 - `tools.search` / `tools.describe` via `tools/call`. No batch JSON-RPC.
 - Errors: `-32004` execution budget, `-32005` AI-query/MCP quota, `-32006` tool protection.

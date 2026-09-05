@@ -11,7 +11,7 @@ Resolve the issuer before you fetch. `GET /v1/entities/resolve` turns a ticker, 
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/entities/resolve?ticker=AAPL&view=agent"
+  "https://api.turos.app/v1/entities/resolve?ticker=AAPL&view=agent"
 ```
 
 Keep `id`, `cik`, `ticker`, `matchConfidence`, and `matchBasis` when they're returned. A low-confidence match is a correction task, not a join key. Don't infer a CIK from a ticker string or an old filing URL - tickers can be reused or changed, and the CIK is the identifier that survives.
@@ -22,7 +22,7 @@ Then carry the identity into the fetch:
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/filings/latest?ticker=AAPL&form=10-K&view=agent"
+  "https://api.turos.app/v1/filings/latest?ticker=AAPL&form=10-K&view=agent"
 ```
 
 Ticker, `symbol`, and CIK must not conflict in a single request. When issuer input could be ambiguous, resolve it first rather than passing conflicting hints downstream.

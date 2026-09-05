@@ -16,7 +16,7 @@ Query SEC filing data, economic data from official institutions, factor data, an
     Give a compatible AI client focused investor tools through one hosted server.
   </Card>
   <Card title="Make an API request" href="/build/api" icon="code">
-    Authenticate with `x-api-key` and query the production API at `api.secapi.ai`.
+    Authenticate with `x-api-key` and query the production API at `api.turos.app`.
   </Card>
 </CardGroup>
 
@@ -82,4 +82,4 @@ Prefer a guided path? Use [Agent Setup](https://www.turos.app/agent-setup) to co
 
 ## One production contract
 
-REST, MCP, SDKs, and the CLI use the same data layer, credentials, response conventions, and pay-as-you-go wallet. Production requests currently use `https://api.secapi.ai`. The `api.turos.app` host will become the default only after it passes the documented parity gate; existing integrations will continue to work.
+REST, MCP, SDKs, and the CLI use the same data layer, credentials, response conventions, and pay-as-you-go wallet. Production requests use `https://api.turos.app`. `https://api.secapi.ai` is a permanently supported compatibility alias for existing integrations; API requests are never redirected between hosts.

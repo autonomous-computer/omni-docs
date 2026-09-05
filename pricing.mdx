@@ -39,10 +39,10 @@ Other amounts from `$10` to `$5,000` use the applicable savings band. See the [T
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/billing"
+  "https://api.turos.app/v1/billing"
 
 curl --fail-with-body -sS \
-  "https://api.secapi.ai/v1/billing/rates"
+  "https://api.turos.app/v1/billing/rates"
 ```
 
 Use `POST /v1/billing/quote` to estimate a request. A quote is not a reservation. Use `PUT /v1/billing/budget` for spend caps and alerts, and retain returned meter and estimated-cost headers when present.

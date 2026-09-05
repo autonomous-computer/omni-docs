@@ -16,7 +16,7 @@ Indicator keys drive every other macro call. Search first when the key is unknow
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/macro/search?q=inflation&country=US&limit=10"
+  "https://api.turos.app/v1/macro/search?q=inflation&country=US&limit=10"
 ```
 
 Use the returned `indicatorKey` in later calls - for example, US CPI is available as `CPIAUCSL`.
@@ -29,7 +29,7 @@ Use the returned `indicatorKey` in later calls - for example, US CPI is availabl
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/macro/high-signal-pack?country=US"
+  "https://api.turos.app/v1/macro/high-signal-pack?country=US"
 ```
 
 Expand only when needed: `response_mode=standard&include=series,trust`.
@@ -47,7 +47,7 @@ These are different questions. Don't mix them.
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/macro/calendar?country=US&indicator=CPIAUCSL&days=45&limit=12&response_mode=compact"
+  "https://api.turos.app/v1/macro/calendar?country=US&indicator=CPIAUCSL&days=45&limit=12&response_mode=compact"
 ```
 
 Add `GET /v1/macro/forecasts` and `GET /v1/macro/regimes` when the workflow needs forward context, and check `GET /v1/macro/status` before citing freshness-sensitive conclusions. When TUROS can't confirm source freshness, `GET /v1/macro/status` returns an explicitly degraded response (`runtime_registry_fallback`) - treat that as a caution flag, cite the degraded status, and avoid freshness-sensitive claims.
@@ -71,7 +71,7 @@ For research or backfill, `GET /v1/macro/all` returns a filterable page of raw o
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/macro/all?country=US&indicator_type=inflation&limit=250"
+  "https://api.turos.app/v1/macro/all?country=US&indicator_type=inflation&limit=250"
 ```
 
 The route is cursor-paginated - follow `nextCursor` until it is absent. It accepts `country` (single or comma-separated), `indicator_type`, `indicator`, `frequency`, `date_from`, `date_to`, and `limit` (max `1000`). Pass `format=csv` for an attachment; an oversized export is generated asynchronously and returned as an export job whose signed download URL arrives via the `export.completed` webhook event. See [Event types](/intelligence/event-types).

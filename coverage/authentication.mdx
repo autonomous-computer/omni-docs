@@ -18,7 +18,7 @@ export SECAPI_API_KEY="secapi_..."
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/limits"
+  "https://api.turos.app/v1/limits"
 ```
 
 Use `secapi-version` to pin a dated API version. When you omit it, TUROS resolves the current version and returns it in the `SECAPI-Version` response header. A pinned version can still receive additive fields, so parse the fields your application uses and tolerate extras.
@@ -54,8 +54,8 @@ Enterprise key management also supports scoped keys: `read:sec`, `write:sec`, an
 MCP clients that require protected-resource metadata can discover it at the standard well-known endpoints:
 
 ```text
-https://api.secapi.ai/.well-known/oauth-protected-resource
-https://api.secapi.ai/.well-known/oauth-authorization-server
+https://api.turos.app/.well-known/oauth-protected-resource
+https://api.turos.app/.well-known/oauth-authorization-server
 ```
 
 Server-to-server MCP calls still authenticate with `x-api-key`. See [TUROS MCP](/build/mcp) for setup.

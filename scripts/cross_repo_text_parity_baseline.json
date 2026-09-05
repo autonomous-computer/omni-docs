@@ -3,13 +3,10 @@
     "Text divergences between openapi/sec-api-public.v1.json in THIS repo and the",
     "authoritative contract published by omni-datastream.",
     "",
-    "Entries are ratcheted and digest-pinned. Remove an entry as soon as the",
-    "published contract catches up to the corrected docs text."
+    "Empty by construction: that contract is now pulled wholesale by",
+    "scripts/sync_public_contract.mjs, so the two documents are byte-identical and",
+    "no divergence can exist. An entry appearing here again means someone edited",
+    "this repo's copy by hand instead of changing the source."
   ],
-  "divergences": {
-    "GET /v1/earnings/transcripts|description": {
-      "digest": "43d159b38dcd22c1",
-      "reason": "Temporary docs-side correction: the published contract still says /v1/filings/transcripts is currently unavailable, but that route is live and the availability guard requires truthful public prose until datastream republishes."
-    }
-  }
+  "divergences": {}
 }

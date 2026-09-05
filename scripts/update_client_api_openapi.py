@@ -26,7 +26,7 @@ from typing import Any, Dict
 
 
 DEFAULT_SOURCE_URL = "openapi/sec-api-public.v1.json"
-DEFAULT_BASE_URL = "https://api.secapi.ai"
+DEFAULT_BASE_URL = "https://api.turos.app"
 DEFAULT_OUT_PATH = Path("openapi/omni-client-api.v1.json")
 # Routes that the SEC API public contract must expose before the local
 # compatibility overlay is applied. Used as an identity gate so a redirect or

@@ -6,7 +6,7 @@ sidebarTitle: "MCP"
 
 Connect a compatible AI client to the TUROS data layer without writing an integration. The hosted server gives agents focused tools for SEC filing data, macro data, factor data, and repeatable investment analysis, with compact schemas and links or identifiers for the underlying sources.
 
-The current production endpoint is `https://api.secapi.ai/mcp`. Public discovery uses `GET /mcp`; authenticated JSON-RPC tool calls use `POST /mcp` with an API key in `x-api-key`.
+The production endpoint is `https://api.turos.app/mcp`. Public discovery uses `GET /mcp`; authenticated JSON-RPC tool calls use `POST /mcp` with an API key in `x-api-key`.
 
 Want a guided path for your client? Start with [Agent Setup](https://www.turos.app/agent-setup). To compare TUROS with an existing provider before migrating, see [Switch to TUROS](https://www.turos.app/switch).
 
@@ -25,7 +25,7 @@ export SECAPI_API_KEY="secapi_test_..."
 ### Claude Code
 
 ```bash
-claude mcp add --transport http turos https://api.secapi.ai/mcp \
+claude mcp add --transport http turos https://api.turos.app/mcp \
   --header "x-api-key: $SECAPI_API_KEY"
 ```
 
@@ -38,7 +38,7 @@ Use the environment-variable syntax supported by your client:
   "mcpServers": {
     "turos": {
       "type": "http",
-      "url": "https://api.secapi.ai/mcp",
+      "url": "https://api.turos.app/mcp",
       "headers": {
         "x-api-key": "${SECAPI_API_KEY}"
       }
@@ -67,5 +67,5 @@ Test keys let an agent discover and exercise deterministic fixture workflows wit
 MCP and the REST API share the same data layer and core conventions. Prototype a workflow with an agent, then move repeatable production execution to the [API](/build/api) or a supported [SDK](/build/sdks) without adopting a separate data product.
 
 <Note>
-Keep `api.secapi.ai` in configuration until TUROS publishes host parity for `api.turos.app`. Existing host and package names remain compatibility contracts.
+`https://api.turos.app/mcp` is the production MCP endpoint. Existing configurations that point at `https://api.secapi.ai/mcp` keep working: that host is a permanently supported compatibility alias. Package names and CLI commands that still use `secapi` are compatibility contracts.
 </Note>
