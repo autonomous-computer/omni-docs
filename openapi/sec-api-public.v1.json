@@ -12791,7 +12791,7 @@
     "/v1/earnings/transcripts": {
       "get": {
         "summary": "Earnings materials",
-        "description": "Returns SEC-furnished earnings materials from 8-K Item 2.02 filings. This is an on-demand scan of EDGAR filing materials, not a complete speaker-transcript store. `contentMd` is capped at 12,000 characters; longer bodies set `contentTruncated=true` and report the full length in `contentMdChars`. `kind` mirrors `coverage` (`release_only`, `prepared_remarks`, `transcript_text`, `unusable`) and adds `shareholder_letter` for an EX-99 shareholder letter. `letterId` is currently always null. A shareholder letter is not an earnings-call transcript. Speaker-level transcript records are served by `/v1/filings/transcripts` when source material supports extraction. See [API conventions](https://docs.secapi.ai/api-conventions).",
+        "description": "Returns SEC-furnished earnings materials from 8-K Item 2.02 filings. This is an on-demand scan of EDGAR filing materials, not a complete speaker-transcript store. `contentMd` is capped at 12,000 characters; longer bodies set `contentTruncated=true` and report the full length in `contentMdChars`. `kind` mirrors `coverage` (`release_only`, `prepared_remarks`, `transcript_text`, `unusable`) and adds `shareholder_letter` for an EX-99 shareholder letter. `letterId` is currently always null. A shareholder letter is not an earnings-call transcript. Speaker-level transcripts are served by `/v1/filings/transcripts`, which is currently unavailable and returns 404. See [API conventions](https://docs.secapi.ai/api-conventions).",
         "responses": {
           "200": {
             "description": "Successful response",
