@@ -1,0 +1,17 @@
+---
+title: "Operations"
+description: "Quote and reserve channel-neutral TUROS operations before execution across API, MCP, CLI, SDK, Excel, and Sheets."
+---
+
+Operations endpoints help clients price and reserve channel-neutral work before execution. Use them when an agent, API client, CLI, SDK, Excel workbook, or Sheets integration needs to check availability, budget impact, and settlement posture before running the underlying operation.
+
+<Note>
+The pages in this family describe the quote and reservation envelope. They do not execute the underlying research operation unless that operation page and the response explicitly say so.
+</Note>
+
+## Operations in this family
+
+<CardGroup cols={2}>
+<Card title="POST /v1/operations/execute" href="/api-reference/operations/post-v1-operations-execute">Validate and reserve an operation against the current quote and budget gate.</Card>
+<Card title="POST /v1/operations/quote" href="/api-reference/operations/post-v1-operations-quote">Price an operation before execution across API, MCP, CLI, SDK, Excel, and Sheets.</Card>
+</CardGroup>
