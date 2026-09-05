@@ -15,7 +15,7 @@ Every webhook and stream delivery attempt lands in the delivery ledger. Inspect 
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/delivery/events?kind=event&type=monitor.match&limit=20"
+  "https://api.turos.app/v1/delivery/events?kind=event&type=monitor.match&limit=20"
 ```
 
 `GET /v1/delivery/events/export` produces JSON or NDJSON with the same filters (`kind`, `type`, `requestId`, `since`, `limit`). Use NDJSON for line-oriented ingestion into log processors. Delivery events meter as `delivery_events`.

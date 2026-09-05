@@ -10,7 +10,7 @@ Then make one safe reproduction with the same credential:
 ```bash
 curl -i -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
-  "https://api.secapi.ai/v1/limits"
+  "https://api.turos.app/v1/limits"
 ```
 
 If this request doesn't succeed, resolve the credential or account condition before investigating a filing workflow. If it succeeds while your filing request fails, the problem is in the request or the route's coverage, not your key.
@@ -47,10 +47,10 @@ A different key can have different plan, billing, or quota state - use the faili
 
 ```bash
 curl --fail-with-body -sS -H "x-api-key: $SECAPI_API_KEY" \
-  "https://api.secapi.ai/v1/billing"
+  "https://api.turos.app/v1/billing"
 
 curl --fail-with-body -sS -H "x-api-key: $SECAPI_API_KEY" \
-  "https://api.secapi.ai/v1/limits"
+  "https://api.turos.app/v1/limits"
 ```
 
 ## Escalate with a useful diagnostic

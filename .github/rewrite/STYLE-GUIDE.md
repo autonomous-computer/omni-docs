@@ -48,8 +48,8 @@ Do not describe the allowance as a subscription or promise more than the confirm
 ## Host policy
 
 - Canonical docs: `https://www.turos.app/docs`.
-- Current production API and MCP: `https://api.secapi.ai` and `https://api.secapi.ai/mcp`.
-- `api.turos.app` becomes a default only after the documented parity gate passes.
+- Production API and MCP: `https://api.turos.app` and `https://api.turos.app/mcp`.
+- `https://api.secapi.ai` is a permanently supported compatibility alias. Do not call it deprecated, do not give it an end date, and do not say requests are redirected between hosts.
 - Existing host, key prefixes, package names, CLI commands, headers, and environment variables are compatibility contracts.
 - `/docs/mcp` is the JSON transport; the human guide is `/docs/build/mcp`.
 

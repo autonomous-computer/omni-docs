@@ -3,7 +3,7 @@
   "info": {
     "title": "OMNI Client API",
     "version": "2026-03-19",
-    "description": "The AI-ready data layer for sophisticated investors: SEC filing data, macro data, factor data, and repeatable investment analysis through one API. The current production API host is https://api.secapi.ai. The intended future TUROS API host is https://api.turos.app, but it is not listed as a server until host parity is verified.",
+    "description": "The AI-ready data layer for sophisticated investors: SEC filing data, macro data, factor data, and repeatable investment analysis through one API. The production API host is https://api.turos.app. https://api.secapi.ai is a permanently supported compatibility alias for existing integrations; requests are never redirected between hosts.",
     "contact": {
       "name": "TUROS Support",
       "email": "support@turos.app",
@@ -16,8 +16,12 @@
   },
   "servers": [
     {
-      "url": "https://api.secapi.ai",
+      "url": "https://api.turos.app",
       "description": "Production"
+    },
+    {
+      "url": "https://api.secapi.ai",
+      "description": "Compatibility alias; permanently supported for existing integrations"
     }
   ],
   "paths": {

@@ -4,7 +4,7 @@ description: "Reference the TUROS API contract, request parameters, response sch
 sidebarTitle: "Introduction"
 ---
 
-The TUROS API gives you programmatic access to SEC filing data, macro data, factor data, repeatable investment analysis, and delivery infrastructure. The current production base URL is `https://api.secapi.ai`.
+The TUROS API gives you programmatic access to SEC filing data, macro data, factor data, repeatable investment analysis, and delivery infrastructure. The production base URL is `https://api.turos.app`; `https://api.secapi.ai` is a permanently supported compatibility alias for existing integrations.
 
 Each resource family has its own reference page. This introduction describes the fields and boundaries that the generated operation contract is intended to expose. The current family pages and operation pages remain the authority for what a particular route returns; do not infer an availability, meter, source, freshness, or coverage field when that page or response does not provide it. A registry entry or page in this reference does not, by itself, mean that the route is enabled for every account.
 
@@ -57,7 +57,7 @@ Send the key in the `x-api-key` header. Don't send it as an `Authorization: Bear
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/entities/resolve?ticker=AAPL&view=agent"
+  "https://api.turos.app/v1/entities/resolve?ticker=AAPL&view=agent"
 ```
 
 A `401 missing_api_key` means the request didn't include `x-api-key`. A `401 authentication_failed` means the supplied key wasn't accepted. Don't switch to a bearer header to fix either error.
@@ -107,4 +107,4 @@ TUROS resolves a version for every request and returns it in the `SECAPI-Version
 
 ## Clients
 
-You don't have to hand-roll HTTP. TUROS ships a [JavaScript SDK](/sdks/javascript), [Python SDK](/sdks/python), [Go SDK](/sdks/go), [Rust SDK](/sdks/rust), and a [CLI](/sdks/cli), plus a hosted Model Context Protocol (MCP) server at `https://api.secapi.ai/mcp` for agent clients.
+You don't have to hand-roll HTTP. TUROS ships a [JavaScript SDK](/sdks/javascript), [Python SDK](/sdks/python), [Go SDK](/sdks/go), [Rust SDK](/sdks/rust), and a [CLI](/sdks/cli), plus a hosted Model Context Protocol (MCP) server at `https://api.turos.app/mcp` for agent clients.

@@ -39,7 +39,7 @@ Hand your AI tool one working request so it starts from a verified shape instead
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/entities/resolve?ticker=AAPL&view=agent"
+  "https://api.turos.app/v1/entities/resolve?ticker=AAPL&view=agent"
 ```
 
 TUROS returns the matched identity and a request ID:
@@ -64,8 +64,8 @@ You're building against the TUROS API.
 
 Context:
 - Docs index: https://www.turos.app/docs/llms.txt
-- REST base URL: https://api.secapi.ai
-- Hosted MCP: https://api.secapi.ai/mcp
+- REST base URL: https://api.turos.app
+- Hosted MCP: https://api.turos.app/mcp
 
 Rules:
 - Authenticate with the x-api-key header. Never send the API key as
@@ -86,7 +86,7 @@ Rules:
 For agentic tools, the hosted MCP server is usually better than raw REST because the client discovers current tool schemas at runtime:
 
 ```bash
-claude mcp add --transport http secapi https://api.secapi.ai/mcp \
+claude mcp add --transport http secapi https://api.turos.app/mcp \
   --header "x-api-key: $SECAPI_API_KEY"
 ```
 
@@ -98,7 +98,7 @@ secapi mcp install --client <claude-code|claude-desktop|cursor|windsurf|project>
 
 Tell the agent to use `tools.search` to find tools and `tools.describe` to inspect input schemas before calling them. See [TUROS MCP](/build/mcp) for the full workflow.
 
-Keep `api.secapi.ai` as the API and MCP host until TUROS announces `api.turos.app` as parity-ready. Package names, key prefixes, environment variables, and CLI commands that still use `secapi` are compatibility contracts.
+Use `api.turos.app` as the API and MCP host. `api.secapi.ai` is a permanently supported compatibility alias for existing integrations. Package names, key prefixes, environment variables, and CLI commands that still use `secapi` are compatibility contracts.
 
 ## Test the workflow before production
 

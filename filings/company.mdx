@@ -11,7 +11,7 @@ The company overview is the starting view for issuer research: identity, classif
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/companies/overview?ticker=AAPL"
+  "https://api.turos.app/v1/companies/overview?ticker=AAPL"
 ```
 
 `companyType` determines which metrics are meaningful - null margins or cash-flow values are expected for financial institutions and pre-revenue companies, not a data gap. Optional enrichments such as `include=factors` are bounded and independently statused; factor exposure is descriptive, not a forecast. Preserve the returned filing, provenance, and freshness fields before presenting the snapshot as current.

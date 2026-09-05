@@ -11,7 +11,7 @@ When `POST /v1/intelligence/query` returns `202`, the work is queued and the bod
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/intelligence/query/$JOB_ID"
+  "https://api.turos.app/v1/intelligence/query/$JOB_ID"
 ```
 
 Handle each outcome distinctly rather than collapsing them into "not done yet":

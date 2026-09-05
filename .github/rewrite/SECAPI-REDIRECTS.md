@@ -6,7 +6,7 @@ Do not flip DNS or bulk redirects while the coordinated release is still a draft
 Host rule: `docs.secapi.ai` 301 → `https://www.turos.app/docs` + mapped path.
 Unmapped paths: 301 to `https://www.turos.app/docs`.
 
-API host stays `https://api.secapi.ai` until a separate API hostname cutover.
+API host: `https://api.turos.app` is production; `https://api.secapi.ai` is a permanently supported alias. API requests are never redirected between hosts — this map covers documentation URLs only.
 
 | Source path | Destination |
 | --- | --- |

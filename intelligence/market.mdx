@@ -13,7 +13,7 @@ Market data routes return structured, source-attributed payloads: snapshots, OHL
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/market/snapshots?symbols=AAPL,MSFT,GOOG"
+  "https://api.turos.app/v1/market/snapshots?symbols=AAPL,MSFT,GOOG"
 ```
 
 ## Bars
@@ -31,7 +31,7 @@ curl --fail-with-body -sS \
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/market/bars?ticker=AAPL&date_from=2025-01-01&date_to=2025-12-31"
+  "https://api.turos.app/v1/market/bars?ticker=AAPL&date_from=2025-01-01&date_to=2025-12-31"
 ```
 
 ## Corporate actions
@@ -42,7 +42,7 @@ curl --fail-with-body -sS \
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/market/corporate-actions?ticker=AAPL&date_from=2025-01-01"
+  "https://api.turos.app/v1/market/corporate-actions?ticker=AAPL&date_from=2025-01-01"
 ```
 
 ## Calendar coverage semantics
@@ -63,7 +63,7 @@ The calendar states where coverage is partial. Read the coverage fields before m
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/market/calendar?market=XNYS&duration=5"
+  "https://api.turos.app/v1/market/calendar?market=XNYS&duration=5"
 ```
 
 ## Reference and search

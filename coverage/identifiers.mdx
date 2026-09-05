@@ -13,7 +13,7 @@ Every issuer-specific workflow starts with identity. Resolve a ticker, name, or 
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/entities/resolve?ticker=AAPL&view=agent"
+  "https://api.turos.app/v1/entities/resolve?ticker=AAPL&view=agent"
 ```
 
 Keep `id`, `cik`, `ticker`, `matchConfidence`, and `matchBasis` when TUROS returns them. A low-confidence match is a correction task, not a join key. Don't infer a CIK from a ticker string or an old filing URL - tickers can be reused or changed, and the CIK in the response is the durable identifier.

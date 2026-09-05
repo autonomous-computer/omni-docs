@@ -10,12 +10,13 @@ Use the status page and health endpoints to assess whether the service is reacha
 | Surface | Address |
 | --- | --- |
 | Status | [status.turos.app](https://status.turos.app) |
-| API | `https://api.secapi.ai` |
-| Health | `https://api.secapi.ai/healthz` |
-| Readiness | `https://api.secapi.ai/readyz` |
+| API | `https://api.turos.app` |
+| API compatibility alias | `https://api.secapi.ai` (permanently supported; same methods, auth, and billing) |
+| Health | `https://api.turos.app/healthz` |
+| Readiness | `https://api.turos.app/readyz` |
 
 ```bash
-curl -sS "https://api.secapi.ai/healthz"
+curl -sS "https://api.turos.app/healthz"
 ```
 
 `/healthz` reports service health; `/readyz` reports readiness. If health is successful but a route still fails, work from that route's error and request ID rather than assuming a general outage.

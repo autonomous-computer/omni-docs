@@ -22,10 +22,10 @@ Before a watchlist, backfill, or scheduled job, prove the credential that will r
 
 ```bash
 curl --fail-with-body -sS -H "x-api-key: $SECAPI_API_KEY" \
-  "https://api.secapi.ai/v1/billing"
+  "https://api.turos.app/v1/billing"
 
 curl --fail-with-body -sS -H "x-api-key: $SECAPI_API_KEY" \
-  "https://api.secapi.ai/v1/limits"
+  "https://api.turos.app/v1/limits"
 ```
 
 These describe the organization behind this key, not a public price list. Store the redacted responses with the run record, and keep the key out of logs, prompts, and saved artifacts.
@@ -37,7 +37,7 @@ curl --fail-with-body -sS -X POST \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "content-type: application/json" \
   -d '{"path":"/v1/filings/latest","method":"GET","units":1}' \
-  "https://api.secapi.ai/v1/billing/quote"
+  "https://api.turos.app/v1/billing/quote"
 ```
 
 Save `requestId`, `planKey`, `meterClass`, `units`, `budget`, and `budgetGate` with the run record. A quote is an estimate, not a reservation. Set a maximum work-unit count before the job begins.

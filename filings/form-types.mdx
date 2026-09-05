@@ -10,7 +10,7 @@ For an unfamiliar form, start with filing search:
 ```bash
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
-  "https://api.secapi.ai/v1/filings?ticker=AAPL&forms=10-K,10-Q,8-K&limit=25"
+  "https://api.turos.app/v1/filings?ticker=AAPL&forms=10-K,10-Q,8-K&limit=25"
 ```
 
 The response identifies SEC filings. It doesn't promise a normalized parser for every form, attachment, or exhibit.

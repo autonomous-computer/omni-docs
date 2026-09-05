@@ -17,7 +17,7 @@ Read delivery history with an API key:
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/webhook_endpoints/wh_123/deliveries?limit=20"
+  "https://api.turos.app/v1/webhook_endpoints/wh_123/deliveries?limit=20"
 ```
 
 Each attempt is an audit record: ID, event type, status, timestamps, latency, request ID, and `replayedFromDeliveryId` when the attempt came from a replay. Join it to the event ID your receiver stored - an HTTP status alone doesn't prove downstream processing succeeded. Page through `nextCursor` before concluding a delivery was never sent.
@@ -40,7 +40,7 @@ Cursor polling is the pull-side alternative for workers that can't receive a pub
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/stream_subscriptions/str_123/events?limit=25"
+  "https://api.turos.app/v1/stream_subscriptions/str_123/events?limit=25"
 ```
 
 The response carries ordered `data`, `nextCursor` for the next read, and `replayCursor` for durable checkpoint recovery. The rules:

@@ -13,7 +13,7 @@ A situation response answers one of two different questions, and mixing them cor
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/situations/sit_abc123"
+  "https://api.turos.app/v1/situations/sit_abc123"
 ```
 
 Keep the `situationId`, accession numbers, source URLs, event dates, and `requestId` with any resulting memo. The timeline is the evidence: retrieve the original SEC filing for each term or date you use in a decision. Use `GET /v1/situations/{situation_id}/filings` when you only need to page the timeline.

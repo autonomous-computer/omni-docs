@@ -24,7 +24,7 @@ Retrieve the latest 10-K for an issuer:
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/filings/latest?ticker=AAPL&form=10-K&view=agent"
+  "https://api.turos.app/v1/filings/latest?ticker=AAPL&form=10-K&view=agent"
 ```
 
 Latest-filing results are time-dependent - the accession number changes when a newer filing arrives. Preserve `accessionNumber`, `form`, `filingDate`, `filingUrl`, and `requestId` when the response includes them; they are the citation that identifies the source.

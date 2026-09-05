@@ -55,7 +55,7 @@ For a `401`, check the environment variable and keep using API-key authenticatio
 
 ## Production notes
 
-- The default client uses `https://api.secapi.ai`; override `base_url` only for an environment you control.
+- The current release defaults to `https://api.secapi.ai`, a permanently supported alias of the production host `https://api.turos.app`. Set `base_url="https://api.turos.app"` to target the canonical host; otherwise override `base_url` only for an environment you control.
 - Pass `api_version` after validating the exact operation, and log `Request-Id` and `SECAPI-Version` around failures.
 - Disable SDK retries when a queue, job runner, or service mesh already owns retry behavior.
 - Endpoint fields and response views aren't interchangeable. Consult the reference before parsing optional metadata.

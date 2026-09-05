@@ -13,7 +13,7 @@ Filter by artifact kind, current status, and result count:
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/artifacts?kind=section_compare&status=ready&limit=10"
+  "https://api.turos.app/v1/artifacts?kind=section_compare&status=ready&limit=10"
 ```
 
 Use the list to answer three questions: which artifacts exist for the organization, whether an artifact is still metadata-only or backed by object storage (`storageMode`), and which object key and download URL belong to a generated bundle.
@@ -35,7 +35,7 @@ Two retrieval shapes, two jobs:
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/artifacts/art_example_123/export?format=markdown"
+  "https://api.turos.app/v1/artifacts/art_example_123/export?format=markdown"
 ```
 
 Retrieval reads are not the billable event - creation is. Polling a completed artifact doesn't bill again.

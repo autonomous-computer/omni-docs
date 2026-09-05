@@ -26,7 +26,7 @@ The most common mistake is treating any of these as current state. A 13F report 
 ```bash
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
-  "https://api.secapi.ai/v1/insiders?ticker=AAPL&forms=4&transaction_code=P&limit=25"
+  "https://api.turos.app/v1/insiders?ticker=AAPL&forms=4&transaction_code=P&limit=25"
 ```
 
 `transactionCode` and `transactionDirection` are different fields - preserve both, along with the transaction date, filing date, accession number, and filing URL. A row can omit a price, title, or post-transaction ownership; leave absent fields absent rather than estimating them. A filed transaction identifies a disclosure to review - it doesn't establish motive or current exposure.
@@ -36,7 +36,7 @@ curl --fail-with-body -sS \
 ```bash
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
-  "https://api.secapi.ai/v1/owners/13f?cik=0001067983&limit=20"
+  "https://api.turos.app/v1/owners/13f?cik=0001067983&limit=20"
 ```
 
 To select a particular report, take a `reportDate` from `GET /v1/owners/13f/filings` and pass it back. Note that `view=agent` caps 13F holdings at 50 regardless of `limit` - use the default view when you need complete holdings.

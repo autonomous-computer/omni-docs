@@ -23,7 +23,7 @@ Pin the API version on every request and check the `SECAPI-Version` response hea
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/limits"
+  "https://api.turos.app/v1/limits"
 ```
 
 A `200` here confirms the key authenticates. `401 missing_api_key` means the header didn't arrive; `401 authentication_failed` means the credential is wrong. Don't switch to bearer auth to "fix" either.

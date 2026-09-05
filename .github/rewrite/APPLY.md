@@ -16,9 +16,9 @@ This repository deploys the developer documentation at `https://www.turos.app/do
 
 1. Merge human and machine-readable docs together.
 2. Verify navigation, links, redirects, Markdown page variants, `llms.txt`, and OpenAPI rendering in preview.
-3. Confirm `api.secapi.ai` remains the base URL in working examples.
+3. Confirm `api.turos.app` is the base URL in working examples and that `api.secapi.ai` appears only as the compatibility alias.
 4. Deploy the linked marketing, docs, and API-contract changes as one coordinated release.
 5. Verify production at `www.turos.app/docs`, including `/docs/build/mcp` as HTML and `/docs/mcp` as JSON.
 6. Apply legacy SECAPI.ai documentation redirects only after the destination pages are live.
 
-Do not switch examples or discovery defaults to `api.turos.app` until the cross-host parity gate passes.
+Examples and discovery defaults use `api.turos.app`. `api.secapi.ai` stays documented as a permanently supported alias; never describe it as deprecated or scheduled for removal.

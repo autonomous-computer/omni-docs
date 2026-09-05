@@ -17,7 +17,7 @@ Key creation, reveal, rotation, and revocation are dashboard-session actions - a
 curl --fail-with-body -sS \
   -H "x-api-key: $SECAPI_API_KEY" \
   -H "secapi-version: 2026-03-19" \
-  "https://api.secapi.ai/v1/limits"
+  "https://api.turos.app/v1/limits"
 ```
 
 `GET /v1/limits` returns the rate limits, key limits, and throughput ceilings for the plan, and it isn't billed - it's the standard smoke test after any key change.
