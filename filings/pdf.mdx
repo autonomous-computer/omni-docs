@@ -18,7 +18,7 @@ curl --fail-with-body \
   --output filing-source.html
 ```
 
-The response may return cached bytes directly or answer with a `302` redirect to a signed URL or the SEC source. Don't use `curl --location` on the authenticated request - a redirect can leave `api.secapi.ai`, and `--location` would forward your API key to another host. Read the `Location` header and follow it in a separate, unauthenticated request.
+The response may return cached bytes directly or answer with a `302` redirect to a signed URL or the SEC source. Don't use `curl --location` on the authenticated request - a redirect can leave the API host, and `--location` would forward your API key to another host. Read the `Location` header and follow it in a separate, unauthenticated request.
 
 Don't assume the downloaded document is a PDF. Its content type comes from the filing source - most primary documents are HTML. Preserve the accession and the final source URL when the filed presentation is evidence.
 

@@ -2,7 +2,7 @@
 
 Source: the live TUROS contract, `omni-datastream`, and the approved TUROS Data & Intelligence positioning plan. If a fact is not here or in the current OpenAPI/catalog, do not add a capability.
 
-## Hosts (cutover)
+## Hosts
 
 - Product / dashboard: `https://www.turos.app` (signup, login, keys, billing, monitors, webhooks).
 - Docs destination: TUROS docs (this tree). `docs.secapi.ai` and secapi.ai docs URLs will redirect here.
