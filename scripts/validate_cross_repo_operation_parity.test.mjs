@@ -158,10 +158,12 @@ const vacuous = twoSpecs({ openapi: "3.1.0", paths: {} }, { openapi: "3.1.0", pa
 assert.equal(vacuous.status, 2, vacuous.stdout);
 assert.match(vacuous.stderr, /Refusing to pass vacuously/);
 
-// The real repo baseline may be empty when the local spec is synced directly
-// from the published contract. Any future exception entries must still be
-// explicit, digest-pinned, and justified.
+// The real repo baseline must be well formed. Empty is the expected steady
+// state: scripts/sync_public_contract.mjs pulls the published contract
+// wholesale, so the two documents are byte-identical and no divergence can
+// exist. An entry here means someone hand-edited this repo's copy.
 const realBaseline = JSON.parse(fs.readFileSync("scripts/cross_repo_text_parity_baseline.json", "utf8"));
+assert.ok(realBaseline.divergences && typeof realBaseline.divergences === "object", "baseline must have a divergences object");
 for (const [key, value] of Object.entries(realBaseline.divergences)) {
   assert.match(key, /^[A-Z]+ \/\S* ?\S*\|(summary|description)$/, `malformed baseline key ${key}`);
   assert.match(value.digest, /^[0-9a-f]{16}$/, `malformed digest for ${key}`);

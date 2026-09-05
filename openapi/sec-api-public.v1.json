@@ -5817,7 +5817,7 @@
           "Embed"
         ],
         "summary": "Featured shareholder letters",
-        "description": "Anonymous, cacheable excerpts (up to 480 characters) from featured shareholder letters. Full letter documents are not returned. Returns 404 while this public embed is not enabled. See [API conventions](https://docs.secapi.ai/api-conventions).",
+        "description": "Anonymous, cacheable excerpts (up to 480 characters) from a curated set of featured shareholder letters. Full letter documents are not returned. See [API conventions](https://docs.secapi.ai/api-conventions).",
         "responses": {
           "200": {
             "description": "Successful response",
@@ -5855,7 +5855,7 @@
           "Embed"
         ],
         "summary": "Featured letter by slug",
-        "description": "Anonymous member of `/v1/embed/letters`. Slugs come from a fixed curated set (`brk-2024`, `brk-2025`, `xyz-q4-2025`, `xyz-q2-2026`). Returns 404 while this public embed is not enabled.",
+        "description": "Anonymous member of `/v1/embed/letters`. Slugs come from a fixed curated set (`brk-2024`, `brk-2025`, `xyz-q4-2025`, `xyz-q2-2026`); unknown slugs return 404. Full letter documents are not returned.",
         "parameters": [
           {
             "name": "slug",
@@ -12795,7 +12795,7 @@
     "/v1/earnings/transcripts": {
       "get": {
         "summary": "Earnings materials",
-        "description": "Returns SEC-furnished earnings materials from 8-K Item 2.02 filings. This is an on-demand scan of EDGAR filing materials, not a complete speaker-transcript store. `contentMd` is capped at 12,000 characters; longer bodies set `contentTruncated=true` and report the full length in `contentMdChars`. `kind` mirrors `coverage` (`release_only`, `prepared_remarks`, `transcript_text`, `unusable`) and adds `shareholder_letter` for an EX-99 shareholder letter. `letterId` is currently always null. A shareholder letter is not an earnings-call transcript. Speaker-level transcript records are served by `/v1/filings/transcripts` when source material supports extraction. See [API conventions](https://docs.secapi.ai/api-conventions).",
+        "description": "Returns SEC-furnished earnings materials from 8-K Item 2.02 filings. This is an on-demand scan of EDGAR filing materials, not a complete speaker-transcript store. `contentMd` is capped at 12,000 characters; longer bodies set `contentTruncated=true` and report the full length in `contentMdChars`. `kind` mirrors `coverage` (`release_only`, `prepared_remarks`, `transcript_text`, `unusable`) and adds `shareholder_letter` for an EX-99 shareholder letter. `letterId` is currently always null. A shareholder letter is not an earnings-call transcript. Speaker-level transcripts are served by `/v1/filings/transcripts`. See [API conventions](https://docs.secapi.ai/api-conventions).",
         "responses": {
           "200": {
             "description": "Successful response",
@@ -14139,6 +14139,8 @@
                       "asOf": "2026-06-09T22:15:00.000Z",
                       "country": "US",
                       "coverageTier": "core",
+                      "coverageSourceId": "macro_high_signal_pack_core",
+                      "coverageVersion": "macro_high_signal_pack_v1:core",
                       "responseMode": "compact",
                       "seriesCount": 32,
                       "series": [
@@ -28845,7 +28847,7 @@
         ],
         "responses": {
           "404": {
-            "description": "The filings-intelligence API is currently disabled (filings_intelligence_not_available).",
+            "description": "Returned when filing intelligence is not enabled for the requesting account (`filings_intelligence_not_available`). This is an account entitlement, not the endpoint's availability.",
             "content": {
               "application/json": {
                 "schema": {
@@ -28859,7 +28861,7 @@
                       "id": "err_example",
                       "code": "filings_intelligence_not_available",
                       "type": "invalid_request_error",
-                      "message": "The filings-intelligence API is not enabled.",
+                      "message": "Filing intelligence is not enabled for this account.",
                       "requestId": "req_example",
                       "details": {}
                     }
@@ -28969,7 +28971,7 @@
         ],
         "responses": {
           "404": {
-            "description": "The filings-intelligence API is currently disabled (filings_intelligence_not_available).",
+            "description": "Returned when filing intelligence is not enabled for the requesting account (`filings_intelligence_not_available`). This is an account entitlement, not the endpoint's availability.",
             "content": {
               "application/json": {
                 "schema": {
@@ -28983,7 +28985,7 @@
                       "id": "err_example",
                       "code": "filings_intelligence_not_available",
                       "type": "invalid_request_error",
-                      "message": "The filings-intelligence API is not enabled.",
+                      "message": "Filing intelligence is not enabled for this account.",
                       "requestId": "req_example",
                       "details": {}
                     }
@@ -29100,7 +29102,7 @@
         ],
         "responses": {
           "404": {
-            "description": "The filings-intelligence API is currently disabled (filings_intelligence_not_available).",
+            "description": "Returned when filing intelligence is not enabled for the requesting account (`filings_intelligence_not_available`). This is an account entitlement, not the endpoint's availability.",
             "content": {
               "application/json": {
                 "schema": {
@@ -29114,7 +29116,7 @@
                       "id": "err_example",
                       "code": "filings_intelligence_not_available",
                       "type": "invalid_request_error",
-                      "message": "The filings-intelligence API is not enabled.",
+                      "message": "Filing intelligence is not enabled for this account.",
                       "requestId": "req_example",
                       "details": {}
                     }
@@ -29254,7 +29256,7 @@
         ],
         "responses": {
           "404": {
-            "description": "The filings-intelligence API is currently disabled (filings_intelligence_not_available).",
+            "description": "Returned when filing intelligence is not enabled for the requesting account (`filings_intelligence_not_available`). This is an account entitlement, not the endpoint's availability.",
             "content": {
               "application/json": {
                 "schema": {
@@ -29268,7 +29270,7 @@
                       "id": "err_example",
                       "code": "filings_intelligence_not_available",
                       "type": "invalid_request_error",
-                      "message": "The filings-intelligence API is not enabled.",
+                      "message": "Filing intelligence is not enabled for this account.",
                       "requestId": "req_example",
                       "details": {}
                     }
@@ -29354,7 +29356,7 @@
         ],
         "responses": {
           "404": {
-            "description": "The filings-intelligence API is currently disabled (filings_intelligence_not_available).",
+            "description": "Returned when filing intelligence is not enabled for the requesting account (`filings_intelligence_not_available`). This is an account entitlement, not the endpoint's availability.",
             "content": {
               "application/json": {
                 "schema": {
@@ -29368,7 +29370,7 @@
                       "id": "err_example",
                       "code": "filings_intelligence_not_available",
                       "type": "invalid_request_error",
-                      "message": "The filings-intelligence API is not enabled.",
+                      "message": "Filing intelligence is not enabled for this account.",
                       "requestId": "req_example",
                       "details": {}
                     }
@@ -33388,7 +33390,7 @@
           "Fund Letters"
         ],
         "summary": "List fund managers",
-        "description": "The Fund Directory expansion is enabled: this endpoint covers letterless directory-listed 13F managers alongside letter publishers, and supports the ticker/cik/theme/min_positions/publishes_letters/period/sort filters and the theme/publishesLetters/has13F/latest13F/references fields. latest13F is a summary — follow crossLinks.holdings13F for full holdings.",
+        "description": "Covers letterless directory-listed 13F managers alongside letter publishers, and supports the ticker/cik/theme/min_positions/publishes_letters/period/sort filters and the theme/publishesLetters/has13F/latest13F/references fields. latest13F is a summary — follow crossLinks.holdings13F for full holdings.",
         "parameters": [
           {
             "name": "q",
@@ -33915,7 +33917,7 @@
           "Fund Letters"
         ],
         "summary": "Compare letter topics",
-        "description": "Register this static path before /v1/fund-letters/{letter_id}. Identify letters by from_letter_id + to_letter_id, or by issuer_cik / issuer_ticker plus from_period + to_period. Deterministic lexicon in v1; no public sentiment field. Metered as fund_letter_lookup.",
+        "description": "Identify letters by from_letter_id + to_letter_id, or by issuer_cik / issuer_ticker plus from_period + to_period. Deterministic lexicon in v1; no public sentiment field. Metered as fund_letter_lookup.",
         "parameters": [
           {
             "name": "from_letter_id",
@@ -47414,10 +47416,13 @@
             ],
             "description": "Coverage group this country pack belongs to. `core` is the core coverage group; `extended` is the extended coverage group. Both groups return the same pack shape. Always present on responses from this API version; declared optional so older clients and cached payloads still validate."
           },
-          "ring": {
+          "coverageSourceId": {
             "type": "string",
-            "deprecated": true,
-            "description": "Deprecated. A legacy internal coverage identifier whose values are unspecified and subject to change; it is still emitted for backwards compatibility but is omitted from the examples and should not be parsed. Use `coverageTier` instead. Note that `coverageTier` is a coarser grouping than `ring` — it answers whether a country is in core coverage, and every non-core country is `extended`."
+            "description": "Identifier for this pack's coverage group, e.g. `macro_high_signal_pack_core`. Carries the same information as `coverageTier` in the `macro_high_signal_pack_*` identifier FORMAT, so a caller already parsing an identifier of that shape can migrate without changing its parsing; if you are not format-constrained, read `coverageTier` instead. This is NOT the upstream data source: `provenance.source` / `sourceRights.source` carry that (`fred`, `bls`, `oecd`, `world_bank`, …) and remain the fields to use for attribution. `coverageSourceId` is only the coverage-group identifier, and is what those fields fall back to when a pack has no observations at all."
+          },
+          "coverageVersion": {
+            "type": "string",
+            "description": "Materialization version for this pack's coverage group, e.g. `macro_high_signal_pack_v1:core`. This is the same value now carried by `materializationVersion` on this resource. It keeps the `<parserVersion>:<variant>` FORMAT, so a caller parsing `materializationVersion` as a version string can migrate without changing its parsing — which a bare `coverageTier` enum would require. Note it is coarser than the value it replaces: `core` and `extended` only, so packs that `materializationVersion` distinguished may share a `coverageVersion`."
           },
           "responseMode": {
             "type": "string",
