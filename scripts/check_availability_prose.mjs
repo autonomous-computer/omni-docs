@@ -27,6 +27,7 @@ import fs from "node:fs";
 export const GATED_FAMILIES = [
   { flag: "OMNI_EMBED_LETTERS_ENABLED", prefix: "/v1/embed/letters" },
   { flag: "OMNI_EMBED_OWNERS_ENABLED", prefix: "/v1/embed/owners/" },
+  { flag: "OMNI_FILINGS_TRANSCRIPTS_ENABLED", prefix: "/v1/earnings/transcripts" },
 ];
 
 /**
