@@ -17,8 +17,8 @@ For the broader evaluation and migration path, see [Switch to TUROS](https://www
 ## What stays compatible
 
 - Existing API keys, paths, request bodies, headers, and pinned versions continue to work on both hosts.
-- Current SDK package names, CLI commands, and environment variables (`@secapi/sdk-js`, `secapi-client`, `secapi`, `SECAPI_API_KEY`, `secapi_live_…` key prefixes) remain valid. They are compatibility contracts, not stale branding.
-- Billing, quotas, and idempotency keys are shared across hosts: the same organization, wallet, and rate limits apply whichever host a request reaches.
+- Current SDK package names, CLI commands, and environment variables (`@secapi/sdk-js`, `secapi-client`, `secapi`, `SECAPI_API_KEY`, `secapi_live_…` and `secapi_test_…` key prefixes) remain valid. They are compatibility contracts, not stale branding.
+- Billing and quotas are shared across hosts: the same organization, wallet, and rate limits apply whichever host a request reaches.
 
 ## What changes
 
